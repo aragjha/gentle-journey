@@ -15,7 +15,7 @@ const onboardingPhases = [
         helper: "This helps us personalize your experience.",
         type: "single" as const,
         options: [
-          { id: "patient", label: "I have Parkinson's", icon: "🙋" },
+          { id: "patient", label: "I am the patient", icon: "🙋" },
           { id: "caregiver", label: "I'm a caregiver", icon: "💝" },
           { id: "both", label: "Both", icon: "🤝" },
         ],
