@@ -1,96 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* NeuraChamp Design System - Optimized for Parkinson's Patients
+   Large fonts, high contrast, calm colors, high gratification
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Light Mode Colors */
+    --background: 0 0% 97%; /* #F7F7F7 */
+    --foreground: 220 13% 9%; /* #111827 */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%; /* #FFFFFF */
+    --card-foreground: 220 13% 9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 220 13% 9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary: Deep readable blue for text on CTAs */
+    --primary: 213 58% 34%; /* #23538B */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary: Soft gray */
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 13% 9%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 215 16% 47%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent: Aqua CTA color */
+    --accent: 186 71% 72%; /* #8CE0EC */
+    --accent-foreground: 213 58% 34%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 186 71% 72%;
 
-    --radius: 0.5rem;
+    --radius: 1.5rem; /* 24dp for cards */
+
+    /* CTA Specific */
+    --cta-fill: 186 71% 72%; /* #8CE0EC */
+    --cta-text: 213 58% 34%; /* #23538B */
+    --cta-highlight: 186 71% 82%;
+    --cta-shadow: 213 58% 34%;
+
+    /* Gamification */
+    --xp-gold: 45 93% 58%;
+    --streak-orange: 25 95% 53%;
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+
+    /* Safe areas */
+    --safe-top: 24px;
+    --safe-bottom: 24px;
+    --content-padding: 16px;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 186 71% 72%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark Mode: Deep Navy */
+    --background: 221 28% 29%; /* #323F5A */
+    --foreground: 0 0% 100%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    /* Glass card effect */
+    --card: 221 28% 35%; /* Slightly lighter */
+    --card-foreground: 0 0% 100%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 221 28% 32%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 221 28% 29%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 221 28% 38%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 221 28% 38%;
+    --muted-foreground: 220 14% 75%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 186 71% 72%;
+    --accent-foreground: 213 58% 34%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 221 28% 42%;
+    --input: 221 28% 38%;
+    --ring: 186 71% 72%;
+
+    --sidebar-background: 221 28% 25%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 186 71% 72%;
+    --sidebar-primary-foreground: 213 58% 34%;
+    --sidebar-accent: 221 28% 35%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 221 28% 42%;
+    --sidebar-ring: 186 71% 72%;
   }
 }
 
@@ -99,7 +118,174 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html {
+    font-family: 'Nunito', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   body {
     @apply bg-background text-foreground;
+    font-family: 'Nunito', system-ui, sans-serif;
   }
+}
+
+@layer components {
+  /* 3D CTA Button Style */
+  .btn-cta {
+    @apply relative inline-flex items-center justify-center;
+    @apply font-bold text-lg;
+    @apply rounded-full px-8 py-4;
+    @apply transition-all duration-150 ease-out;
+    background: linear-gradient(
+      to bottom,
+      hsl(var(--cta-highlight)) 0%,
+      hsl(var(--cta-fill)) 50%,
+      hsl(186 71% 65%) 100%
+    );
+    color: hsl(var(--cta-text));
+    box-shadow:
+      0 6px 18px hsla(var(--cta-shadow), 0.18),
+      inset 0 2px 4px hsla(0 0% 100% / 0.3),
+      inset 0 -2px 4px hsla(var(--cta-shadow), 0.1);
+    min-height: 56px;
+  }
+
+  .btn-cta:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow:
+      0 8px 24px hsla(var(--cta-shadow), 0.22),
+      inset 0 2px 4px hsla(0 0% 100% / 0.3),
+      inset 0 -2px 4px hsla(var(--cta-shadow), 0.1);
+  }
+
+  .btn-cta:active:not(:disabled) {
+    transform: translateY(2px);
+    box-shadow:
+      0 2px 8px hsla(var(--cta-shadow), 0.15),
+      inset 0 2px 4px hsla(0 0% 100% / 0.2),
+      inset 0 -1px 2px hsla(var(--cta-shadow), 0.1);
+  }
+
+  .btn-cta:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* Glass Card */
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-sm;
+    @apply rounded-3xl p-6;
+    @apply border border-border/50;
+    box-shadow: 0 4px 16px hsla(var(--foreground), 0.05);
+  }
+
+  /* Progress Bar */
+  .progress-bar {
+    @apply h-2 w-full rounded-full bg-muted overflow-hidden;
+  }
+
+  .progress-bar-fill {
+    @apply h-full rounded-full bg-accent;
+    @apply transition-all duration-500 ease-out;
+  }
+
+  /* Gamification badges */
+  .badge-xp {
+    @apply inline-flex items-center gap-1 px-3 py-1 rounded-full;
+    @apply text-sm font-bold;
+    background: linear-gradient(135deg, hsl(var(--xp-gold)), hsl(40 93% 48%));
+    color: hsl(30 50% 20%);
+  }
+
+  .badge-streak {
+    @apply inline-flex items-center gap-1 px-3 py-1 rounded-full;
+    @apply text-sm font-bold;
+    background: linear-gradient(135deg, hsl(var(--streak-orange)), hsl(15 95% 48%));
+    color: white;
+  }
+
+  /* Chip selection */
+  .chip {
+    @apply inline-flex items-center justify-center;
+    @apply px-5 py-3 rounded-2xl;
+    @apply text-base font-semibold;
+    @apply border-2 border-border bg-card;
+    @apply transition-all duration-200;
+    min-height: 48px;
+  }
+
+  .chip:hover {
+    @apply border-accent/50 bg-accent/10;
+  }
+
+  .chip.selected {
+    @apply border-accent bg-accent/20;
+    @apply text-accent-foreground;
+  }
+
+  /* Safe area layout */
+  .safe-layout {
+    padding-top: calc(var(--safe-top) + 8px);
+    padding-bottom: calc(var(--safe-bottom) + 80px);
+    padding-left: var(--content-padding);
+    padding-right: var(--content-padding);
+    min-height: 100dvh;
+  }
+
+  /* Bottom nav */
+  .bottom-nav {
+    @apply fixed bottom-0 left-0 right-0;
+    @apply flex items-center justify-around;
+    @apply bg-card/95 backdrop-blur-md;
+    @apply border-t border-border;
+    height: calc(56px + var(--safe-bottom));
+    padding-bottom: var(--safe-bottom);
+  }
+
+  .bottom-nav-item {
+    @apply flex flex-col items-center justify-center gap-1;
+    @apply py-2 px-4;
+    @apply text-muted-foreground;
+    @apply transition-colors duration-200;
+  }
+
+  .bottom-nav-item.active {
+    @apply text-accent;
+  }
+
+  .bottom-nav-item.active::after {
+    content: '';
+    @apply absolute bottom-2 w-8 h-0.5 rounded-full bg-accent;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px hsla(var(--accent), 0.3); }
+  50% { box-shadow: 0 0 40px hsla(var(--accent), 0.5); }
+}
+
+@keyframes celebrate {
+  0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+  50% { transform: scale(1.2) rotate(0deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes confetti {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-celebrate {
+  animation: celebrate 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
 }
