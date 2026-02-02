@@ -30,7 +30,7 @@ const SplashScreen = ({
         {/* Content */}
         <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
           {/* Logo - centered and larger */}
-          <motion.img src={logoLight} alt="NeuraChamp" className="w-64 max-w-[80vw] h-auto" initial={{
+          <motion.img src={logoLight} alt="NeuraChamp" className="w-[448rem] h-auto" initial={{
           opacity: 0,
           scale: 0.8
         }} animate={{
