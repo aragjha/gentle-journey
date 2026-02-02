@@ -34,7 +34,7 @@ const DiariesHub = ({ onStartCheckin, onNavigate }: DiariesHubProps) => {
       </div>
 
       {/* Gamification Bar */}
-      <GamificationBar streak={7} xp={245} level={3} />
+      <GamificationBar streak={1} xp={245} level={3} />
 
       {/* Content */}
       <div className="flex-1 px-4 pb-24 overflow-y-auto">

@@ -41,7 +41,7 @@ const ProfilePage = ({ onNavigate }: ProfilePageProps) => {
             <div className="text-center">
               <div className="flex items-center justify-center gap-1 text-streak">
                 <Flame className="w-5 h-5" />
-                <span className="text-h2 font-bold">7</span>
+                <span className="text-h2 font-bold">1</span>
               </div>
               <p className="text-helper text-muted-foreground">Day streak</p>
             </div>
