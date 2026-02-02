@@ -38,7 +38,7 @@ const SplashScreen = ({ step, onContinue }: SplashScreenProps) => {
           <motion.img
             src={logoLight}
             alt="NeuraChamp"
-            className="w-[112rem] h-auto"
+            className="w-[224rem] h-auto"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, type: "spring", stiffness: 200 }}
