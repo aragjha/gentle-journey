@@ -1,12 +1,14 @@
 import { Volume2 } from "lucide-react";
 import { motion } from "framer-motion";
 import logoLight from "@/assets/logo-light.png";
+import ThemeToggle from "./ThemeToggle";
 
 interface HeaderProps {
   progress?: number;
   totalSteps?: number;
   showProgress?: boolean;
   showSpeaker?: boolean;
+  showThemeToggle?: boolean;
   onSpeakerClick?: () => void;
 }
 
@@ -15,13 +17,14 @@ const Header = ({
   totalSteps = 1, 
   showProgress = false,
   showSpeaker = true,
+  showThemeToggle = true,
   onSpeakerClick 
 }: HeaderProps) => {
   const progressPercent = totalSteps > 0 ? (progress / totalSteps) * 100 : 0;
 
   return (
     <header className="w-full">
-      {/* Logo and Speaker Row */}
+      {/* Logo and Controls Row */}
       <div className="flex items-center justify-between mb-4">
         <motion.img
           src={logoLight}
@@ -32,19 +35,31 @@ const Header = ({
           transition={{ duration: 0.4 }}
         />
         
-        {showSpeaker && (
-          <motion.button
-            onClick={onSpeakerClick}
-            className="p-2 rounded-full hover:bg-muted transition-colors"
-            whileTap={{ scale: 0.95 }}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-            aria-label="Read aloud"
-          >
-            <Volume2 className="w-6 h-6 text-muted-foreground" />
-          </motion.button>
-        )}
+        <div className="flex items-center gap-1">
+          {showThemeToggle && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: 0.05 }}
+            >
+              <ThemeToggle />
+            </motion.div>
+          )}
+          
+          {showSpeaker && (
+            <motion.button
+              onClick={onSpeakerClick}
+              className="p-2 rounded-full hover:bg-muted transition-colors"
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+              aria-label="Read aloud"
+            >
+              <Volume2 className="w-6 h-6 text-muted-foreground" />
+            </motion.button>
+          )}
+        </div>
       </div>
 
       {/* Progress Bar */}

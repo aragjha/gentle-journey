@@ -41,12 +41,12 @@ const SplashScreen = ({ step, onContinue }: SplashScreenProps) => {
             transition={{ duration: 0.3 }}
             className="flex flex-col items-center"
           >
-            {/* Logo on first screen */}
+            {/* Logo on first screen - 100% larger */}
             {step === 1 && (
               <motion.img
                 src={logoLight}
                 alt="NeuraChamp"
-                className="w-48 h-auto mb-8"
+                className="w-96 h-auto mb-8"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
