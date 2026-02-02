@@ -165,8 +165,8 @@ const LessonDetailPage = ({ node, onBack }: LessonDetailPageProps) => {
         )}
       </div>
 
-      {/* Ask NeuroQuery CTA */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background to-transparent pt-8">
+      {/* CTAs */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background to-transparent pt-8 space-y-3">
         <motion.button
           onClick={() => setIsSheetOpen(true)}
           className="w-full py-4 px-6 rounded-2xl bg-accent text-accent-foreground font-semibold text-body-lg flex items-center justify-center gap-3 shadow-lg hover:bg-accent/90 transition-colors"
@@ -176,6 +176,15 @@ const LessonDetailPage = ({ node, onBack }: LessonDetailPageProps) => {
         >
           <MessageCircle className="w-5 h-5" />
           Ask NeuroQuery
+        </motion.button>
+        <motion.button
+          onClick={onBack}
+          className="w-full py-3 px-6 rounded-2xl bg-muted text-foreground font-semibold text-body flex items-center justify-center gap-2 hover:bg-muted/80 transition-colors"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          Continue
         </motion.button>
       </div>
 
