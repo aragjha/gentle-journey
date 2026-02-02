@@ -44,7 +44,7 @@ const SplashScreen = ({ step, onContinue }: SplashScreenProps) => {
           <motion.img
             src={logoLight}
             alt="NeuraChamp"
-            className="w-56 h-auto"
+            className="w-[28rem] h-auto"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, type: "spring", stiffness: 200 }}
@@ -63,9 +63,9 @@ const SplashScreen = ({ step, onContinue }: SplashScreenProps) => {
 
         {/* CTA */}
         <div className="px-6 pb-safe-bottom mb-8">
-          <CTAButton size="full" onClick={onContinue}>
-            Continue
-          </CTAButton>
+        <CTAButton size="full" onClick={onContinue} className="uppercase font-bold">
+          Continue
+        </CTAButton>
         </div>
       </div>
     );
@@ -135,7 +135,7 @@ const SplashScreen = ({ step, onContinue }: SplashScreenProps) => {
 
       {/* CTA */}
       <div className="px-6 pb-safe-bottom mb-8">
-        <CTAButton size="full" onClick={onContinue}>
+        <CTAButton size="full" onClick={onContinue} className="uppercase font-bold">
           {step === 3 ? "Get Started" : "Continue"}
         </CTAButton>
       </div>
