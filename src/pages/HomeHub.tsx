@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Header from "@/components/Header";
-import GamificationBar from "@/components/GamificationBar";
 import HeroCard from "@/components/HeroCard";
 import BottomNav from "@/components/BottomNav";
 import DiaryTile from "@/components/DiaryTile";
@@ -12,16 +11,13 @@ interface HomeHubProps {
 }
 
 const regimeSteps = [
-  { id: "learn", title: "Today's Lesson", subtitle: "Understanding tremors", duration: "1 min", xp: 10, icon: "📚" },
-  { id: "diary", title: "Daily Check-in", subtitle: "How are you today?", duration: "2 min", xp: 25, icon: "📝", isHero: true },
-  { id: "log", title: "Log Medication", subtitle: "Quick entry", duration: "30 sec", xp: 5, icon: "💊" },
-  { id: "move", title: "Gentle Stretch", subtitle: "1-minute movement", duration: "1 min", xp: 10, icon: "🧘" },
+  { id: "learn", title: "Today's Lesson", subtitle: "Understanding tremors", duration: "1 min", icon: "📚" },
+  { id: "diary", title: "Daily Check-in", subtitle: "How are you today?", duration: "2 min", icon: "📝", isHero: true },
+  { id: "log", title: "Log Medication", subtitle: "Quick entry", duration: "30 sec", icon: "💊" },
+  { id: "move", title: "Gentle Stretch", subtitle: "1-minute movement", duration: "1 min", icon: "🧘" },
 ];
 
 const HomeHub = ({ onStartCheckin, onNavigate }: HomeHubProps) => {
-  const [streak, setStreak] = useState(1);
-  const [xp, setXp] = useState(0);
-  const [level, setLevel] = useState(1);
   const [completedToday, setCompletedToday] = useState<string[]>([]);
 
   const handleStepClick = (stepId: string) => {
@@ -37,9 +33,6 @@ const HomeHub = ({ onStartCheckin, onNavigate }: HomeHubProps) => {
       <div className="px-4 pt-safe-top">
         <Header showSpeaker={false} />
       </div>
-
-      {/* Gamification Bar */}
-      <GamificationBar streak={streak} xp={xp} level={level} />
 
       {/* Content */}
       <div className="flex-1 px-4 pb-24 overflow-y-auto">
@@ -75,7 +68,6 @@ const HomeHub = ({ onStartCheckin, onNavigate }: HomeHubProps) => {
                   title={step.title}
                   subtitle={step.subtitle}
                   duration={step.duration}
-                  xp={step.xp}
                   icon={step.icon}
                   onClick={() => handleStepClick(step.id)}
                   variant={step.isHero ? "primary" : "secondary"}

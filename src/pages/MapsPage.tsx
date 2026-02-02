@@ -12,14 +12,14 @@ interface MapsPageProps {
 const stages = ["Diagnosis", "Treatment", "Living"];
 
 const mapNodes = [
-  { id: "1", title: "What is Parkinson's?", stage: "Diagnosis", status: "done", xp: 10 },
-  { id: "2", title: "Common early symptoms", stage: "Diagnosis", status: "done", xp: 10 },
-  { id: "3", title: "Getting a diagnosis", stage: "Diagnosis", status: "current", xp: 10 },
-  { id: "4", title: "Understanding your team", stage: "Diagnosis", status: "locked", xp: 10 },
-  { id: "5", title: "Medication basics", stage: "Treatment", status: "locked", xp: 10 },
-  { id: "6", title: "Managing side effects", stage: "Treatment", status: "locked", xp: 10 },
-  { id: "7", title: "Daily routines", stage: "Living", status: "locked", xp: 10 },
-  { id: "8", title: "Exercise & movement", stage: "Living", status: "locked", xp: 10 },
+  { id: "1", title: "What is Parkinson's?", stage: "Diagnosis", status: "done" },
+  { id: "2", title: "Common early symptoms", stage: "Diagnosis", status: "done" },
+  { id: "3", title: "Getting a diagnosis", stage: "Diagnosis", status: "current" },
+  { id: "4", title: "Understanding your team", stage: "Diagnosis", status: "locked" },
+  { id: "5", title: "Medication basics", stage: "Treatment", status: "locked" },
+  { id: "6", title: "Managing side effects", stage: "Treatment", status: "locked" },
+  { id: "7", title: "Daily routines", stage: "Living", status: "locked" },
+  { id: "8", title: "Exercise & movement", stage: "Living", status: "locked" },
 ];
 
 const MapsPage = ({ onNavigate }: MapsPageProps) => {

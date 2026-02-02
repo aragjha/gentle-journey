@@ -10,7 +10,7 @@ interface ToolsHubProps {
 }
 
 const tools = [
-  { id: "diaries", title: "Diaries", subtitle: "Track daily symptoms", icon: "📓", xp: 25 },
+  { id: "diaries", title: "Diaries", subtitle: "Track daily symptoms", icon: "📓" },
   { id: "chat", title: "Talk to Neura", subtitle: "Ask anything about PD", icon: "💬" },
   { id: "medication", title: "Medication Log", subtitle: "Track your meds", icon: "💊", comingSoon: true },
   { id: "activity", title: "Activity Tracker", subtitle: "Log exercise & movement", icon: "🏃", comingSoon: true },
@@ -56,7 +56,6 @@ const ToolsHub = ({ onNavigate, onStartCheckin, onOpenChat }: ToolsHubProps) => 
                 title={tool.title}
                 subtitle={tool.subtitle}
                 icon={tool.icon}
-                xp={tool.xp}
                 onClick={() => handleToolClick(tool.id)}
                 variant={tool.id === "diaries" ? "primary" : "secondary"}
               />
