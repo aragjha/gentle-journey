@@ -18,6 +18,8 @@ interface OnboardingQuestionProps {
   onSliderChange?: (value: number) => void;
   onContinue: () => void;
   canContinue: boolean;
+  showBackButton?: boolean;
+  onBack?: () => void;
 }
 
 const OnboardingQuestion = ({
@@ -33,6 +35,8 @@ const OnboardingQuestion = ({
   onSliderChange,
   onContinue,
   canContinue,
+  showBackButton = false,
+  onBack,
 }: OnboardingQuestionProps) => {
   return (
     <div className="min-h-screen flex flex-col bg-background safe-layout">
@@ -41,6 +45,8 @@ const OnboardingQuestion = ({
         showProgress 
         progress={progress} 
         totalSteps={totalSteps}
+        showBackButton={showBackButton}
+        onBack={onBack}
       />
 
       {/* Question Content */}

@@ -1,4 +1,4 @@
-import { Volume2 } from "lucide-react";
+import { Volume2, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import logoLight from "@/assets/logo-light.png";
 import ThemeToggle from "./ThemeToggle";
@@ -9,7 +9,9 @@ interface HeaderProps {
   showProgress?: boolean;
   showSpeaker?: boolean;
   showThemeToggle?: boolean;
+  showBackButton?: boolean;
   onSpeakerClick?: () => void;
+  onBack?: () => void;
 }
 
 const Header = ({ 
@@ -18,22 +20,37 @@ const Header = ({
   showProgress = false,
   showSpeaker = true,
   showThemeToggle = true,
-  onSpeakerClick 
+  showBackButton = false,
+  onSpeakerClick,
+  onBack
 }: HeaderProps) => {
   const progressPercent = totalSteps > 0 ? (progress / totalSteps) * 100 : 0;
 
   return (
     <header className="w-full">
-      {/* Logo and Controls Row */}
+      {/* Logo/Back and Controls Row */}
       <div className="flex items-center justify-between mb-4">
-        <motion.img
-          src={logoLight}
-          alt="NeuraChamp"
-          className="h-10 w-auto object-contain"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4 }}
-        />
+        {showBackButton ? (
+          <motion.button
+            onClick={onBack}
+            className="w-10 h-10 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4 }}
+            aria-label="Go back"
+          >
+            <ArrowLeft className="w-5 h-5 text-foreground" />
+          </motion.button>
+        ) : (
+          <motion.img
+            src={logoLight}
+            alt="NeuraChamp"
+            className="h-10 w-auto object-contain"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4 }}
+          />
+        )}
         
         <div className="flex items-center gap-1">
           {showThemeToggle && (

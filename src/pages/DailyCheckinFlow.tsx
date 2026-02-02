@@ -158,6 +158,8 @@ const DailyCheckinFlow = ({ onComplete, onBack }: DailyCheckinFlowProps) => {
           onSliderChange={handleSliderChange}
           onContinue={handleContinue}
           canContinue={canContinue()}
+          showBackButton
+          onBack={onBack}
         />
       </motion.div>
     </AnimatePresence>
