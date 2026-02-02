@@ -4,25 +4,57 @@ import Header from "@/components/Header";
 import HeroCard from "@/components/HeroCard";
 import BottomNav from "@/components/BottomNav";
 import DiaryTile from "@/components/DiaryTile";
+import { getTodaysLesson } from "@/data/lessonContent";
 
 interface HomeHubProps {
   onStartCheckin: () => void;
   onNavigate: (tab: "home" | "maps" | "tools" | "profile") => void;
+  onOpenLesson?: () => void;
 }
 
-const regimeSteps = [
-  { id: "learn", title: "Today's Lesson", subtitle: "Understanding tremors", duration: "1 min", icon: "📚" },
-  { id: "diary", title: "Daily Check-in", subtitle: "How are you today?", duration: "2 min", icon: "📝", isHero: true },
-  { id: "log", title: "Log Medication", subtitle: "Quick entry", duration: "30 sec", icon: "💊" },
-  { id: "move", title: "Gentle Stretch", subtitle: "1-minute movement", duration: "1 min", icon: "🧘" },
-];
-
-const HomeHub = ({ onStartCheckin, onNavigate }: HomeHubProps) => {
+const HomeHub = ({ onStartCheckin, onNavigate, onOpenLesson }: HomeHubProps) => {
   const [completedToday, setCompletedToday] = useState<string[]>([]);
+  
+  // Get today's lesson from the journey map
+  const todaysLesson = getTodaysLesson();
+
+  const regimeSteps = [
+    { 
+      id: "learn", 
+      title: "Today's Lesson", 
+      subtitle: todaysLesson.title, 
+      duration: "1 min", 
+      icon: "📚" 
+    },
+    { 
+      id: "diary", 
+      title: "Daily Check-in", 
+      subtitle: "How are you today?", 
+      duration: "2 min", 
+      icon: "📝", 
+      isHero: true 
+    },
+    { 
+      id: "log", 
+      title: "Log Medication", 
+      subtitle: "Quick entry", 
+      duration: "30 sec", 
+      icon: "💊" 
+    },
+    { 
+      id: "move", 
+      title: "Gentle Stretch", 
+      subtitle: "1-minute movement", 
+      duration: "1 min", 
+      icon: "🧘" 
+    },
+  ];
 
   const handleStepClick = (stepId: string) => {
     if (stepId === "diary") {
       onStartCheckin();
+    } else if (stepId === "learn" && onOpenLesson) {
+      onOpenLesson();
     }
     // Other steps would navigate to their respective flows
   };
