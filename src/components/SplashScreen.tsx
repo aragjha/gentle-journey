@@ -28,6 +28,44 @@ const splashContent = [
 const SplashScreen = ({ step, onContinue }: SplashScreenProps) => {
   const content = splashContent[step - 1];
 
+  // Screen 1: Logo + Slogan only
+  if (step === 1) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        {/* Content */}
+        <div className="flex-1 flex flex-col items-center justify-center px-8 text-center relative">
+          {/* Slogan behind logo */}
+          <motion.p
+            className="absolute text-[2.5rem] font-extrabold tracking-[0.2em] text-muted-foreground/20 uppercase whitespace-nowrap"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
+            NEURO CARE REDEFINED
+          </motion.p>
+
+          {/* Logo - centered and larger */}
+          <motion.img
+            src={logoLight}
+            alt="NeuraChamp"
+            className="w-[28rem] h-auto relative z-10"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, type: "spring", stiffness: 200 }}
+          />
+        </div>
+
+        {/* CTA */}
+        <div className="px-6 pb-safe-bottom mb-8">
+          <CTAButton size="full" onClick={onContinue}>
+            Continue
+          </CTAButton>
+        </div>
+      </div>
+    );
+  }
+
+  // Screens 2 & 3: Value props
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Content */}
@@ -41,18 +79,6 @@ const SplashScreen = ({ step, onContinue }: SplashScreenProps) => {
             transition={{ duration: 0.3 }}
             className="flex flex-col items-center"
           >
-            {/* Logo on first screen - 100% larger */}
-            {step === 1 && (
-              <motion.img
-                src={logoLight}
-                alt="NeuraChamp"
-                className="w-96 h-auto mb-8"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              />
-            )}
-
             {/* Emoji */}
             <motion.span
               className="text-7xl mb-8"
