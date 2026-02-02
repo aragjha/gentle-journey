@@ -10,6 +10,7 @@ import ToolsHub from "@/pages/ToolsHub";
 import NeuroQueryChat from "@/pages/NeuroQueryChat";
 import ProfilePage from "@/pages/ProfilePage";
 import GratificationScreen from "@/components/GratificationScreen";
+import { getTodaysLesson } from "@/data/lessonContent";
 
 type AppScreen = 
   | "splash1" 
@@ -21,6 +22,7 @@ type AppScreen =
   | "diaries" 
   | "checkin" 
   | "maps" 
+  | "maps-lesson"
   | "tools" 
   | "chat" 
   | "profile";
@@ -28,6 +30,7 @@ type AppScreen =
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>("splash1");
   const [previousScreen, setPreviousScreen] = useState<AppScreen>("home");
+  const [openLessonId, setOpenLessonId] = useState<string | null>(null);
 
   const handleSplashContinue = () => {
     if (currentScreen === "splash1") setCurrentScreen("splash2");
@@ -44,6 +47,7 @@ const Index = () => {
   };
 
   const handleNavigate = (tab: "home" | "maps" | "tools" | "profile") => {
+    setOpenLessonId(null); // Reset lesson when navigating via tabs
     setCurrentScreen(tab);
   };
 
@@ -58,6 +62,22 @@ const Index = () => {
 
   const handleOpenChat = () => {
     setCurrentScreen("chat");
+  };
+
+  const handleOpenLesson = () => {
+    // Open the current lesson from home page
+    const todaysLesson = getTodaysLesson();
+    setOpenLessonId(todaysLesson.id);
+    setPreviousScreen("home");
+    setCurrentScreen("maps-lesson");
+  };
+
+  const handleLessonClose = () => {
+    // When closing lesson opened from home, go back to home
+    if (previousScreen === "home") {
+      setOpenLessonId(null);
+      setCurrentScreen("home");
+    }
   };
 
   const renderScreen = () => {
@@ -84,7 +104,8 @@ const Index = () => {
         return (
           <HomeHub 
             onStartCheckin={handleStartCheckin} 
-            onNavigate={handleNavigate} 
+            onNavigate={handleNavigate}
+            onOpenLesson={handleOpenLesson}
           />
         );
       case "diaries":
@@ -103,6 +124,14 @@ const Index = () => {
         );
       case "maps":
         return <MapsPage onNavigate={handleNavigate} />;
+      case "maps-lesson":
+        return (
+          <MapsPage 
+            onNavigate={handleNavigate}
+            initialLessonId={openLessonId}
+            onLessonClose={handleLessonClose}
+          />
+        );
       case "tools":
         return (
           <ToolsHub 

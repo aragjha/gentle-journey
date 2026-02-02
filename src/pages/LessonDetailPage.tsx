@@ -2,20 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Play, MessageCircle, ChevronRight, ExternalLink } from "lucide-react";
 import NeuroQuerySheet from "@/components/NeuroQuerySheet";
-
-interface LessonNode {
-  id: string;
-  title: string;
-  stage: string;
-  status: "done" | "current" | "locked";
-  description?: string;
-  videoTitle?: string;
-  aboutStation?: string;
-  actionToTake?: string;
-  neuroQueryPrompts?: string[];
-  questionsForTeam?: string[];
-  additionalResources?: string[];
-}
+import { type LessonNode } from "@/data/lessonContent";
 
 interface LessonDetailPageProps {
   node: LessonNode;
