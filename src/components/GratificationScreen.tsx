@@ -5,7 +5,6 @@ import { Check, Star, Sparkles } from "lucide-react";
 interface GratificationScreenProps {
   title: string;
   subtitle?: string;
-  xpEarned?: number;
   onContinue: () => void;
   ctaText?: string;
   type?: "success" | "celebration" | "milestone";
@@ -14,7 +13,6 @@ interface GratificationScreenProps {
 const GratificationScreen = ({
   title,
   subtitle,
-  xpEarned,
   onContinue,
   ctaText = "Continue",
   type = "success"
@@ -105,18 +103,6 @@ const GratificationScreen = ({
         </motion.p>
       )}
 
-      {/* XP Badge */}
-      {xpEarned && (
-        <motion.div
-          className="badge-xp text-lg mb-8"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.6, type: "spring", stiffness: 300 }}
-        >
-          <Star className="w-5 h-5" />
-          <span>+{xpEarned} XP</span>
-        </motion.div>
-      )}
 
       {/* CTA */}
       <motion.div

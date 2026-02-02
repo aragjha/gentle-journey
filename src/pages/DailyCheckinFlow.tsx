@@ -129,7 +129,6 @@ const DailyCheckinFlow = ({ onComplete, onBack }: DailyCheckinFlowProps) => {
       <GratificationScreen
         title="Check-in complete! 🎉"
         subtitle="You're building healthy habits every day."
-        xpEarned={25}
         onContinue={onComplete}
         type="celebration"
         ctaText="Back to Home"
