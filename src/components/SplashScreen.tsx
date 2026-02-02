@@ -26,39 +26,44 @@ const SplashScreen = ({
 
   // Screen 1: Logo + Slogan only
   if (step === 1) {
-    return (
-      <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'hsl(220, 30%, 22%)' }}>
-        {/* Content - Logo centered vertically in upper portion */}
-        <div className="flex-1 flex flex-col items-center justify-center px-8">
-          {/* Logo */}
-          <motion.img 
-            src={logoLight} 
-            alt="NeuraChamp" 
-            className="w-72 max-w-[80%] h-auto" 
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, type: "spring", stiffness: 200 }}
-          />
+    return <div className="min-h-screen flex flex-col bg-background">
+        {/* Content */}
+        <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
+          {/* Logo - centered and larger */}
+          <motion.img src={logoLight} alt="NeuraChamp" className="w-[448rem] h-auto" initial={{
+          opacity: 0,
+          scale: 0.8
+        }} animate={{
+          opacity: 1,
+          scale: 1
+        }} transition={{
+          duration: 0.5,
+          type: "spring",
+          stiffness: 200
+        }} />
+
+          {/* Slogan below logo */}
+          <motion.p className="text-sm tracking-[0.25em] uppercase mt-4 text-primary-foreground font-bold" initial={{
+          opacity: 0,
+          y: 10
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} transition={{
+          delay: 0.4,
+          duration: 0.4
+        }}>
+            NEURO CARE REDEFINED
+          </motion.p>
         </div>
 
-        {/* Slogan - positioned between logo and button */}
-        <motion.p 
-          className="text-sm tracking-[0.25em] uppercase text-center text-white/90 font-bold mb-12"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.4 }}
-        >
-          NEURO CARE REDEFINED
-        </motion.p>
-
         {/* CTA */}
-        <div className="px-8 pb-12">
+        <div className="px-6 pb-safe-bottom mb-8">
           <CTAButton size="full" onClick={onContinue}>
             Continue
           </CTAButton>
         </div>
-      </div>
-    );
+      </div>;
   }
 
   // Screens 2 & 3: Value props
