@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
-import { User, Settings, Bell, Shield, HelpCircle, LogOut, ChevronRight, Award, Flame, Star } from "lucide-react";
+import { User, Settings, Bell, Shield, HelpCircle, LogOut, ChevronRight } from "lucide-react";
 
 interface ProfilePageProps {
   onNavigate: (tab: "home" | "maps" | "tools" | "profile") => void;
@@ -34,32 +34,7 @@ const ProfilePage = ({ onNavigate }: ProfilePageProps) => {
             <User className="w-10 h-10 text-accent" />
           </div>
           <h1 className="text-h2 text-foreground mb-1">NeuraChamp User</h1>
-          <p className="text-body text-muted-foreground mb-4">Member since Feb 2026</p>
-
-          {/* Stats */}
-          <div className="flex gap-6 pt-4 border-t border-border w-full justify-center">
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1 text-streak">
-                <Flame className="w-5 h-5" />
-                <span className="text-h2 font-bold">1</span>
-              </div>
-              <p className="text-helper text-muted-foreground">Day streak</p>
-            </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1 text-xp">
-                <Star className="w-5 h-5" />
-                <span className="text-h2 font-bold">245</span>
-              </div>
-              <p className="text-helper text-muted-foreground">Total XP</p>
-            </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1 text-accent">
-                <Award className="w-5 h-5" />
-                <span className="text-h2 font-bold">3</span>
-              </div>
-              <p className="text-helper text-muted-foreground">Level</p>
-            </div>
-          </div>
+          <p className="text-body text-muted-foreground">Member since Feb 2026</p>
         </motion.div>
 
         {/* Menu Items */}

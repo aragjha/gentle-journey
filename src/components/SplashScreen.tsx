@@ -21,7 +21,7 @@ const splashContent = [
   {
     emoji: "🎯",
     title: "Build tiny habits",
-    subtitle: "One small step each day. Watch your streak grow and celebrate every win.",
+    subtitle: "One small step each day. Celebrate every win along the way.",
   },
 ];
 

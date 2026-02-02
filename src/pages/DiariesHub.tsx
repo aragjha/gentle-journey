@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Header from "@/components/Header";
-import GamificationBar from "@/components/GamificationBar";
 import HeroCard from "@/components/HeroCard";
 import DiaryTile from "@/components/DiaryTile";
 import BottomNav from "@/components/BottomNav";
@@ -33,9 +32,6 @@ const DiariesHub = ({ onStartCheckin, onNavigate }: DiariesHubProps) => {
         <Header showSpeaker={false} />
       </div>
 
-      {/* Gamification Bar */}
-      <GamificationBar streak={1} xp={0} level={1} />
-
       {/* Content */}
       <div className="flex-1 px-4 pb-24 overflow-y-auto">
         {/* Title */}
@@ -59,10 +55,9 @@ const DiariesHub = ({ onStartCheckin, onNavigate }: DiariesHubProps) => {
           </h2>
           <HeroCard
             title={todayCompleted ? "You're done for today ✅" : "Today's Check-in"}
-            subtitle={todayCompleted ? "Great job keeping your streak!" : "Quick symptom check"}
-            helper={todayCompleted ? undefined : "Keeps your streak alive 🔥"}
+            subtitle={todayCompleted ? "Great job today!" : "Quick symptom check"}
+            helper={todayCompleted ? undefined : "Build healthy habits daily"}
             duration={todayCompleted ? undefined : "~3 mins"}
-            xp={todayCompleted ? undefined : 25}
             icon="📝"
             onClick={onStartCheckin}
             variant="primary"

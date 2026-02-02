@@ -1,12 +1,11 @@
 import { motion } from "framer-motion";
-import { ChevronRight, Clock, Star } from "lucide-react";
+import { ChevronRight, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface HeroCardProps {
   title: string;
   subtitle?: string;
   helper?: string;
-  xp?: number;
   duration?: string;
   onClick: () => void;
   variant?: "primary" | "secondary";
@@ -18,7 +17,6 @@ const HeroCard = ({
   title,
   subtitle,
   helper,
-  xp,
   duration,
   onClick,
   variant = "primary",
@@ -54,20 +52,14 @@ const HeroCard = ({
           </h3>
 
           {/* Meta info */}
-          <div className="flex items-center gap-3 text-helper text-muted-foreground mb-2">
-            {duration && (
+          {duration && (
+            <div className="flex items-center gap-3 text-helper text-muted-foreground mb-2">
               <span className="flex items-center gap-1">
                 <Clock className="w-3.5 h-3.5" />
                 {duration}
               </span>
-            )}
-            {xp && (
-              <span className="flex items-center gap-1 text-xp">
-                <Star className="w-3.5 h-3.5" />
-                +{xp} XP
-              </span>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Subtitle */}
           {subtitle && (

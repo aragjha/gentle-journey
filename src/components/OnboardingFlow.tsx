@@ -132,7 +132,7 @@ const onboardingPhases = [
         title: "What motivates you most?",
         type: "single" as const,
         options: [
-          { id: "streaks", label: "Keeping my streak", icon: "🔥" },
+          { id: "consistency", label: "Staying consistent", icon: "📅" },
           { id: "progress", label: "Seeing my progress", icon: "📈" },
           { id: "learning", label: "Learning new things", icon: "📚" },
           { id: "community", label: "Helping others", icon: "🤝" },
