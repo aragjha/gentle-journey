@@ -19,7 +19,7 @@ const regimeSteps = [
 ];
 
 const HomeHub = ({ onStartCheckin, onNavigate }: HomeHubProps) => {
-  const [streak, setStreak] = useState(7);
+  const [streak, setStreak] = useState(1);
   const [xp, setXp] = useState(245);
   const [level, setLevel] = useState(3);
   const [completedToday, setCompletedToday] = useState<string[]>([]);
