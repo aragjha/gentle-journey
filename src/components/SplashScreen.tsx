@@ -33,26 +33,26 @@ const SplashScreen = ({ step, onContinue }: SplashScreenProps) => {
     return (
       <div className="min-h-screen flex flex-col bg-background">
         {/* Content */}
-        <div className="flex-1 flex flex-col items-center justify-center px-8 text-center relative">
-          {/* Slogan behind logo */}
-          <motion.p
-            className="absolute text-[2.5rem] font-extrabold tracking-[0.2em] text-muted-foreground/20 uppercase whitespace-nowrap"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-          >
-            NEURO CARE REDEFINED
-          </motion.p>
-
+        <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
           {/* Logo - centered and larger */}
           <motion.img
             src={logoLight}
             alt="NeuraChamp"
-            className="w-[56rem] h-auto relative z-10"
+            className="w-[56rem] h-auto"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, type: "spring", stiffness: 200 }}
           />
+
+          {/* Slogan below logo */}
+          <motion.p
+            className="text-sm font-semibold tracking-[0.25em] text-muted-foreground uppercase mt-4"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.4 }}
+          >
+            NEURO CARE REDEFINED
+          </motion.p>
         </div>
 
         {/* CTA */}
