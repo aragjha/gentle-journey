@@ -10,9 +10,9 @@
 
 @layer base {
   :root {
-    /* Light Mode Colors - Dark Teal Background */
-    --background: 180 35% 20%; /* Dark Teal */
-    --foreground: 0 0% 100%; /* White text for contrast */
+    /* Light Mode Colors - Dark Blue Background */
+    --background: 220 40% 18%; /* Dark Blue */
+    --foreground: 0 0% 100%; /* White text */
 
     --card: 0 0% 100%; /* #FFFFFF */
     --card-foreground: 220 13% 9%;
@@ -72,8 +72,8 @@
   }
 
   .dark {
-    /* Dark Mode: Dark Teal */
-    --background: 180 35% 15%; /* Deeper Dark Teal */
+    /* Dark Mode: Dark Blue */
+    --background: 220 40% 14%; /* Deeper Dark Blue */
     --foreground: 0 0% 100%;
 
     /* Glass card effect */
