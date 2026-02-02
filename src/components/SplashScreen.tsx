@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import CTAButton from "@/components/CTAButton";
+import ThemeToggle from "@/components/ThemeToggle";
 import logoLight from "@/assets/logo-light.png";
 
 interface SplashScreenProps {
@@ -32,6 +33,11 @@ const SplashScreen = ({ step, onContinue }: SplashScreenProps) => {
   if (step === 1) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
+        {/* Theme Toggle - Top Right */}
+        <div className="absolute top-6 right-6 z-10">
+          <ThemeToggle />
+        </div>
+
         {/* Content */}
         <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
           {/* Logo - centered and larger */}
