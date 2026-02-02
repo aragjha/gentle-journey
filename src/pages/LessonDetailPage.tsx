@@ -175,7 +175,7 @@ const LessonDetailPage = ({ node, onBack }: LessonDetailPageProps) => {
           transition={{ delay: 0.35 }}
         >
           <MessageCircle className="w-5 h-5" />
-          Ask NeuroQuery
+          Ask Neura
         </motion.button>
         <motion.button
           onClick={onBack}
