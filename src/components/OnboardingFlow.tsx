@@ -223,7 +223,6 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
       <GratificationScreen
         title={message.title}
         subtitle={message.subtitle}
-        xpEarned={10}
         onContinue={handleGratificationContinue}
         type="celebration"
       />

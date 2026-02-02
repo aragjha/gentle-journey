@@ -75,7 +75,6 @@ const Index = () => {
           <GratificationScreen
             title="Your plan is ready! 🎉"
             subtitle="Let's start your personalized journey together."
-            xpEarned={50}
             onContinue={handleOnboardingGratificationComplete}
             ctaText="Enter NeuraChamp"
             type="milestone"
