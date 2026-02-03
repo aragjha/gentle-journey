@@ -14,18 +14,18 @@ interface SplashScreenProps {
 const slides = [
   {
     image: splashSlide1,
-    headline: "Reconnect with what they love",
-    subtext: "Bring back comfort through memories, routines, and familiar moments.",
+    headline: "Reconnect with joy",
+    subtext: "Rediscover comfort through familiar moments.",
   },
   {
     image: splashSlide2,
-    headline: "Taking care is easier now",
-    subtext: "Understand today's condition and make informed decisions with clarity.",
+    headline: "Care made simple",
+    subtext: "Understand and act with clarity.",
   },
   {
     image: splashSlide3,
-    headline: "All care, in one place",
-    subtext: "Manage medicines, appointments, and daily activities like never before.",
+    headline: "All in one",
+    subtext: "Manage meds, tasks, and more.",
   },
 ];
 
