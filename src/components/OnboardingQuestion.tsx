@@ -41,9 +41,12 @@ const OnboardingQuestion = ({
   showSkip = false,
   onSkip,
 }: OnboardingQuestionProps) => {
+  // Show continue button only for multi-select and slider (single auto-advances)
+  const showContinueButton = questionType === "multi" || questionType === "slider";
+
   return (
     <div className="min-h-screen flex flex-col bg-background safe-layout">
-      {/* Header */}
+      {/* Header with back button */}
       <Header 
         showProgress 
         progress={progress} 
@@ -109,31 +112,35 @@ const OnboardingQuestion = ({
         </div>
       </div>
 
-      {/* Sticky CTA */}
-      <motion.div
-        className="sticky bottom-0 left-0 right-0 pt-4 pb-2 bg-gradient-to-t from-background via-background to-transparent"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
-        <div className="space-y-3">
-          <CTAButton 
-            size="full" 
-            onClick={onContinue}
-            disabled={!canContinue}
-          >
-            Continue
-          </CTAButton>
-          {showSkip && onSkip && (
-            <button
-              onClick={onSkip}
-              className="w-full py-3 text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
-            >
-              Skip onboarding
-            </button>
-          )}
-        </div>
-      </motion.div>
+      {/* Sticky CTA - only for multi-select and slider questions */}
+      {(showContinueButton || showSkip) && (
+        <motion.div
+          className="fixed bottom-0 left-0 right-0 px-4 pt-4 pb-6 bg-gradient-to-t from-background via-background to-transparent"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <div className="space-y-3">
+            {showContinueButton && (
+              <CTAButton 
+                size="full" 
+                onClick={onContinue}
+                disabled={!canContinue}
+              >
+                Continue
+              </CTAButton>
+            )}
+            {showSkip && onSkip && (
+              <button
+                onClick={onSkip}
+                className="w-full py-3 text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
+              >
+                Skip onboarding
+              </button>
+            )}
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 };
