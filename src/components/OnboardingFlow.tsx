@@ -144,9 +144,10 @@ const onboardingPhases = [
 
 interface OnboardingFlowProps {
   onComplete: () => void;
+  onSkip?: () => void;
 }
 
-const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
+const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
   const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [showGratification, setShowGratification] = useState(false);
@@ -253,6 +254,8 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
           onSliderChange={handleSliderChange}
           onContinue={handleContinue}
           canContinue={canContinue()}
+          showSkip={currentPhaseIndex === 0 && currentQuestionIndex === 0}
+          onSkip={onSkip}
         />
       </motion.div>
     </AnimatePresence>

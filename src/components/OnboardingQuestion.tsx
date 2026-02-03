@@ -20,6 +20,8 @@ interface OnboardingQuestionProps {
   canContinue: boolean;
   showBackButton?: boolean;
   onBack?: () => void;
+  showSkip?: boolean;
+  onSkip?: () => void;
 }
 
 const OnboardingQuestion = ({
@@ -37,6 +39,8 @@ const OnboardingQuestion = ({
   canContinue,
   showBackButton = false,
   onBack,
+  showSkip = false,
+  onSkip,
 }: OnboardingQuestionProps) => {
   return (
     <div className="min-h-screen flex flex-col bg-background safe-layout">
@@ -125,13 +129,23 @@ const OnboardingQuestion = ({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
-        <CTAButton 
-          size="full" 
-          onClick={onContinue}
-          disabled={!canContinue}
-        >
-          Continue
-        </CTAButton>
+        <div className="space-y-3">
+          <CTAButton 
+            size="full" 
+            onClick={onContinue}
+            disabled={!canContinue}
+          >
+            Continue
+          </CTAButton>
+          {showSkip && onSkip && (
+            <button
+              onClick={onSkip}
+              className="w-full py-3 text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
+            >
+              Skip onboarding
+            </button>
+          )}
+        </div>
       </motion.div>
     </div>
   );
