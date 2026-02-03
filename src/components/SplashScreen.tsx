@@ -44,7 +44,7 @@ const SplashScreen = ({ onContinue }: SplashScreenProps) => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Header: Logo centered, Theme toggle right */}
-      <div className="relative flex items-center justify-center pt-8 pb-4 px-6">
+      <div className="relative flex items-center justify-center pt-10 pb-2 px-6">
         {/* Logo - centered */}
         <motion.img
           src={logoLight}
@@ -56,14 +56,14 @@ const SplashScreen = ({ onContinue }: SplashScreenProps) => {
         />
 
         {/* Theme Toggle - absolute right */}
-        <div className="absolute right-6 top-8">
+        <div className="absolute right-6 top-10">
           <ThemeToggle />
         </div>
       </div>
 
       {/* Tagline */}
       <motion.p
-        className="text-xs font-semibold tracking-[0.2em] text-muted-foreground uppercase text-center mb-6"
+        className="text-xs font-semibold tracking-[0.2em] text-muted-foreground uppercase text-center mt-2 mb-8"
         initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.4 }}
@@ -72,8 +72,8 @@ const SplashScreen = ({ onContinue }: SplashScreenProps) => {
       </motion.p>
 
       {/* Carousel */}
-      <div className="flex-1 flex flex-col px-6 overflow-hidden">
-        <div className="relative flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col px-6">
+        <div className="flex flex-col gap-5">
           {/* Image Carousel */}
           <div className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-xl">
             <AnimatePresence mode="wait">
@@ -94,7 +94,7 @@ const SplashScreen = ({ onContinue }: SplashScreenProps) => {
           </div>
 
           {/* Text Content */}
-          <div className="mt-6 text-center">
+          <div className="text-center">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentSlide}
@@ -106,7 +106,7 @@ const SplashScreen = ({ onContinue }: SplashScreenProps) => {
                 <h1 className="text-2xl font-bold text-foreground mb-2">
                   {slides[currentSlide].headline}
                 </h1>
-                <p className="text-base text-muted-foreground max-w-xs mx-auto">
+                <p className="text-base text-muted-foreground max-w-sm mx-auto leading-relaxed">
                   {slides[currentSlide].subtext}
                 </p>
               </motion.div>
@@ -114,15 +114,15 @@ const SplashScreen = ({ onContinue }: SplashScreenProps) => {
           </div>
 
           {/* Dots Indicator */}
-          <div className="flex justify-center gap-2 mt-6">
+          <div className="flex justify-center gap-2.5 mt-2">
             {slides.map((_, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentSlide(index)}
-                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                className={`h-2.5 rounded-full transition-all duration-300 ${
                   index === currentSlide
                     ? "bg-accent w-8"
-                    : "bg-muted hover:bg-muted-foreground/50"
+                    : "bg-muted w-2.5 hover:bg-muted-foreground/50"
                 }`}
                 aria-label={`Go to slide ${index + 1}`}
               />
@@ -132,7 +132,7 @@ const SplashScreen = ({ onContinue }: SplashScreenProps) => {
       </div>
 
       {/* CTA Button */}
-      <div className="px-6 pb-safe-bottom mb-8 mt-6">
+      <div className="px-6 pb-safe-bottom mb-8 mt-auto pt-6">
         <CTAButton size="full" onClick={onContinue} className="uppercase font-bold">
           Get Started
         </CTAButton>
