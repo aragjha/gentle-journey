@@ -7,6 +7,7 @@ interface ToolsHubProps {
   onNavigate: (tab: "home" | "maps" | "tools" | "profile") => void;
   onStartCheckin: () => void;
   onOpenChat: () => void;
+  onOpenDiaries: () => void;
 }
 
 const tools = [
@@ -17,10 +18,10 @@ const tools = [
   { id: "appointments", title: "Appointments", subtitle: "Prep for doctor visits", icon: "📅", comingSoon: true },
 ];
 
-const ToolsHub = ({ onNavigate, onStartCheckin, onOpenChat }: ToolsHubProps) => {
+const ToolsHub = ({ onNavigate, onStartCheckin, onOpenChat, onOpenDiaries }: ToolsHubProps) => {
   const handleToolClick = (toolId: string) => {
     if (toolId === "diaries") {
-      onStartCheckin();
+      onOpenDiaries();
     } else if (toolId === "chat") {
       onOpenChat();
     }
