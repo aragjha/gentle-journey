@@ -77,7 +77,7 @@ const MapsPage = ({ onNavigate, initialLessonId, onLessonClose }: MapsPageProps)
   };
 
   const handleMarkAsHere = (nodeId: string) => {
-    setUserCurrentNode(nodeId);
+    setUserCurrentNode(prev => prev === nodeId ? null : nodeId);
   };
 
   // Show lesson detail page if a node is selected
