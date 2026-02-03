@@ -1,7 +1,9 @@
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
 import { User, Settings, Bell, Shield, HelpCircle, LogOut, ChevronRight } from "lucide-react";
+import { toast } from "sonner";
 
 interface ProfilePageProps {
   onNavigate: (tab: "home" | "maps" | "tools" | "profile") => void;
@@ -15,6 +17,16 @@ const menuItems = [
 ];
 
 const ProfilePage = ({ onNavigate }: ProfilePageProps) => {
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      toast.success("Logged out successfully");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to log out");
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
@@ -66,6 +78,7 @@ const ProfilePage = ({ onNavigate }: ProfilePageProps) => {
 
         {/* Logout */}
         <motion.button
+          onClick={handleLogout}
           className="w-full mt-6 flex items-center justify-center gap-2 py-4 text-destructive font-medium"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
