@@ -76,8 +76,8 @@
   }
 
   .dark {
-    /* Dark Mode: Deep Navy */
-    --background: 221 28% 29%; /* #323F5A */
+    /* Dark Mode: Pure Black */
+    --background: 0 0% 0%; /* #000000 */
     --foreground: 0 0% 100%;
 
     /* Glass card effect */
