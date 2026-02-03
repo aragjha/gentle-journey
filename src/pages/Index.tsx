@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 import SplashScreen from "@/components/SplashScreen";
 import OnboardingFlow from "@/components/OnboardingFlow";
+import AuthPage from "@/pages/AuthPage";
 import HomeHub from "@/pages/HomeHub";
 import DiariesHub from "@/pages/DiariesHub";
 import DailyCheckinFlow from "@/pages/DailyCheckinFlow";
@@ -16,6 +18,7 @@ type AppScreen =
   | "splash1" 
   | "splash2" 
   | "splash3" 
+  | "auth"
   | "onboarding" 
   | "onboarding-complete"
   | "home" 
@@ -31,15 +34,48 @@ const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>("splash1");
   const [previousScreen, setPreviousScreen] = useState<AppScreen>("home");
   const [openLessonId, setOpenLessonId] = useState<string | null>(null);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  // Check for existing session on mount and listen for auth changes
+  useEffect(() => {
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        // User just signed in (e.g., from OAuth redirect)
+        setCurrentScreen("onboarding");
+      } else if (event === "SIGNED_OUT") {
+        setCurrentScreen("splash1");
+      }
+    });
+
+    // Then check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        // User is already logged in, go to home
+        setCurrentScreen("home");
+      }
+      setIsCheckingAuth(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleSplashContinue = () => {
     if (currentScreen === "splash1") setCurrentScreen("splash2");
     else if (currentScreen === "splash2") setCurrentScreen("splash3");
-    else if (currentScreen === "splash3") setCurrentScreen("onboarding");
+    else if (currentScreen === "splash3") setCurrentScreen("auth");
   };
 
   const handleSkipOnboarding = () => {
-    setCurrentScreen("home");
+    setCurrentScreen("auth");
+  };
+
+  const handleAuthSuccess = () => {
+    setCurrentScreen("onboarding");
+  };
+
+  const handleAuthBack = () => {
+    setCurrentScreen("splash3");
   };
 
   const handleOnboardingComplete = () => {
@@ -84,6 +120,15 @@ const Index = () => {
     }
   };
 
+  // Show loading while checking auth
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   const renderScreen = () => {
     switch (currentScreen) {
       case "splash1":
@@ -92,6 +137,8 @@ const Index = () => {
         return <SplashScreen step={2} onContinue={handleSplashContinue} onSkip={handleSkipOnboarding} />;
       case "splash3":
         return <SplashScreen step={3} onContinue={handleSplashContinue} />;
+      case "auth":
+        return <AuthPage onAuthSuccess={handleAuthSuccess} onBack={handleAuthBack} />;
       case "onboarding":
         return <OnboardingFlow onComplete={handleOnboardingComplete} />;
       case "onboarding-complete":
