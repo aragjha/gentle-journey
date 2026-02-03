@@ -4,25 +4,15 @@ import Header from "@/components/Header";
 import HeroCard from "@/components/HeroCard";
 import DiaryTile from "@/components/DiaryTile";
 import BottomNav from "@/components/BottomNav";
+import { diaryCategories } from "@/data/diaryContent";
 
 interface DiariesHubProps {
   onStartCheckin: () => void;
   onNavigate: (tab: "home" | "maps" | "tools" | "profile") => void;
+  onOpenDiary: (diaryId: string) => void;
 }
 
-const allDiaries = [
-  { id: "movement", title: "Movement", icon: "🏃" },
-  { id: "sleep", title: "Sleep", icon: "😴" },
-  { id: "mood", title: "Mood", icon: "💭" },
-  { id: "memory", title: "Attention & Memory", icon: "🧠" },
-  { id: "digestion", title: "Digestion & Gut", icon: "🥗" },
-  { id: "pain", title: "Pain", icon: "🩹" },
-  { id: "bladder", title: "Bladder", icon: "💧" },
-  { id: "nonmotor", title: "Non-motor", icon: "📋" },
-  { id: "medication", title: "Medication Log", icon: "💊" },
-];
-
-const DiariesHub = ({ onStartCheckin, onNavigate }: DiariesHubProps) => {
+const DiariesHub = ({ onStartCheckin, onNavigate, onOpenDiary }: DiariesHubProps) => {
   const [todayCompleted, setTodayCompleted] = useState(false);
 
   return (
@@ -73,12 +63,12 @@ const DiariesHub = ({ onStartCheckin, onNavigate }: DiariesHubProps) => {
         >
           <h2 className="text-h2 text-foreground mb-4">All Diaries</h2>
           <div className="grid grid-cols-3 gap-3">
-            {allDiaries.map((diary, index) => (
+            {diaryCategories.map((diary, index) => (
               <DiaryTile
                 key={diary.id}
                 title={diary.title}
                 icon={diary.icon}
-                onClick={() => {}}
+                onClick={() => onOpenDiary(diary.id)}
                 delay={0.05 * index}
               />
             ))}

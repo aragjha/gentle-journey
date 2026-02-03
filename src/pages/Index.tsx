@@ -6,6 +6,7 @@ import OnboardingFlow from "@/components/OnboardingFlow";
 import AuthPage from "@/pages/AuthPage";
 import HomeHub from "@/pages/HomeHub";
 import DiariesHub from "@/pages/DiariesHub";
+import DiaryFlow from "@/pages/DiaryFlow";
 import DailyCheckinFlow from "@/pages/DailyCheckinFlow";
 import MapsPage from "@/pages/MapsPage";
 import ToolsHub from "@/pages/ToolsHub";
@@ -13,6 +14,7 @@ import NeuroQueryChat from "@/pages/NeuroQueryChat";
 import ProfilePage from "@/pages/ProfilePage";
 import GratificationScreen from "@/components/GratificationScreen";
 import { getTodaysLesson } from "@/data/lessonContent";
+import { getDiaryById } from "@/data/diaryContent";
 
 type AppScreen = 
   | "splash1" 
@@ -23,6 +25,7 @@ type AppScreen =
   | "onboarding-complete"
   | "home" 
   | "diaries" 
+  | "diary-flow"
   | "checkin" 
   | "maps" 
   | "maps-lesson"
@@ -34,6 +37,7 @@ const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>("splash1");
   const [previousScreen, setPreviousScreen] = useState<AppScreen>("home");
   const [openLessonId, setOpenLessonId] = useState<string | null>(null);
+  const [openDiaryId, setOpenDiaryId] = useState<string | null>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   // Check for existing session on mount and listen for auth changes
@@ -124,6 +128,17 @@ const Index = () => {
     }
   };
 
+  const handleOpenDiary = (diaryId: string) => {
+    setOpenDiaryId(diaryId);
+    setPreviousScreen("diaries");
+    setCurrentScreen("diary-flow");
+  };
+
+  const handleDiaryComplete = () => {
+    setOpenDiaryId(null);
+    setCurrentScreen("diaries");
+  };
+
   // Show loading while checking auth
   if (isCheckingAuth) {
     return (
@@ -167,7 +182,18 @@ const Index = () => {
         return (
           <DiariesHub 
             onStartCheckin={handleStartCheckin} 
-            onNavigate={handleNavigate} 
+            onNavigate={handleNavigate}
+            onOpenDiary={handleOpenDiary}
+          />
+        );
+      case "diary-flow":
+        const diary = openDiaryId ? getDiaryById(openDiaryId) : null;
+        if (!diary) return null;
+        return (
+          <DiaryFlow
+            diary={diary}
+            onComplete={handleDiaryComplete}
+            onBack={() => setCurrentScreen("diaries")}
           />
         );
       case "checkin":
