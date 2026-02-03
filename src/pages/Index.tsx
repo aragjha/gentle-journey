@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import SplashScreen from "@/components/SplashScreen";
-import OnboardingFlow from "@/components/OnboardingFlow";
+import OnboardingFlow, { OnboardingState } from "@/components/OnboardingFlow";
 import AuthPage from "@/pages/AuthPage";
 import HomeHub from "@/pages/HomeHub";
 import DiariesHub from "@/pages/DiariesHub";
@@ -51,6 +51,9 @@ const Index = () => {
   // Medication state (in real app, this would be persisted to database)
   const [medications, setMedications] = useState<Medication[]>([]);
   const [medicationLogs, setMedicationLogs] = useState<MedicationLog[]>([]);
+  
+  // Onboarding state for resuming after medication setup
+  const [savedOnboardingState, setSavedOnboardingState] = useState<OnboardingState | undefined>();
 
   // Check for existing session on mount and listen for auth changes
   useEffect(() => {
@@ -212,7 +215,11 @@ const Index = () => {
           <OnboardingFlow 
             onComplete={handleOnboardingComplete} 
             onSkip={handleSkipToHome}
-            onAddMedications={() => setCurrentScreen("medication-onboarding-from-flow")}
+            onAddMedications={(state) => {
+              setSavedOnboardingState(state);
+              setCurrentScreen("medication-onboarding-from-flow");
+            }}
+            initialState={savedOnboardingState}
           />
         );
       case "onboarding-complete":
