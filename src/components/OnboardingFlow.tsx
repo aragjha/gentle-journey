@@ -153,17 +153,24 @@ const onboardingPhases = [
   },
 ];
 
+export interface OnboardingState {
+  phaseIndex: number;
+  questionIndex: number;
+  answers: Record<string, string[] | number>;
+}
+
 interface OnboardingFlowProps {
   onComplete: () => void;
   onSkip?: () => void;
-  onAddMedications?: () => void;
+  onAddMedications?: (state: OnboardingState) => void;
+  initialState?: OnboardingState;
 }
 
-const OnboardingFlow = ({ onComplete, onSkip, onAddMedications }: OnboardingFlowProps) => {
-  const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+const OnboardingFlow = ({ onComplete, onSkip, onAddMedications, initialState }: OnboardingFlowProps) => {
+  const [currentPhaseIndex, setCurrentPhaseIndex] = useState(initialState?.phaseIndex ?? 0);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(initialState?.questionIndex ?? 0);
   const [showGratification, setShowGratification] = useState(false);
-  const [answers, setAnswers] = useState<Record<string, string[] | number>>({});
+  const [answers, setAnswers] = useState<Record<string, string[] | number>>(initialState?.answers ?? {});
 
   const currentPhase = onboardingPhases[currentPhaseIndex];
   
@@ -234,7 +241,16 @@ const OnboardingFlow = ({ onComplete, onSkip, onAddMedications }: OnboardingFlow
     if (currentQuestion?.id === "add_medications") {
       const addMedsAnswer = answers["add_medications"];
       if (Array.isArray(addMedsAnswer) && addMedsAnswer.includes("yes") && onAddMedications) {
-        onAddMedications();
+        // Pass current state so we can resume after medication setup
+        // Move to next question index so we don't repeat this question
+        const nextQuestionIndex = currentQuestionIndex + 1;
+        const isLastInPhase = nextQuestionIndex >= visibleQuestions.length;
+        
+        onAddMedications({
+          phaseIndex: isLastInPhase ? currentPhaseIndex + 1 : currentPhaseIndex,
+          questionIndex: isLastInPhase ? 0 : nextQuestionIndex,
+          answers,
+        });
         return;
       }
     }
