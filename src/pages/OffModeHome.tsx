@@ -84,9 +84,10 @@ const OffModeHome = ({ onSwitchToOn }: OffModeHomeProps) => {
           <Header showSpeaker={false} showThemeToggle={true} />
         </div>
 
-        <div className="flex-1 flex flex-col items-center justify-center px-4">
+        <div className="flex-1 px-4 pb-32 overflow-y-auto">
+          {/* Timer Section */}
           <motion.div
-            className="text-center"
+            className="text-center mb-8 pt-4"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
           >
@@ -110,7 +111,7 @@ const OffModeHome = ({ onSwitchToOn }: OffModeHomeProps) => {
             </p>
 
             {/* Log Summary Chips */}
-            <div className="flex flex-wrap justify-center gap-2 mb-8">
+            <div className="flex flex-wrap justify-center gap-2">
               <span className="px-3 py-1 rounded-full bg-muted text-sm font-medium">
                 Most: {symptoms.find(s => s.id === selectedSymptom)?.label}
               </span>
@@ -119,10 +120,47 @@ const OffModeHome = ({ onSwitchToOn }: OffModeHomeProps) => {
               </span>
             </div>
           </motion.div>
+
+          {/* Safety Contacts - Always visible during OFF period */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <h2 className="text-h2 text-foreground mb-4">Safety Contacts</h2>
+            <div className="grid grid-cols-3 gap-3">
+              <motion.button
+                onClick={() => handleQuickAction("caregiver")}
+                className="glass-card flex flex-col items-center justify-center py-4 gap-2"
+                whileTap={{ scale: 0.98 }}
+              >
+                <Phone className="w-6 h-6 text-accent" />
+                <span className="text-sm font-semibold text-foreground text-center">Call caregiver</span>
+              </motion.button>
+
+              <motion.button
+                onClick={() => handleQuickAction("doctor")}
+                className="glass-card flex flex-col items-center justify-center py-4 gap-2"
+                whileTap={{ scale: 0.98 }}
+              >
+                <PhoneCall className="w-6 h-6 text-accent" />
+                <span className="text-sm font-semibold text-foreground text-center">Call doctor</span>
+              </motion.button>
+
+              <motion.button
+                onClick={() => handleQuickAction("911")}
+                className="glass-card flex flex-col items-center justify-center py-4 gap-2 border-2 border-destructive/50"
+                whileTap={{ scale: 0.98 }}
+              >
+                <AlertCircle className="w-6 h-6 text-destructive" />
+                <span className="text-sm font-semibold text-destructive text-center">Call 911</span>
+              </motion.button>
+            </div>
+          </motion.section>
         </div>
 
         {/* Bottom CTA */}
-        <div className="px-4 pb-8">
+        <div className="fixed bottom-0 left-0 right-0 px-4 pb-8 pt-4 bg-gradient-to-t from-background to-transparent">
           <motion.button
             onClick={handleBackToOn}
             className="btn-cta w-full"
