@@ -1,152 +1,141 @@
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import CTAButton from "@/components/CTAButton";
 import ThemeToggle from "@/components/ThemeToggle";
 import logoLight from "@/assets/logo-light.png";
+import splashSlide1 from "@/assets/splash-slide-1.png";
+import splashSlide2 from "@/assets/splash-slide-2.png";
+import splashSlide3 from "@/assets/splash-slide-3.png";
 
 interface SplashScreenProps {
-  step: 1 | 2 | 3;
   onContinue: () => void;
-  onSkip?: () => void;
 }
 
-const splashContent = [
+const slides = [
   {
-    emoji: "🧠",
-    title: "Your Parkinson's companion",
-    subtitle: "Clinically-guided daily routines designed for you—without overwhelm.",
+    image: splashSlide1,
+    headline: "Reconnect with what they love",
+    subtext: "Bring back comfort through memories, routines, and familiar moments.",
   },
   {
-    emoji: "📊",
-    title: "Track what matters",
-    subtitle: "Quick 2-minute check-ins that help you understand your symptoms and patterns.",
+    image: splashSlide2,
+    headline: "Taking care is easier now",
+    subtext: "Understand today's condition and make informed decisions with clarity.",
   },
   {
-    emoji: "🎯",
-    title: "Build tiny habits",
-    subtitle: "One small step each day. Celebrate every win along the way.",
+    image: splashSlide3,
+    headline: "All care, in one place",
+    subtext: "Manage medicines, appointments, and daily activities like never before.",
   },
 ];
 
-const SplashScreen = ({ step, onContinue, onSkip }: SplashScreenProps) => {
-  const content = splashContent[step - 1];
+const SplashScreen = ({ onContinue }: SplashScreenProps) => {
+  const [currentSlide, setCurrentSlide] = useState(0);
 
-  // Screen 1: Logo + Slogan only
-  if (step === 1) {
-    return (
-      <div className="min-h-screen flex flex-col bg-background">
-        {/* Theme Toggle - Top Right */}
-        <div className="absolute top-6 right-6 z-10">
-          <ThemeToggle />
-        </div>
+  // Auto-scroll every 4 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 4000);
 
-        {/* Content */}
-        <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
-          {/* Logo - centered and larger */}
-          <motion.img
-            src={logoLight}
-            alt="NeuraChamp"
-            className="w-[28rem] h-auto"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, type: "spring", stiffness: 200 }}
-          />
+    return () => clearInterval(interval);
+  }, []);
 
-          {/* Slogan below logo */}
-          <motion.p
-            className="text-sm font-semibold tracking-[0.25em] text-muted-foreground uppercase mt-4"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.4 }}
-          >
-            NEURO CARE REDEFINED
-          </motion.p>
-        </div>
-
-        {/* CTA */}
-        <div className="px-6 pb-safe-bottom mb-8">
-        <CTAButton size="full" onClick={onContinue} className="uppercase font-bold">
-          Continue
-        </CTAButton>
-        </div>
-      </div>
-    );
-  }
-
-  // Screens 2 & 3: Value props
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      {/* Content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={step}
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            transition={{ duration: 0.3 }}
-            className="flex flex-col items-center"
-          >
-            {/* Emoji */}
-            <motion.span
-              className="text-7xl mb-8"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 300, damping: 15, delay: 0.1 }}
-            >
-              {content.emoji}
-            </motion.span>
+      {/* Header: Logo centered, Theme toggle right */}
+      <div className="relative flex items-center justify-center pt-8 pb-4 px-6">
+        {/* Logo - centered */}
+        <motion.img
+          src={logoLight}
+          alt="NeuraChamp"
+          className="w-48 h-auto"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        />
 
-            {/* Title */}
-            <motion.h1
-              className="text-h1-lg text-foreground mb-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              {content.title}
-            </motion.h1>
-
-            {/* Subtitle */}
-            <motion.p
-              className="text-body-lg text-muted-foreground max-w-xs"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              {content.subtitle}
-            </motion.p>
-          </motion.div>
-        </AnimatePresence>
+        {/* Theme Toggle - absolute right */}
+        <div className="absolute right-6 top-8">
+          <ThemeToggle />
+        </div>
       </div>
 
-      {/* Progress dots */}
-      <div className="flex justify-center gap-2 mb-6">
-        {[1, 2, 3].map((dot) => (
-          <motion.div
-            key={dot}
-            className={`w-2 h-2 rounded-full transition-colors ${
-              dot === step ? "bg-accent" : "bg-muted"
-            }`}
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: dot * 0.1 }}
-          />
-        ))}
+      {/* Tagline */}
+      <motion.p
+        className="text-xs font-semibold tracking-[0.2em] text-muted-foreground uppercase text-center mb-6"
+        initial={{ opacity: 0, y: 5 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.4 }}
+      >
+        NEURO CARE REDEFINED
+      </motion.p>
+
+      {/* Carousel */}
+      <div className="flex-1 flex flex-col px-6 overflow-hidden">
+        <div className="relative flex-1 flex flex-col">
+          {/* Image Carousel */}
+          <div className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-xl">
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={currentSlide}
+                src={slides[currentSlide].image}
+                alt={slides[currentSlide].headline}
+                className="absolute inset-0 w-full h-full object-cover"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.5 }}
+              />
+            </AnimatePresence>
+
+            {/* Gradient overlay for text readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+          </div>
+
+          {/* Text Content */}
+          <div className="mt-6 text-center">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentSlide}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4 }}
+              >
+                <h1 className="text-2xl font-bold text-foreground mb-2">
+                  {slides[currentSlide].headline}
+                </h1>
+                <p className="text-base text-muted-foreground max-w-xs mx-auto">
+                  {slides[currentSlide].subtext}
+                </p>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Dots Indicator */}
+          <div className="flex justify-center gap-2 mt-6">
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                  index === currentSlide
+                    ? "bg-accent w-8"
+                    : "bg-muted hover:bg-muted-foreground/50"
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* CTA */}
-      <div className="px-6 pb-safe-bottom mb-8 space-y-3">
+      {/* CTA Button */}
+      <div className="px-6 pb-safe-bottom mb-8 mt-6">
         <CTAButton size="full" onClick={onContinue} className="uppercase font-bold">
-          {step === 3 ? "Get Started" : "Continue"}
+          Get Started
         </CTAButton>
-        {step === 2 && onSkip && (
-          <button
-            onClick={onSkip}
-            className="w-full py-3 text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
-          >
-            Skip onboarding
-          </button>
-        )}
       </div>
     </div>
   );
