@@ -37,6 +37,7 @@ type AppScreen =
   | "chat" 
   | "profile"
   | "medication-onboarding"
+  | "medication-onboarding-from-flow"
   | "medication-hub"
   | "medication-log";
 
@@ -168,6 +169,12 @@ const Index = () => {
     }
   };
 
+  const handleMedicationOnboardingFromFlowComplete = (newMeds: Medication[]) => {
+    setMedications(newMeds);
+    // Return to onboarding flow after adding medications
+    setCurrentScreen("onboarding");
+  };
+
   const handleToggleMedicationReminder = (medId: string) => {
     setMedications((prev) =>
       prev.map((m) =>
@@ -201,7 +208,13 @@ const Index = () => {
       case "auth":
         return <AuthPage onAuthSuccess={handleAuthSuccess} onBack={handleAuthBack} />;
       case "onboarding":
-        return <OnboardingFlow onComplete={handleOnboardingComplete} onSkip={handleSkipToHome} />;
+        return (
+          <OnboardingFlow 
+            onComplete={handleOnboardingComplete} 
+            onSkip={handleSkipToHome}
+            onAddMedications={() => setCurrentScreen("medication-onboarding-from-flow")}
+          />
+        );
       case "onboarding-complete":
         return (
           <GratificationScreen
@@ -270,6 +283,13 @@ const Index = () => {
           <MedicationOnboarding
             onComplete={handleMedicationOnboardingComplete}
             onBack={() => setCurrentScreen("tools")}
+          />
+        );
+      case "medication-onboarding-from-flow":
+        return (
+          <MedicationOnboarding
+            onComplete={handleMedicationOnboardingFromFlowComplete}
+            onBack={() => setCurrentScreen("onboarding")}
           />
         );
       case "medication-hub":
