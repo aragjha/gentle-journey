@@ -38,6 +38,10 @@ const Index = () => {
     else if (currentScreen === "splash3") setCurrentScreen("onboarding");
   };
 
+  const handleSkipOnboarding = () => {
+    setCurrentScreen("home");
+  };
+
   const handleOnboardingComplete = () => {
     setCurrentScreen("onboarding-complete");
   };
@@ -85,7 +89,7 @@ const Index = () => {
       case "splash1":
         return <SplashScreen step={1} onContinue={handleSplashContinue} />;
       case "splash2":
-        return <SplashScreen step={2} onContinue={handleSplashContinue} />;
+        return <SplashScreen step={2} onContinue={handleSplashContinue} onSkip={handleSkipOnboarding} />;
       case "splash3":
         return <SplashScreen step={3} onContinue={handleSplashContinue} />;
       case "onboarding":
