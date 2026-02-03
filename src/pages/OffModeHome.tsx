@@ -81,7 +81,7 @@ const OffModeHome = ({ onSwitchToOn }: OffModeHomeProps) => {
     return (
       <div className="min-h-screen flex flex-col bg-background">
         <div className="px-4 pt-safe-top">
-          <Header showSpeaker={false} showThemeToggle={true} />
+          <Header showThemeToggle={true} />
         </div>
 
         <div className="flex-1 px-4 pb-32 overflow-y-auto">
@@ -180,7 +180,7 @@ const OffModeHome = ({ onSwitchToOn }: OffModeHomeProps) => {
     <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
       <div className="px-4 pt-safe-top">
-        <Header showSpeaker={false} showThemeToggle={true} />
+        <Header showThemeToggle={true} />
       </div>
 
       {/* Content */}

@@ -1,4 +1,4 @@
-import { Volume2, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import logoLight from "@/assets/logo-light.png";
 import ThemeToggle from "./ThemeToggle";
@@ -7,10 +7,8 @@ interface HeaderProps {
   progress?: number;
   totalSteps?: number;
   showProgress?: boolean;
-  showSpeaker?: boolean;
   showThemeToggle?: boolean;
   showBackButton?: boolean;
-  onSpeakerClick?: () => void;
   onBack?: () => void;
 }
 
@@ -18,10 +16,8 @@ const Header = ({
   progress = 0, 
   totalSteps = 1, 
   showProgress = false,
-  showSpeaker = true,
   showThemeToggle = true,
   showBackButton = false,
-  onSpeakerClick,
   onBack
 }: HeaderProps) => {
   const progressPercent = totalSteps > 0 ? (progress / totalSteps) * 100 : 0;
@@ -52,31 +48,15 @@ const Header = ({
           />
         )}
         
-        <div className="flex items-center gap-1">
-          {showThemeToggle && (
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.4, delay: 0.05 }}
-            >
-              <ThemeToggle />
-            </motion.div>
-          )}
-          
-          {showSpeaker && (
-            <motion.button
-              onClick={onSpeakerClick}
-              className="p-2 rounded-full hover:bg-muted transition-colors"
-              whileTap={{ scale: 0.95 }}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.4, delay: 0.1 }}
-              aria-label="Read aloud"
-            >
-              <Volume2 className="w-6 h-6 text-muted-foreground" />
-            </motion.button>
-          )}
-        </div>
+        {showThemeToggle && (
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4, delay: 0.05 }}
+          >
+            <ThemeToggle />
+          </motion.div>
+        )}
       </div>
 
       {/* Progress Bar */}

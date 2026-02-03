@@ -3,7 +3,6 @@ import Header from "@/components/Header";
 import CTAButton from "@/components/CTAButton";
 import SelectionChip from "@/components/SelectionChip";
 import QuestionSlider from "@/components/QuestionSlider";
-import { Mic } from "lucide-react";
 
 interface OnboardingQuestionProps {
   progress: number;
@@ -77,7 +76,7 @@ const OnboardingQuestion = ({
         )}
 
         {/* Answer Area */}
-        <div className="relative mt-6">
+        <div className="mt-6">
           {/* Slider */}
           {questionType === "slider" && (
             <QuestionSlider
@@ -107,18 +106,6 @@ const OnboardingQuestion = ({
               ))}
             </div>
           )}
-
-          {/* Mic button (placeholder for V2) */}
-          <motion.button
-            className="absolute -right-2 top-0 p-3 rounded-full bg-muted hover:bg-muted/80 transition-colors"
-            whileTap={{ scale: 0.95 }}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 0.5, scale: 1 }}
-            transition={{ delay: 0.5 }}
-            title="Voice input coming soon"
-          >
-            <Mic className="w-5 h-5 text-muted-foreground" />
-          </motion.button>
         </div>
       </div>
 

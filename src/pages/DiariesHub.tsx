@@ -19,7 +19,7 @@ const DiariesHub = ({ onStartCheckin, onNavigate, onOpenDiary }: DiariesHubProps
     <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
       <div className="px-4 pt-safe-top">
-        <Header showSpeaker={false} />
+        <Header />
       </div>
 
       {/* Content */}
