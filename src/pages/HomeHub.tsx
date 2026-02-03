@@ -6,6 +6,7 @@ import BottomNav from "@/components/BottomNav";
 import DiaryTile from "@/components/DiaryTile";
 import OnOffToggle from "@/components/OnOffToggle";
 import { getTodaysLesson } from "@/data/lessonContent";
+import { Phone, PhoneCall, AlertCircle } from "lucide-react";
 
 interface HomeHubProps {
   onStartCheckin: () => void;
@@ -60,6 +61,11 @@ const HomeHub = ({ onStartCheckin, onNavigate, onOpenLesson, isOnMode, onToggleM
       onOpenLesson();
     }
     // Other steps would navigate to their respective flows
+  };
+
+  const handleQuickAction = (action: "caregiver" | "doctor" | "911") => {
+    // In a real app, these would trigger actual calls or show contact sheets
+    console.log(`Quick action: ${action}`);
   };
 
   return (
@@ -131,6 +137,7 @@ const HomeHub = ({ onStartCheckin, onNavigate, onOpenLesson, isOnMode, onToggleM
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
+          className="mb-8"
         >
           <h2 className="text-h2 text-foreground mb-4">Quick Access</h2>
           <div className="grid grid-cols-3 gap-3">
@@ -152,6 +159,43 @@ const HomeHub = ({ onStartCheckin, onNavigate, onOpenLesson, isOnMode, onToggleM
               onClick={() => {}}
               delay={0.2}
             />
+          </div>
+        </motion.section>
+
+        {/* Safety Contacts */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+        >
+          <h2 className="text-h2 text-foreground mb-4">Safety Contacts</h2>
+          <div className="grid grid-cols-3 gap-3">
+            <motion.button
+              onClick={() => handleQuickAction("caregiver")}
+              className="glass-card flex flex-col items-center justify-center py-4 gap-2"
+              whileTap={{ scale: 0.98 }}
+            >
+              <Phone className="w-6 h-6 text-accent" />
+              <span className="text-sm font-semibold text-foreground text-center">Call caregiver</span>
+            </motion.button>
+
+            <motion.button
+              onClick={() => handleQuickAction("doctor")}
+              className="glass-card flex flex-col items-center justify-center py-4 gap-2"
+              whileTap={{ scale: 0.98 }}
+            >
+              <PhoneCall className="w-6 h-6 text-accent" />
+              <span className="text-sm font-semibold text-foreground text-center">Call doctor</span>
+            </motion.button>
+
+            <motion.button
+              onClick={() => handleQuickAction("911")}
+              className="glass-card flex flex-col items-center justify-center py-4 gap-2 border-2 border-destructive/50"
+              whileTap={{ scale: 0.98 }}
+            >
+              <AlertCircle className="w-6 h-6 text-destructive" />
+              <span className="text-sm font-semibold text-destructive text-center">Call 911</span>
+            </motion.button>
           </div>
         </motion.section>
       </div>
