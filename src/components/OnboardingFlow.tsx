@@ -8,10 +8,11 @@ import GratificationScreen from "@/components/GratificationScreen";
 const onboardingPhases = [
   {
     phase: "A",
+    showInterstitialAfter: true,
     questions: [
       {
         id: "role",
-        title: "Who are you?",
+        title: "Let's get to know you",
         helper: "This helps us personalize your experience.",
         type: "single" as const,
         options: [
@@ -23,11 +24,11 @@ const onboardingPhases = [
       {
         id: "stage",
         title: "Where are you in your journey?",
-        helper: "Choose what feels closest.",
+        helper: "Choose what feels closest to you.",
         type: "single" as const,
         options: [
           { id: "newly", label: "Newly diagnosed", icon: "🌱" },
-          { id: "few_years", label: "Living with PD for a few years", icon: "🌿" },
+          { id: "few_years", label: "A few years in", icon: "🌿" },
           { id: "long_time", label: "Long-time warrior", icon: "🌳" },
           { id: "unsure", label: "Not sure yet", icon: "❓" },
         ],
@@ -36,11 +37,12 @@ const onboardingPhases = [
   },
   {
     phase: "B",
+    showInterstitialAfter: false,
     questions: [
       {
         id: "main_concern",
-        title: "What concerns you most right now?",
-        helper: "Pick the biggest one.",
+        title: "What's on your mind lately?",
+        helper: "Pick your biggest concern right now.",
         type: "single" as const,
         options: [
           { id: "movement", label: "Movement & tremors", icon: "🏃" },
@@ -52,7 +54,8 @@ const onboardingPhases = [
       },
       {
         id: "energy_level",
-        title: "How's your energy today?",
+        title: "How are you feeling today?",
+        helper: "Slide to show your energy level.",
         type: "slider" as const,
         options: [],
       },
@@ -60,32 +63,33 @@ const onboardingPhases = [
   },
   {
     phase: "C",
+    showInterstitialAfter: true,
     questions: [
       {
         id: "medications",
-        title: "Are you currently taking PD medications?",
+        title: "Are you taking any PD medications?",
         type: "single" as const,
         options: [
-          { id: "yes", label: "Yes", icon: "💊" },
+          { id: "yes", label: "Yes, I am", icon: "💊" },
           { id: "no", label: "Not yet", icon: "⏳" },
           { id: "unsure", label: "I'm not sure", icon: "🤔" },
         ],
       },
       {
         id: "add_medications",
-        title: "Would you like to add your medications now?",
-        helper: "You can always add them later in Tools.",
+        title: "Want to add your medications now?",
+        helper: "You can always do this later in Tools.",
         type: "single" as const,
         showIf: "medications_yes",
         options: [
-          { id: "yes", label: "Yes, let's add them", icon: "✅" },
+          { id: "yes", label: "Yes, let's do it", icon: "✅" },
           { id: "later", label: "I'll do it later", icon: "⏰" },
         ],
       },
       {
         id: "tracking_goal",
         title: "What would you like to track?",
-        helper: "Select all that apply.",
+        helper: "Pick as many as you'd like.",
         type: "multi" as const,
         options: [
           { id: "symptoms", label: "Daily symptoms", icon: "📊" },
@@ -99,11 +103,12 @@ const onboardingPhases = [
   },
   {
     phase: "D",
+    showInterstitialAfter: false,
     questions: [
       {
         id: "reminder_time",
-        title: "When should we remind you?",
-        helper: "For your daily check-in.",
+        title: "When should we check in?",
+        helper: "We'll send a gentle daily reminder.",
         type: "single" as const,
         options: [
           { id: "morning", label: "Morning (8-10am)", icon: "🌅" },
@@ -114,39 +119,13 @@ const onboardingPhases = [
       },
       {
         id: "share_data",
-        title: "Share progress with a caregiver?",
-        helper: "They'll see summaries, not raw data.",
+        title: "Share updates with a caregiver?",
+        helper: "They'll only see summaries, never raw data.",
         type: "single" as const,
         options: [
           { id: "yes", label: "Yes, I'd like that", icon: "👥" },
           { id: "later", label: "Maybe later", icon: "⏰" },
-          { id: "no", label: "No, keep it private", icon: "🔒" },
-        ],
-      },
-    ],
-  },
-  {
-    phase: "E",
-    questions: [
-      {
-        id: "daily_time",
-        title: "How much time can you spend daily?",
-        type: "single" as const,
-        options: [
-          { id: "2min", label: "2-3 minutes", icon: "⚡" },
-          { id: "5min", label: "5-10 minutes", icon: "🕐" },
-          { id: "15min", label: "15+ minutes", icon: "🕑" },
-        ],
-      },
-      {
-        id: "motivation",
-        title: "What motivates you most?",
-        type: "single" as const,
-        options: [
-          { id: "consistency", label: "Staying consistent", icon: "📅" },
-          { id: "progress", label: "Seeing my progress", icon: "📈" },
-          { id: "learning", label: "Learning new things", icon: "📚" },
-          { id: "community", label: "Helping others", icon: "🤝" },
+          { id: "no", label: "Keep it private", icon: "🔒" },
         ],
       },
     ],
@@ -260,8 +239,12 @@ const OnboardingFlow = ({ onComplete, onSkip, onAddMedications, initialState }: 
     if (isLastQuestionInPhase) {
       if (isLastPhase) {
         onComplete();
-      } else {
+      } else if (currentPhase.showInterstitialAfter) {
         setShowGratification(true);
+      } else {
+        // Skip interstitial and go to next phase
+        setCurrentPhaseIndex(currentPhaseIndex + 1);
+        setCurrentQuestionIndex(0);
       }
     } else {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
@@ -311,16 +294,17 @@ const OnboardingFlow = ({ onComplete, onSkip, onAddMedications, initialState }: 
     return Array.isArray(answer) && answer.length > 0;
   };
 
-  const gratificationMessages = [
-    { title: "Great start! 🌟", subtitle: "You're building your foundation." },
-    { title: "Making progress! 📊", subtitle: "We're learning about you." },
-    { title: "Almost there! 🎯", subtitle: "Just a few more questions." },
-    { title: "Keep going! 💪", subtitle: "Your personalized plan awaits." },
-    { title: "Creating your plan! ✨", subtitle: "This will be amazing." },
-  ];
+  // Only 2 interstitials now - after Phase A and Phase C
+  const gratificationMessages: Record<number, { title: string; subtitle: string }> = {
+    0: { title: "Great, nice to meet you! 🌟", subtitle: "Now let's understand how you're feeling." },
+    2: { title: "You're all set! 🎯", subtitle: "Just a couple more preferences to go." },
+  };
 
   if (showGratification) {
-    const message = gratificationMessages[currentPhaseIndex];
+    const message = gratificationMessages[currentPhaseIndex] || { 
+      title: "Looking good! ✨", 
+      subtitle: "Let's keep going." 
+    };
     return (
       <GratificationScreen
         title={message.title}
