@@ -24,6 +24,42 @@ const DiaryFlow = ({ diary, onComplete, onBack }: DiaryFlowProps) => {
   const [otherText, setOtherText] = useState("");
   const [showSafetyPrompt, setShowSafetyPrompt] = useState(false);
 
+  // Calculate total steps and current progress
+  const getProgressInfo = () => {
+    // Base steps: symptoms, troublesome, frequency, impact
+    // Optional: worst_time (if diary has it), safety (conditional)
+    const hasWorstTime = !!diary.worstTimeOptions;
+    const hasTroublesome = selectedSymptoms.length > 1 && !selectedSymptoms.includes("none");
+    
+    // Build the actual step sequence for this diary
+    let stepSequence: DiaryStep[] = ["symptoms"];
+    if (hasTroublesome) stepSequence.push("troublesome");
+    stepSequence.push("frequency", "impact");
+    if (hasWorstTime) stepSequence.push("worst_time");
+    // Safety is conditional and shown between impact and worst_time/complete
+    
+    const currentIndex = stepSequence.indexOf(step);
+    const totalSteps = stepSequence.length;
+    
+    // For steps not in sequence (intro, complete, safety), return special values
+    if (step === "intro" || step === "complete") {
+      return { current: 0, total: totalSteps, progress: 0 };
+    }
+    if (step === "safety") {
+      // Safety appears after impact, show as if between impact and next step
+      const impactIndex = stepSequence.indexOf("impact");
+      return { current: impactIndex + 1, total: totalSteps, progress: ((impactIndex + 1) / totalSteps) * 100 };
+    }
+    
+    return { 
+      current: currentIndex + 1, 
+      total: totalSteps, 
+      progress: ((currentIndex + 1) / totalSteps) * 100 
+    };
+  };
+
+  const progressInfo = getProgressInfo();
+
   const handleSymptomToggle = (symptomId: string) => {
     if (symptomId === "none") {
       // If "none" is selected, clear all others
@@ -386,26 +422,46 @@ const DiaryFlow = ({ diary, onComplete, onBack }: DiaryFlowProps) => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background safe-layout">
-      {/* Header */}
+      {/* Header with Progress */}
       {step !== "intro" && step !== "complete" && (
-        <div className="px-4 py-4 flex items-center">
-          <button
-            onClick={step === "symptoms" ? onBack : () => {
-              // Go back one step
-              const steps: DiaryStep[] = ["intro", "symptoms", "troublesome", "frequency", "impact", "worst_time"];
-              const currentIndex = steps.indexOf(step);
-              if (currentIndex > 0) {
-                setStep(steps[currentIndex - 1]);
-              }
-            }}
-            className="p-2 -ml-2 text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          <span className="flex-1 text-center text-helper-lg text-muted-foreground">
-            {diary.title}
-          </span>
-          <div className="w-10" /> {/* Spacer */}
+        <div className="px-4 pt-4">
+          {/* Progress bar */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-helper text-muted-foreground">
+                Step {progressInfo.current} of {progressInfo.total}
+              </span>
+            </div>
+            <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+              <motion.div
+                className="h-full bg-accent rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${progressInfo.progress}%` }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+              />
+            </div>
+          </div>
+          
+          {/* Back button and title */}
+          <div className="flex items-center">
+            <button
+              onClick={step === "symptoms" ? onBack : () => {
+                // Go back one step
+                const steps: DiaryStep[] = ["intro", "symptoms", "troublesome", "frequency", "impact", "worst_time"];
+                const currentIndex = steps.indexOf(step);
+                if (currentIndex > 0) {
+                  setStep(steps[currentIndex - 1]);
+                }
+              }}
+              className="p-2 -ml-2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <span className="flex-1 text-center text-helper-lg text-muted-foreground">
+              {diary.title}
+            </span>
+            <div className="w-10" /> {/* Spacer */}
+          </div>
         </div>
       )}
 
