@@ -72,6 +72,17 @@ const onboardingPhases = [
         ],
       },
       {
+        id: "add_medications",
+        title: "Would you like to add your medications now?",
+        helper: "You can always add them later in Tools.",
+        type: "single" as const,
+        showIf: "medications_yes",
+        options: [
+          { id: "yes", label: "Yes, let's add them", icon: "✅" },
+          { id: "later", label: "I'll do it later", icon: "⏰" },
+        ],
+      },
+      {
         id: "tracking_goal",
         title: "What would you like to track?",
         helper: "Select all that apply.",
@@ -145,22 +156,58 @@ const onboardingPhases = [
 interface OnboardingFlowProps {
   onComplete: () => void;
   onSkip?: () => void;
+  onAddMedications?: () => void;
 }
 
-const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
+const OnboardingFlow = ({ onComplete, onSkip, onAddMedications }: OnboardingFlowProps) => {
   const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [showGratification, setShowGratification] = useState(false);
   const [answers, setAnswers] = useState<Record<string, string[] | number>>({});
 
   const currentPhase = onboardingPhases[currentPhaseIndex];
-  const currentQuestion = currentPhase?.questions[currentQuestionIndex];
+  
+  // Get filtered questions for current phase (skip conditional questions that shouldn't show)
+  const getVisibleQuestions = () => {
+    if (!currentPhase) return [];
+    return currentPhase.questions.filter((q) => {
+      if ((q as any).showIf === "medications_yes") {
+        // Only show "add_medications" if user selected "yes" to having medications
+        const medsAnswer = answers["medications"];
+        return Array.isArray(medsAnswer) && medsAnswer.includes("yes");
+      }
+      return true;
+    });
+  };
+  
+  const visibleQuestions = getVisibleQuestions();
+  const currentQuestion = visibleQuestions[currentQuestionIndex];
 
-  // Calculate total progress
-  const totalQuestions = onboardingPhases.reduce((sum, phase) => sum + phase.questions.length, 0);
+  // Calculate total progress (accounting for conditional questions)
+  const getTotalVisibleQuestions = () => {
+    return onboardingPhases.reduce((sum, phase) => {
+      return sum + phase.questions.filter((q) => {
+        if ((q as any).showIf === "medications_yes") {
+          const medsAnswer = answers["medications"];
+          return Array.isArray(medsAnswer) && medsAnswer.includes("yes");
+        }
+        return true;
+      }).length;
+    }, 0);
+  };
+  
+  const totalQuestions = getTotalVisibleQuestions();
   const completedQuestions = onboardingPhases
     .slice(0, currentPhaseIndex)
-    .reduce((sum, phase) => sum + phase.questions.length, 0) + currentQuestionIndex;
+    .reduce((sum, phase) => {
+      return sum + phase.questions.filter((q) => {
+        if ((q as any).showIf === "medications_yes") {
+          const medsAnswer = answers["medications"];
+          return Array.isArray(medsAnswer) && medsAnswer.includes("yes");
+        }
+        return true;
+      }).length;
+    }, 0) + currentQuestionIndex;
 
   const handleSelect = (id: string) => {
     if (!currentQuestion) return;
@@ -183,7 +230,16 @@ const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
   };
 
   const handleContinue = () => {
-    const isLastQuestionInPhase = currentQuestionIndex >= currentPhase.questions.length - 1;
+    // Check if user wants to add medications now
+    if (currentQuestion?.id === "add_medications") {
+      const addMedsAnswer = answers["add_medications"];
+      if (Array.isArray(addMedsAnswer) && addMedsAnswer.includes("yes") && onAddMedications) {
+        onAddMedications();
+        return;
+      }
+    }
+    
+    const isLastQuestionInPhase = currentQuestionIndex >= visibleQuestions.length - 1;
     const isLastPhase = currentPhaseIndex >= onboardingPhases.length - 1;
 
     if (isLastQuestionInPhase) {
