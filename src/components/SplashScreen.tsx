@@ -14,18 +14,18 @@ interface SplashScreenProps {
 const slides = [
   {
     image: splashSlide1,
-    headline: "Your daily partner",
-    subtext: "Track symptoms, meds, and moods.",
+    headline: "Reconnect with Joy",
+    subtext: "Comfort through familiar moments daily.",
   },
   {
     image: splashSlide2,
-    headline: "See your progress",
-    subtext: "Insights that help you thrive.",
+    headline: "Caregiving Made Simple",
+    subtext: "Know today's condition with clarity.",
   },
   {
     image: splashSlide3,
-    headline: "Never care alone",
-    subtext: "Share updates with loved ones.",
+    headline: "One Stop Care",
+    subtext: "Medicines, visits, routines in one place.",
   },
 ];
 
