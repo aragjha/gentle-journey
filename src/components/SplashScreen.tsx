@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import CTAButton from "@/components/CTAButton";
 import ThemeToggle from "@/components/ThemeToggle";
+import { Skeleton } from "@/components/ui/skeleton";
 import logoLight from "@/assets/logo-light.png";
 import splashSlide1 from "@/assets/splash-slide-1.png";
 import splashSlide2 from "@/assets/splash-slide-2.png";
@@ -31,15 +32,41 @@ const slides = [
 
 const SplashScreen = ({ onContinue }: SplashScreenProps) => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
+  const [allImagesLoaded, setAllImagesLoaded] = useState(false);
 
-  // Auto-scroll every 4 seconds
+  // Preload all images on mount
   useEffect(() => {
+    const imageUrls = [logoLight, ...slides.map((s) => s.image)];
+    let loadedCount = 0;
+
+    imageUrls.forEach((src, index) => {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => {
+        loadedCount++;
+        if (index > 0) {
+          setLoadedImages((prev) => new Set(prev).add(index - 1));
+        }
+        if (loadedCount === imageUrls.length) {
+          setAllImagesLoaded(true);
+        }
+      };
+    });
+  }, []);
+
+  // Auto-scroll every 4 seconds (only after images loaded)
+  useEffect(() => {
+    if (!allImagesLoaded) return;
+
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 4000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [allImagesLoaded]);
+
+  const isCurrentImageLoaded = loadedImages.has(currentSlide);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -77,6 +104,9 @@ const SplashScreen = ({ onContinue }: SplashScreenProps) => {
         <div className="flex flex-col gap-5">
           {/* Image Carousel */}
           <div className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-xl">
+            {!isCurrentImageLoaded && (
+              <Skeleton className="absolute inset-0 w-full h-full" />
+            )}
             <AnimatePresence mode="wait">
               <motion.img
                 key={currentSlide}
@@ -84,9 +114,11 @@ const SplashScreen = ({ onContinue }: SplashScreenProps) => {
                 alt={slides[currentSlide].headline}
                 className="absolute inset-0 w-full h-full object-cover"
                 initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
+                animate={{ opacity: isCurrentImageLoaded ? 1 : 0, x: 0 }}
                 exit={{ opacity: 0, x: -50 }}
                 transition={{ duration: 0.5 }}
+                loading="eager"
+                decoding="async"
               />
             </AnimatePresence>
 
