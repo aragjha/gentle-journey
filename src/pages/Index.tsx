@@ -22,9 +22,7 @@ import { getDiaryById } from "@/data/diaryContent";
 import { Medication, MedicationLog } from "@/data/medicationContent";
 
 type AppScreen = 
-  | "splash1" 
-  | "splash2" 
-  | "splash3" 
+  | "splash"
   | "auth"
   | "onboarding" 
   | "onboarding-complete"
@@ -44,7 +42,7 @@ type AppScreen =
   | "medication-log";
 
 const Index = () => {
-  const [currentScreen, setCurrentScreen] = useState<AppScreen>("splash1");
+  const [currentScreen, setCurrentScreen] = useState<AppScreen>("splash");
   const [previousScreen, setPreviousScreen] = useState<AppScreen>("home");
   const [openLessonId, setOpenLessonId] = useState<string | null>(null);
   const [openDiaryId, setOpenDiaryId] = useState<string | null>(null);
@@ -68,7 +66,7 @@ const Index = () => {
         // User just signed in (e.g., from OAuth redirect)
         setCurrentScreen("onboarding");
       } else if (event === "SIGNED_OUT") {
-        setCurrentScreen("splash1");
+        setCurrentScreen("splash");
       }
     });
 
@@ -85,12 +83,6 @@ const Index = () => {
   }, []);
 
   const handleSplashContinue = () => {
-    if (currentScreen === "splash1") setCurrentScreen("splash2");
-    else if (currentScreen === "splash2") setCurrentScreen("splash3");
-    else if (currentScreen === "splash3") setCurrentScreen("auth");
-  };
-
-  const handleSkipOnboarding = () => {
     setCurrentScreen("auth");
   };
 
@@ -99,7 +91,7 @@ const Index = () => {
   };
 
   const handleAuthBack = () => {
-    setCurrentScreen("splash3");
+    setCurrentScreen("splash");
   };
 
   const handleSkipToHome = () => {
@@ -217,12 +209,8 @@ const Index = () => {
 
   const renderScreen = () => {
     switch (currentScreen) {
-      case "splash1":
-        return <SplashScreen step={1} onContinue={handleSplashContinue} />;
-      case "splash2":
-        return <SplashScreen step={2} onContinue={handleSplashContinue} onSkip={handleSkipOnboarding} />;
-      case "splash3":
-        return <SplashScreen step={3} onContinue={handleSplashContinue} />;
+      case "splash":
+        return <SplashScreen onContinue={handleSplashContinue} />;
       case "auth":
         return <AuthPage onAuthSuccess={handleAuthSuccess} onBack={handleAuthBack} />;
       case "onboarding":
@@ -349,7 +337,7 @@ const Index = () => {
       case "profile":
         return <ProfilePage onNavigate={handleNavigate} />;
       default:
-        return <SplashScreen step={1} onContinue={handleSplashContinue} />;
+        return <SplashScreen onContinue={handleSplashContinue} />;
     }
   };
 
