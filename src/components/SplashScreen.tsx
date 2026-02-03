@@ -6,6 +6,7 @@ import logoLight from "@/assets/logo-light.png";
 interface SplashScreenProps {
   step: 1 | 2 | 3;
   onContinue: () => void;
+  onSkip?: () => void;
 }
 
 const splashContent = [
@@ -26,7 +27,7 @@ const splashContent = [
   },
 ];
 
-const SplashScreen = ({ step, onContinue }: SplashScreenProps) => {
+const SplashScreen = ({ step, onContinue, onSkip }: SplashScreenProps) => {
   const content = splashContent[step - 1];
 
   // Screen 1: Logo + Slogan only
@@ -134,10 +135,18 @@ const SplashScreen = ({ step, onContinue }: SplashScreenProps) => {
       </div>
 
       {/* CTA */}
-      <div className="px-6 pb-safe-bottom mb-8">
+      <div className="px-6 pb-safe-bottom mb-8 space-y-3">
         <CTAButton size="full" onClick={onContinue} className="uppercase font-bold">
           {step === 3 ? "Get Started" : "Continue"}
         </CTAButton>
+        {step === 2 && onSkip && (
+          <button
+            onClick={onSkip}
+            className="w-full py-3 text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
+          >
+            Skip onboarding
+          </button>
+        )}
       </div>
     </div>
   );
