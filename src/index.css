@@ -55,6 +55,10 @@
     --streak-orange: 25 95% 53%;
     --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
+    
+    /* Status */
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
 
     /* Safe areas */
     --safe-top: 24px;
@@ -110,6 +114,10 @@
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 221 28% 42%;
     --sidebar-ring: 186 71% 72%;
+    
+    /* Status */
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
   }
 }
 

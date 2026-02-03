@@ -1,11 +1,17 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
-import CTAButton from "@/components/CTAButton";
 import LessonDetailPage from "@/pages/LessonDetailPage";
-import { Play, Check, Lock, ChevronRight } from "lucide-react";
-import { allLessons, stages, getCurrentLesson, type LessonNode } from "@/data/lessonContent";
+import { ChevronRight, ChevronDown, MapPin, Info, GitBranch, Compass } from "lucide-react";
+import { 
+  allLessons, 
+  stages, 
+  getSubstagesForStage, 
+  getLessonsBySubstage,
+  type LessonNode,
+  type NodeType
+} from "@/data/lessonContent";
 
 interface MapsPageProps {
   onNavigate: (tab: "home" | "maps" | "tools" | "profile") => void;
@@ -13,23 +19,54 @@ interface MapsPageProps {
   onLessonClose?: () => void;
 }
 
+const getNodeTypeIcon = (nodeType: NodeType) => {
+  switch (nodeType) {
+    case "entry": return <Compass className="w-4 h-4" />;
+    case "choice": return <GitBranch className="w-4 h-4" />;
+    case "info": return <Info className="w-4 h-4" />;
+    case "subsection": return <ChevronRight className="w-4 h-4" />;
+  }
+};
+
+const getNodeTypeColor = (nodeType: NodeType) => {
+  switch (nodeType) {
+    case "entry": return "bg-accent text-accent-foreground";
+    case "choice": return "bg-warning text-warning-foreground";
+    case "info": return "bg-muted text-muted-foreground";
+    case "subsection": return "bg-secondary text-secondary-foreground";
+  }
+};
+
 const MapsPage = ({ onNavigate, initialLessonId, onLessonClose }: MapsPageProps) => {
   const [activeStage, setActiveStage] = useState("Diagnosis");
+  const [expandedSubstages, setExpandedSubstages] = useState<Set<string>>(new Set(getSubstagesForStage("Diagnosis")));
   const [selectedNode, setSelectedNode] = useState<LessonNode | null>(() => {
-    // If initialLessonId is provided, open that lesson
     if (initialLessonId) {
       return allLessons.find((l) => l.id === initialLessonId) || null;
     }
     return null;
   });
+  const [userCurrentNode, setUserCurrentNode] = useState<string | null>(null);
 
-  const filteredNodes = allLessons.filter((node) => node.stage === activeStage);
-  const currentNode = getCurrentLesson();
+  const substagesForStage = getSubstagesForStage(activeStage);
+
+  const handleStageChange = (stage: string) => {
+    setActiveStage(stage);
+    setExpandedSubstages(new Set(getSubstagesForStage(stage)));
+  };
+
+  const toggleSubstage = (substage: string) => {
+    const newExpanded = new Set(expandedSubstages);
+    if (newExpanded.has(substage)) {
+      newExpanded.delete(substage);
+    } else {
+      newExpanded.add(substage);
+    }
+    setExpandedSubstages(newExpanded);
+  };
 
   const handleNodeClick = (node: LessonNode) => {
-    if (node.status !== "locked") {
-      setSelectedNode(node);
-    }
+    setSelectedNode(node);
   };
 
   const handleBack = () => {
@@ -39,12 +76,18 @@ const MapsPage = ({ onNavigate, initialLessonId, onLessonClose }: MapsPageProps)
     }
   };
 
+  const handleMarkAsHere = (nodeId: string) => {
+    setUserCurrentNode(nodeId);
+  };
+
   // Show lesson detail page if a node is selected
   if (selectedNode) {
     return (
       <LessonDetailPage
         node={selectedNode}
         onBack={handleBack}
+        isUserHere={userCurrentNode === selectedNode.id}
+        onMarkAsHere={() => handleMarkAsHere(selectedNode.id)}
       />
     );
   }
@@ -65,7 +108,40 @@ const MapsPage = ({ onNavigate, initialLessonId, onLessonClose }: MapsPageProps)
           animate={{ opacity: 1, y: 0 }}
         >
           <h1 className="text-h1-lg text-foreground">Your Journey Map 🗺️</h1>
-          <p className="text-body text-muted-foreground">One tiny lesson at a time.</p>
+          <p className="text-body text-muted-foreground">Explore at your own pace. Mark where you are.</p>
+        </motion.div>
+
+        {/* Legend */}
+        <motion.div
+          className="flex flex-wrap gap-2 mb-4"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+        >
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center">
+              <Compass className="w-3 h-3 text-accent-foreground" />
+            </div>
+            <span>Entry</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <div className="w-5 h-5 rounded-full bg-warning flex items-center justify-center">
+              <GitBranch className="w-3 h-3 text-warning-foreground" />
+            </div>
+            <span>Decision</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center">
+              <Info className="w-3 h-3 text-muted-foreground" />
+            </div>
+            <span>Info</span>
+          </div>
+          {userCurrentNode && (
+            <div className="flex items-center gap-1.5 text-xs text-accent">
+              <MapPin className="w-4 h-4" />
+              <span>You are here</span>
+            </div>
+          )}
         </motion.div>
 
         {/* Stage Tabs */}
@@ -78,7 +154,7 @@ const MapsPage = ({ onNavigate, initialLessonId, onLessonClose }: MapsPageProps)
           {stages.map((stage) => (
             <button
               key={stage}
-              onClick={() => setActiveStage(stage)}
+              onClick={() => handleStageChange(stage)}
               className={`px-4 py-2 rounded-full text-helper-lg font-semibold whitespace-nowrap transition-colors ${
                 activeStage === stage
                   ? "bg-accent text-accent-foreground"
@@ -90,80 +166,89 @@ const MapsPage = ({ onNavigate, initialLessonId, onLessonClose }: MapsPageProps)
           ))}
         </motion.div>
 
-        {/* Journey Path */}
-        <div className="relative">
-          {/* Connecting Line */}
-          <div className="absolute left-6 top-8 bottom-8 w-0.5 bg-border" />
+        {/* Substages and Nodes */}
+        <div className="space-y-4">
+          {substagesForStage.map((substage, substageIndex) => {
+            const nodesInSubstage = getLessonsBySubstage(activeStage, substage);
+            const isExpanded = expandedSubstages.has(substage);
 
-          {/* Nodes */}
-          <div className="space-y-4">
-            {filteredNodes.map((node, index) => (
+            return (
               <motion.div
-                key={node.id}
-                className="relative flex items-start gap-4"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 + index * 0.05 }}
+                key={substage}
+                className="glass-card p-0 overflow-hidden"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + substageIndex * 0.05 }}
               >
-                {/* Node Indicator */}
-                <div
-                  className={`relative z-10 w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${
-                    node.status === "done"
-                      ? "bg-success text-success-foreground"
-                      : node.status === "current"
-                      ? "bg-accent text-accent-foreground"
-                      : "bg-muted text-muted-foreground"
-                  }`}
-                >
-                  {node.status === "done" ? (
-                    <Check className="w-5 h-5" />
-                  ) : node.status === "current" ? (
-                    <Play className="w-5 h-5" />
-                  ) : (
-                    <Lock className="w-4 h-4" />
-                  )}
-                </div>
-
-                {/* Node Card */}
+                {/* Substage Header */}
                 <button
-                  onClick={() => handleNodeClick(node)}
-                  className={`flex-1 glass-card flex items-center justify-between ${
-                    node.status === "locked" ? "opacity-50 cursor-not-allowed" : "hover:border-accent/50"
-                  }`}
-                  disabled={node.status === "locked"}
+                  onClick={() => toggleSubstage(substage)}
+                  className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
                 >
-                  <div>
-                    <h3 className="text-body-lg font-semibold text-foreground text-left">
-                      {node.title}
-                    </h3>
-                    <p className="text-helper text-muted-foreground text-left">
-                      {node.status === "current" && "You're here"}
-                      {node.status === "done" && "Completed"}
-                      {node.status === "locked" && "Complete previous first"}
-                    </p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center">
+                      <span className="text-lg">{substageIndex + 1}</span>
+                    </div>
+                    <div className="text-left">
+                      <h3 className="text-body-lg font-semibold text-foreground">{substage}</h3>
+                      <p className="text-helper text-muted-foreground">{nodesInSubstage.length} topics</p>
+                    </div>
                   </div>
-                  {node.status !== "locked" && (
-                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                  )}
+                  <motion.div
+                    animate={{ rotate: isExpanded ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                  </motion.div>
                 </button>
-              </motion.div>
-            ))}
-          </div>
-        </div>
 
-        {/* Continue CTA */}
-        {currentNode && (
-          <motion.div
-            className="mt-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <CTAButton size="full" onClick={() => handleNodeClick(currentNode)}>
-              Continue: {currentNode.title}
-            </CTAButton>
-          </motion.div>
-        )}
+                {/* Nodes */}
+                <AnimatePresence>
+                  {isExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="border-t border-border"
+                    >
+                      <div className="p-2 space-y-1">
+                        {nodesInSubstage.map((node, nodeIndex) => (
+                          <motion.button
+                            key={node.id}
+                            onClick={() => handleNodeClick(node)}
+                            className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors text-left relative"
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: nodeIndex * 0.03 }}
+                          >
+                            {/* Node Type Icon */}
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${getNodeTypeColor(node.nodeType)}`}>
+                              {getNodeTypeIcon(node.nodeType)}
+                            </div>
+
+                            {/* Node Info */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <h4 className="text-body font-medium text-foreground truncate">{node.title}</h4>
+                                {userCurrentNode === node.id && (
+                                  <MapPin className="w-4 h-4 text-accent shrink-0" />
+                                )}
+                              </div>
+                              <p className="text-helper text-muted-foreground line-clamp-1">{node.description}</p>
+                            </div>
+
+                            <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                          </motion.button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Bottom Nav */}
