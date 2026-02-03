@@ -5,6 +5,7 @@ import SplashScreen from "@/components/SplashScreen";
 import OnboardingFlow, { OnboardingState } from "@/components/OnboardingFlow";
 import AuthPage from "@/pages/AuthPage";
 import HomeHub from "@/pages/HomeHub";
+import OffModeHome from "@/pages/OffModeHome";
 import DiariesHub from "@/pages/DiariesHub";
 import DiaryFlow from "@/pages/DiaryFlow";
 import DailyCheckinFlow from "@/pages/DailyCheckinFlow";
@@ -28,6 +29,7 @@ type AppScreen =
   | "onboarding" 
   | "onboarding-complete"
   | "home" 
+  | "home-off"
   | "diaries" 
   | "diary-flow"
   | "checkin" 
@@ -47,6 +49,9 @@ const Index = () => {
   const [openLessonId, setOpenLessonId] = useState<string | null>(null);
   const [openDiaryId, setOpenDiaryId] = useState<string | null>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  
+  // ON/OFF mode state
+  const [isOnMode, setIsOnMode] = useState(true);
   
   // Medication state (in real app, this would be persisted to database)
   const [medications, setMedications] = useState<Medication[]>([]);
@@ -111,7 +116,17 @@ const Index = () => {
 
   const handleNavigate = (tab: "home" | "maps" | "tools" | "profile") => {
     setOpenLessonId(null); // Reset lesson when navigating via tabs
-    setCurrentScreen(tab);
+    // When navigating to home, respect the current ON/OFF mode
+    if (tab === "home") {
+      setCurrentScreen(isOnMode ? "home" : "home-off");
+    } else {
+      setCurrentScreen(tab);
+    }
+  };
+
+  const handleToggleMode = (isOn: boolean) => {
+    setIsOnMode(isOn);
+    setCurrentScreen(isOn ? "home" : "home-off");
   };
 
   const handleStartCheckin = () => {
@@ -238,6 +253,14 @@ const Index = () => {
             onStartCheckin={handleStartCheckin} 
             onNavigate={handleNavigate}
             onOpenLesson={handleOpenLesson}
+            isOnMode={isOnMode}
+            onToggleMode={handleToggleMode}
+          />
+        );
+      case "home-off":
+        return (
+          <OffModeHome 
+            onSwitchToOn={() => handleToggleMode(true)}
           />
         );
       case "diaries":

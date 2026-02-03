@@ -4,15 +4,18 @@ import Header from "@/components/Header";
 import HeroCard from "@/components/HeroCard";
 import BottomNav from "@/components/BottomNav";
 import DiaryTile from "@/components/DiaryTile";
+import OnOffToggle from "@/components/OnOffToggle";
 import { getTodaysLesson } from "@/data/lessonContent";
 
 interface HomeHubProps {
   onStartCheckin: () => void;
   onNavigate: (tab: "home" | "maps" | "tools" | "profile") => void;
   onOpenLesson?: () => void;
+  isOnMode: boolean;
+  onToggleMode: (isOn: boolean) => void;
 }
 
-const HomeHub = ({ onStartCheckin, onNavigate, onOpenLesson }: HomeHubProps) => {
+const HomeHub = ({ onStartCheckin, onNavigate, onOpenLesson, isOnMode, onToggleMode }: HomeHubProps) => {
   const [completedToday, setCompletedToday] = useState<string[]>([]);
   
   // Get today's lesson from the journey map
@@ -68,11 +71,24 @@ const HomeHub = ({ onStartCheckin, onNavigate, onOpenLesson }: HomeHubProps) => 
 
       {/* Content */}
       <div className="flex-1 px-4 pb-24 overflow-y-auto">
+        {/* ON/OFF Toggle - High Priority */}
+        <motion.div
+          className="mb-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <OnOffToggle 
+            isOn={isOnMode} 
+            onChange={onToggleMode}
+          />
+        </motion.div>
+
         {/* Greeting */}
         <motion.div
           className="mb-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
         >
           <h1 className="text-h1-lg text-foreground">Good morning! 👋</h1>
           <p className="text-body text-muted-foreground">
