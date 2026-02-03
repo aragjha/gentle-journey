@@ -78,6 +78,10 @@ const Index = () => {
     setCurrentScreen("splash3");
   };
 
+  const handleSkipToHome = () => {
+    setCurrentScreen("home");
+  };
+
   const handleOnboardingComplete = () => {
     setCurrentScreen("onboarding-complete");
   };
@@ -140,7 +144,7 @@ const Index = () => {
       case "auth":
         return <AuthPage onAuthSuccess={handleAuthSuccess} onBack={handleAuthBack} />;
       case "onboarding":
-        return <OnboardingFlow onComplete={handleOnboardingComplete} />;
+        return <OnboardingFlow onComplete={handleOnboardingComplete} onSkip={handleSkipToHome} />;
       case "onboarding-complete":
         return (
           <GratificationScreen
