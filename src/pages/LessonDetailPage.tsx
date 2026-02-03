@@ -277,15 +277,6 @@ const LessonDetailPage = ({ node, onBack, isUserHere, onMarkAsHere }: LessonDeta
           </motion.button>
         )}
 
-        <motion.button
-          onClick={onBack}
-          className="w-full py-3 px-6 rounded-2xl bg-transparent text-muted-foreground font-medium text-body flex items-center justify-center gap-2 hover:text-foreground transition-colors"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          Back to Map
-        </motion.button>
       </div>
 
       {/* NeuroQuery Bottom Sheet */}
