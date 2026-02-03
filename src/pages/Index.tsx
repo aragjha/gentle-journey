@@ -12,9 +12,13 @@ import MapsPage from "@/pages/MapsPage";
 import ToolsHub from "@/pages/ToolsHub";
 import NeuroQueryChat from "@/pages/NeuroQueryChat";
 import ProfilePage from "@/pages/ProfilePage";
+import MedicationOnboarding from "@/pages/MedicationOnboarding";
+import MedicationHub from "@/pages/MedicationHub";
+import MedicationLogScreen from "@/pages/MedicationLogScreen";
 import GratificationScreen from "@/components/GratificationScreen";
 import { getTodaysLesson } from "@/data/lessonContent";
 import { getDiaryById } from "@/data/diaryContent";
+import { Medication, MedicationLog } from "@/data/medicationContent";
 
 type AppScreen = 
   | "splash1" 
@@ -31,7 +35,10 @@ type AppScreen =
   | "maps-lesson"
   | "tools" 
   | "chat" 
-  | "profile";
+  | "profile"
+  | "medication-onboarding"
+  | "medication-hub"
+  | "medication-log";
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>("splash1");
@@ -39,6 +46,10 @@ const Index = () => {
   const [openLessonId, setOpenLessonId] = useState<string | null>(null);
   const [openDiaryId, setOpenDiaryId] = useState<string | null>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  
+  // Medication state (in real app, this would be persisted to database)
+  const [medications, setMedications] = useState<Medication[]>([]);
+  const [medicationLogs, setMedicationLogs] = useState<MedicationLog[]>([]);
 
   // Check for existing session on mount and listen for auth changes
   useEffect(() => {
@@ -139,6 +150,37 @@ const Index = () => {
     setCurrentScreen("diaries");
   };
 
+  // Medication handlers
+  const handleOpenMedications = () => {
+    if (medications.length === 0) {
+      setCurrentScreen("medication-onboarding");
+    } else {
+      setCurrentScreen("medication-hub");
+    }
+  };
+
+  const handleMedicationOnboardingComplete = (newMeds: Medication[]) => {
+    setMedications(newMeds);
+    if (newMeds.length > 0) {
+      setCurrentScreen("medication-hub");
+    } else {
+      setCurrentScreen("tools");
+    }
+  };
+
+  const handleToggleMedicationReminder = (medId: string) => {
+    setMedications((prev) =>
+      prev.map((m) =>
+        m.id === medId ? { ...m, reminderEnabled: !m.reminderEnabled } : m
+      )
+    );
+  };
+
+  const handleMedicationLogComplete = (logs: MedicationLog[]) => {
+    setMedicationLogs((prev) => [...prev, ...logs]);
+    setCurrentScreen("medication-hub");
+  };
+
   // Show loading while checking auth
   if (isCheckingAuth) {
     return (
@@ -220,6 +262,36 @@ const Index = () => {
             onStartCheckin={handleStartCheckin}
             onOpenChat={handleOpenChat}
             onOpenDiaries={() => setCurrentScreen("diaries")}
+            onOpenMedications={handleOpenMedications}
+          />
+        );
+      case "medication-onboarding":
+        return (
+          <MedicationOnboarding
+            onComplete={handleMedicationOnboardingComplete}
+            onBack={() => setCurrentScreen("tools")}
+          />
+        );
+      case "medication-hub":
+        return (
+          <MedicationHub
+            medications={medications}
+            onAddMedication={() => setCurrentScreen("medication-onboarding")}
+            onEditMedication={(med) => {
+              // For now, just log - would need edit flow
+              console.log("Edit medication:", med);
+            }}
+            onToggleReminder={handleToggleMedicationReminder}
+            onOpenLog={() => setCurrentScreen("medication-log")}
+            onBack={() => setCurrentScreen("tools")}
+          />
+        );
+      case "medication-log":
+        return (
+          <MedicationLogScreen
+            medications={medications}
+            onComplete={handleMedicationLogComplete}
+            onBack={() => setCurrentScreen("medication-hub")}
           />
         );
       case "chat":

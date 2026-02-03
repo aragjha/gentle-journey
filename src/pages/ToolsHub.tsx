@@ -8,22 +8,25 @@ interface ToolsHubProps {
   onStartCheckin: () => void;
   onOpenChat: () => void;
   onOpenDiaries: () => void;
+  onOpenMedications: () => void;
 }
 
 const tools = [
   { id: "diaries", title: "Diaries", subtitle: "Track daily symptoms", icon: "📓" },
+  { id: "medication", title: "Medication Log", subtitle: "Track & log your meds", icon: "💊" },
   { id: "chat", title: "Talk to Neura", subtitle: "Ask anything about PD", icon: "💬" },
-  { id: "medication", title: "Medication Log", subtitle: "Track your meds", icon: "💊", comingSoon: true },
   { id: "activity", title: "Activity Tracker", subtitle: "Log exercise & movement", icon: "🏃", comingSoon: true },
   { id: "appointments", title: "Appointments", subtitle: "Prep for doctor visits", icon: "📅", comingSoon: true },
 ];
 
-const ToolsHub = ({ onNavigate, onStartCheckin, onOpenChat, onOpenDiaries }: ToolsHubProps) => {
+const ToolsHub = ({ onNavigate, onStartCheckin, onOpenChat, onOpenDiaries, onOpenMedications }: ToolsHubProps) => {
   const handleToolClick = (toolId: string) => {
     if (toolId === "diaries") {
       onOpenDiaries();
     } else if (toolId === "chat") {
       onOpenChat();
+    } else if (toolId === "medication") {
+      onOpenMedications();
     }
   };
 
