@@ -43,8 +43,11 @@ const SplashScreen = ({ onContinue }: SplashScreenProps) => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      {/* Header: Logo centered, Theme toggle right */}
-      <div className="relative flex items-center justify-center pt-10 pb-2 px-6">
+      {/* Header: Logo left/center, Theme toggle right - same row */}
+      <div className="flex items-center justify-between pt-6 pb-2 px-6">
+        {/* Spacer for balance */}
+        <div className="w-10" />
+        
         {/* Logo - centered */}
         <motion.img
           src={logoLight}
@@ -55,10 +58,8 @@ const SplashScreen = ({ onContinue }: SplashScreenProps) => {
           transition={{ duration: 0.4 }}
         />
 
-        {/* Theme Toggle - absolute right */}
-        <div className="absolute right-6 top-10">
-          <ThemeToggle />
-        </div>
+        {/* Theme Toggle - right aligned */}
+        <ThemeToggle />
       </div>
 
       {/* Tagline */}
