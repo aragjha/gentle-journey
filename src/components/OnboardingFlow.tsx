@@ -227,29 +227,28 @@ const OnboardingFlow = ({ onComplete, onSkip, onAddMedications, initialState }: 
         setAnswers({ ...answers, [currentQuestion.id]: [...current, id] });
       }
     } else {
+      // Single selection - set answer and auto-advance after a short delay
       setAnswers({ ...answers, [currentQuestion.id]: [id] });
+      
+      // Auto-advance for single selection questions
+      setTimeout(() => {
+        handleContinueInternal([id]);
+      }, 300);
     }
   };
 
-  const handleSliderChange = (value: number) => {
-    if (!currentQuestion) return;
-    setAnswers({ ...answers, [currentQuestion.id]: value });
-  };
-
-  const handleContinue = () => {
+  const handleContinueInternal = (currentAnswer?: string[]) => {
     // Check if user wants to add medications now
     if (currentQuestion?.id === "add_medications") {
-      const addMedsAnswer = answers["add_medications"];
+      const addMedsAnswer = currentAnswer || answers["add_medications"];
       if (Array.isArray(addMedsAnswer) && addMedsAnswer.includes("yes") && onAddMedications) {
-        // Pass current state so we can resume after medication setup
-        // Move to next question index so we don't repeat this question
         const nextQuestionIndex = currentQuestionIndex + 1;
         const isLastInPhase = nextQuestionIndex >= visibleQuestions.length;
         
         onAddMedications({
           phaseIndex: isLastInPhase ? currentPhaseIndex + 1 : currentPhaseIndex,
           questionIndex: isLastInPhase ? 0 : nextQuestionIndex,
-          answers,
+          answers: { ...answers, [currentQuestion.id]: addMedsAnswer },
         });
         return;
       }
@@ -268,6 +267,36 @@ const OnboardingFlow = ({ onComplete, onSkip, onAddMedications, initialState }: 
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     }
   };
+
+  const handleSliderChange = (value: number) => {
+    if (!currentQuestion) return;
+    setAnswers({ ...answers, [currentQuestion.id]: value });
+  };
+
+  const handleContinue = () => {
+    handleContinueInternal();
+  };
+
+  const handleBack = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    } else if (currentPhaseIndex > 0) {
+      // Go to last question of previous phase
+      const prevPhase = onboardingPhases[currentPhaseIndex - 1];
+      const prevVisibleQuestions = prevPhase.questions.filter((q) => {
+        if ((q as any).showIf === "medications_yes") {
+          const medsAnswer = answers["medications"];
+          return Array.isArray(medsAnswer) && medsAnswer.includes("yes");
+        }
+        return true;
+      });
+      setCurrentPhaseIndex(currentPhaseIndex - 1);
+      setCurrentQuestionIndex(prevVisibleQuestions.length - 1);
+    }
+  };
+
+  // Check if we can go back
+  const canGoBack = currentPhaseIndex > 0 || currentQuestionIndex > 0;
 
   const handleGratificationContinue = () => {
     setShowGratification(false);
@@ -326,6 +355,8 @@ const OnboardingFlow = ({ onComplete, onSkip, onAddMedications, initialState }: 
           onSliderChange={handleSliderChange}
           onContinue={handleContinue}
           canContinue={canContinue()}
+          showBackButton={canGoBack}
+          onBack={handleBack}
           showSkip={currentPhaseIndex === 0 && currentQuestionIndex === 0}
           onSkip={onSkip}
         />

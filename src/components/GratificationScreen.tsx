@@ -26,9 +26,9 @@ const GratificationScreen = ({
   const Icon = icons[type];
 
   return (
-    <div className="min-h-screen flex flex-col bg-background safe-layout">
+    <div className="min-h-screen flex flex-col bg-background">
       {/* Content centered */}
-      <div className="flex-1 flex flex-col items-center justify-center text-center">
+      <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
         {/* Animated Icon */}
         <motion.div
           className="relative mb-8"
@@ -106,9 +106,9 @@ const GratificationScreen = ({
         )}
       </div>
 
-      {/* Sticky CTA - same as OnboardingQuestion */}
+      {/* Fixed CTA at bottom */}
       <motion.div
-        className="sticky bottom-0 left-0 right-0 pt-4 pb-2 bg-gradient-to-t from-background via-background to-transparent"
+        className="fixed bottom-0 left-0 right-0 px-6 pt-4 pb-8 bg-gradient-to-t from-background via-background to-transparent"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7 }}
