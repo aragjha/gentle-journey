@@ -219,6 +219,7 @@ const Index = () => {
             onNavigate={handleNavigate}
             onStartCheckin={handleStartCheckin}
             onOpenChat={handleOpenChat}
+            onOpenDiaries={() => setCurrentScreen("diaries")}
           />
         );
       case "chat":
