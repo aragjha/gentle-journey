@@ -48,6 +48,9 @@ const Index = () => {
   const [openDiaryId, setOpenDiaryId] = useState<string | null>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   
+  // Track if user is a guest (skipped login) - guests always see onboarding
+  const [isGuestUser, setIsGuestUser] = useState(false);
+  
   // ON/OFF mode state
   const [isOnMode, setIsOnMode] = useState(true);
   
@@ -64,8 +67,10 @@ const Index = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" && session) {
         // User just signed in (e.g., from OAuth redirect)
+        setIsGuestUser(false);
         setCurrentScreen("onboarding");
       } else if (event === "SIGNED_OUT") {
+        setIsGuestUser(false);
         setCurrentScreen("splash");
       }
     });
@@ -74,6 +79,7 @@ const Index = () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         // User is already logged in, go to home
+        setIsGuestUser(false);
         setCurrentScreen("home");
       }
       setIsCheckingAuth(false);
@@ -87,6 +93,7 @@ const Index = () => {
   };
 
   const handleAuthSuccess = () => {
+    setIsGuestUser(false);
     setCurrentScreen("onboarding");
   };
 
@@ -94,7 +101,14 @@ const Index = () => {
     setCurrentScreen("splash");
   };
 
+  // Skip login - mark as guest and show onboarding
   const handleSkipToHome = () => {
+    setIsGuestUser(true);
+    setCurrentScreen("onboarding");
+  };
+
+  // Skip onboarding - go to home
+  const handleSkipOnboarding = () => {
     setCurrentScreen("home");
   };
 
@@ -217,7 +231,7 @@ const Index = () => {
         return (
           <OnboardingFlow 
             onComplete={handleOnboardingComplete} 
-            onSkip={handleSkipToHome}
+            onSkip={handleSkipOnboarding}
             onAddMedications={(state) => {
               setSavedOnboardingState(state);
               setCurrentScreen("medication-onboarding-from-flow");
