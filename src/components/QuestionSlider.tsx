@@ -7,6 +7,7 @@ interface QuestionSliderProps {
   max?: number;
   value: number;
   onChange: (value: number) => void;
+  onCommit?: (value: number) => void;
   labels?: { min: string; max: string };
   showValue?: boolean;
 }
@@ -16,6 +17,7 @@ const QuestionSlider = ({
   max = 10, 
   value, 
   onChange,
+  onCommit,
   labels = { min: "Not nice", max: "Awesome" },
   showValue = true
 }: QuestionSliderProps) => {
@@ -59,6 +61,7 @@ const QuestionSlider = ({
       <Slider
         value={[value]}
         onValueChange={(vals) => onChange(vals[0])}
+        onValueCommit={(vals) => onCommit?.(vals[0])}
         min={min}
         max={max}
         step={1}

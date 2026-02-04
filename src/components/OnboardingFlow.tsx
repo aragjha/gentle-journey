@@ -256,6 +256,15 @@ const OnboardingFlow = ({ onComplete, onSkip, onAddMedications, initialState }: 
     setAnswers({ ...answers, [currentQuestion.id]: value });
   };
 
+  const handleSliderCommit = (value: number) => {
+    if (!currentQuestion) return;
+    setAnswers({ ...answers, [currentQuestion.id]: value });
+    // Auto-advance when user releases the slider
+    setTimeout(() => {
+      handleContinueInternal();
+    }, 300);
+  };
+
   const handleContinue = () => {
     handleContinueInternal();
   };
@@ -337,6 +346,7 @@ const OnboardingFlow = ({ onComplete, onSkip, onAddMedications, initialState }: 
           sliderValue={typeof answers[currentQuestion.id] === "number" ? answers[currentQuestion.id] as number : 5}
           onSelect={handleSelect}
           onSliderChange={handleSliderChange}
+          onSliderCommit={handleSliderCommit}
           onContinue={handleContinue}
           canContinue={canContinue()}
           showBackButton={canGoBack}
