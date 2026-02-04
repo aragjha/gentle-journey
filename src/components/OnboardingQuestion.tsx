@@ -15,6 +15,7 @@ interface OnboardingQuestionProps {
   sliderValue?: number;
   onSelect: (id: string) => void;
   onSliderChange?: (value: number) => void;
+  onSliderCommit?: (value: number) => void;
   onContinue: () => void;
   canContinue: boolean;
   showBackButton?: boolean;
@@ -34,6 +35,7 @@ const OnboardingQuestion = ({
   sliderValue = 5,
   onSelect,
   onSliderChange,
+  onSliderCommit,
   onContinue,
   canContinue,
   showBackButton = false,
@@ -41,8 +43,8 @@ const OnboardingQuestion = ({
   showSkip = false,
   onSkip,
 }: OnboardingQuestionProps) => {
-  // Show continue button only for multi-select and slider (single auto-advances)
-  const showContinueButton = questionType === "multi" || questionType === "slider";
+  // Show continue button only for multi-select (single and slider auto-advance)
+  const showContinueButton = questionType === "multi";
 
   return (
     <div className="min-h-screen flex flex-col bg-background safe-layout">
@@ -85,6 +87,7 @@ const OnboardingQuestion = ({
             <QuestionSlider
               value={sliderValue}
               onChange={onSliderChange || (() => {})}
+              onCommit={onSliderCommit}
             />
           )}
 
