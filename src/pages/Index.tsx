@@ -154,6 +154,11 @@ const Index = () => {
     setCurrentScreen("chat");
   };
 
+  const handleOpenAppointments = () => {
+    setPreviousScreen(currentScreen);
+    setCurrentScreen("appointments");
+  };
+
   const handleOpenLesson = () => {
     // Open the current lesson from home page
     const todaysLesson = getTodaysLesson();
@@ -261,7 +266,7 @@ const Index = () => {
             onStartCheckin={handleStartCheckin} 
             onNavigate={handleNavigate}
             onOpenLesson={handleOpenLesson}
-            onOpenAppointments={() => setCurrentScreen("appointments")}
+            onOpenAppointments={handleOpenAppointments}
             isOnMode={isOnMode}
             onToggleMode={handleToggleMode}
           />
@@ -315,7 +320,7 @@ const Index = () => {
             onOpenChat={handleOpenChat}
             onOpenDiaries={() => setCurrentScreen("diaries")}
             onOpenMedications={handleOpenMedications}
-            onOpenAppointments={() => setCurrentScreen("appointments")}
+            onOpenAppointments={handleOpenAppointments}
           />
         );
       case "appointments":
@@ -323,7 +328,7 @@ const Index = () => {
           <AppointmentsHub
             appointments={appointments}
             onUpdateAppointments={setAppointments}
-            onBack={() => setCurrentScreen("tools")}
+            onBack={() => setCurrentScreen(previousScreen === "appointments" ? "home" : previousScreen)}
           />
         );
       case "medication-onboarding":
