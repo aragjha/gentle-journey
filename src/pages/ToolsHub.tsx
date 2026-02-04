@@ -9,17 +9,18 @@ interface ToolsHubProps {
   onOpenChat: () => void;
   onOpenDiaries: () => void;
   onOpenMedications: () => void;
+  onOpenAppointments: () => void;
 }
 
 const tools = [
   { id: "diaries", title: "Diaries", subtitle: "Track daily symptoms", icon: "📓" },
   { id: "medication", title: "Medication Log", subtitle: "Track & log your meds", icon: "💊" },
+  { id: "appointments", title: "Appointments", subtitle: "Track & prep for visits", icon: "📅" },
   { id: "chat", title: "Talk to Neura", subtitle: "Ask anything about PD", icon: "💬" },
   { id: "activity", title: "Activity Tracker", subtitle: "Log exercise & movement", icon: "🏃", comingSoon: true },
-  { id: "appointments", title: "Appointments", subtitle: "Prep for doctor visits", icon: "📅", comingSoon: true },
 ];
 
-const ToolsHub = ({ onNavigate, onStartCheckin, onOpenChat, onOpenDiaries, onOpenMedications }: ToolsHubProps) => {
+const ToolsHub = ({ onNavigate, onStartCheckin, onOpenChat, onOpenDiaries, onOpenMedications, onOpenAppointments }: ToolsHubProps) => {
   const handleToolClick = (toolId: string) => {
     if (toolId === "diaries") {
       onOpenDiaries();
@@ -27,6 +28,8 @@ const ToolsHub = ({ onNavigate, onStartCheckin, onOpenChat, onOpenDiaries, onOpe
       onOpenChat();
     } else if (toolId === "medication") {
       onOpenMedications();
+    } else if (toolId === "appointments") {
+      onOpenAppointments();
     }
   };
 
