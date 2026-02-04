@@ -16,16 +16,16 @@ const QuestionSlider = ({
   max = 10, 
   value, 
   onChange,
-  labels = { min: "Awesome", max: "Not nice" },
+  labels = { min: "Not nice", max: "Awesome" },
   showValue = true
 }: QuestionSliderProps) => {
   const getEmoji = (val: number) => {
     const percent = val / max;
-    if (percent <= 0.2) return "😊";
-    if (percent <= 0.4) return "🙂";
+    if (percent <= 0.2) return "😔";
+    if (percent <= 0.4) return "😕";
     if (percent <= 0.6) return "😐";
-    if (percent <= 0.8) return "😕";
-    return "😔";
+    if (percent <= 0.8) return "🙂";
+    return "😊";
   };
 
   return (
