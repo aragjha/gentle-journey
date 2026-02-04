@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, Check, X, Clock } from "lucide-react";
-import { Medication, MedicationLog, timeOptions, getTimeIcon } from "@/data/medicationContent";
+import { Medication, MedicationLog, timeOptions, getTimeIcon, formatDosage, getTypeIcon } from "@/data/medicationContent";
 import CTAButton from "@/components/CTAButton";
 import GratificationScreen from "@/components/GratificationScreen";
 
@@ -214,14 +214,14 @@ const MedicationLogScreen = ({ medications, onComplete, onBack }: MedicationLogS
                       className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl"
                       style={{ backgroundColor: `${med.color}20` }}
                     >
-                      💊
+                      {getTypeIcon(med.type)}
                     </div>
                     <div className="flex-1">
                       <h3 className="text-body font-semibold text-foreground">
                         {med.name}
                       </h3>
                       <p className="text-helper text-muted-foreground">
-                        {med.dosage}
+                        {formatDosage(med.dosage, med.quantity, med.type)}
                       </p>
                     </div>
                     {status === "taken" && (

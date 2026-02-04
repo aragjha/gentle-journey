@@ -3,37 +3,46 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, Plus, Check } from "lucide-react";
 import { 
   Medication, 
-  frequencyOptions, 
-  timeOptions, 
   medicationColors, 
   generateId 
 } from "@/data/medicationContent";
 import CTAButton from "@/components/CTAButton";
 import GratificationScreen from "@/components/GratificationScreen";
+import MedicationNameStep from "@/components/medication/MedicationNameStep";
+import MedicationDetailsStep from "@/components/medication/MedicationDetailsStep";
 
 interface MedicationOnboardingProps {
   onComplete: (medications: Medication[]) => void;
   onBack: () => void;
 }
 
-type OnboardingStep = 
-  | "has_meds" 
-  | "med_name" 
-  | "med_dosage" 
-  | "med_frequency" 
-  | "med_times" 
-  | "add_another" 
-  | "complete";
+type OnboardingStep = "has_meds" | "med_name" | "med_details" | "add_another" | "complete";
 
 const MedicationOnboarding = ({ onComplete, onBack }: MedicationOnboardingProps) => {
   const [step, setStep] = useState<OnboardingStep>("has_meds");
   const [medications, setMedications] = useState<Medication[]>([]);
-  const [currentMed, setCurrentMed] = useState<Partial<Medication>>({});
   const [hasMedications, setHasMedications] = useState<boolean | null>(null);
+  
+  // Current medication being added
+  const [currentName, setCurrentName] = useState("");
+  const [currentDosage, setCurrentDosage] = useState(100);
+  const [currentQuantity, setCurrentQuantity] = useState(1);
+  const [currentType, setCurrentType] = useState<Medication["type"]>("tablet");
+  const [currentFrequency, setCurrentFrequency] = useState<Medication["frequency"]>("once");
+  const [currentTimes, setCurrentTimes] = useState<Medication["times"]>([]);
+
+  const resetCurrentMed = () => {
+    setCurrentName("");
+    setCurrentDosage(100);
+    setCurrentQuantity(1);
+    setCurrentType("tablet");
+    setCurrentFrequency("once");
+    setCurrentTimes([]);
+  };
 
   // Progress calculation
   const getProgress = () => {
-    const steps: OnboardingStep[] = ["has_meds", "med_name", "med_dosage", "med_frequency", "med_times", "add_another"];
+    const steps: OnboardingStep[] = ["has_meds", "med_name", "med_details", "add_another"];
     const currentIndex = steps.indexOf(step);
     if (step === "complete") return 100;
     return ((currentIndex + 1) / steps.length) * 100;
@@ -48,45 +57,35 @@ const MedicationOnboarding = ({ onComplete, onBack }: MedicationOnboardingProps)
     }
   };
 
-  const handleNameSubmit = () => {
-    if (currentMed.name?.trim()) {
-      setStep("med_dosage");
+  const handleNameContinue = () => {
+    if (currentName.trim()) {
+      setStep("med_details");
     }
-  };
-
-  const handleDosageSubmit = () => {
-    if (currentMed.dosage?.trim()) {
-      setStep("med_frequency");
-    }
-  };
-
-  const handleFrequencySelect = (freq: Medication["frequency"]) => {
-    setCurrentMed({ ...currentMed, frequency: freq });
-    setStep("med_times");
   };
 
   const handleTimeToggle = (time: "morning" | "afternoon" | "evening" | "night") => {
-    const currentTimes = currentMed.times || [];
     if (currentTimes.includes(time)) {
-      setCurrentMed({ ...currentMed, times: currentTimes.filter((t) => t !== time) });
+      setCurrentTimes(currentTimes.filter((t) => t !== time));
     } else {
-      setCurrentMed({ ...currentMed, times: [...currentTimes, time] });
+      setCurrentTimes([...currentTimes, time]);
     }
   };
 
-  const handleTimesSubmit = () => {
-    if (currentMed.times?.length) {
+  const handleAddMedication = () => {
+    if (currentName.trim() && currentTimes.length > 0) {
       const newMed: Medication = {
         id: generateId(),
-        name: currentMed.name || "",
-        dosage: currentMed.dosage || "",
-        frequency: currentMed.frequency || "once",
-        times: currentMed.times || [],
+        name: currentName,
+        dosage: currentDosage,
+        quantity: currentQuantity,
+        type: currentType,
+        frequency: currentFrequency,
+        times: currentTimes,
         reminderEnabled: true,
         color: medicationColors[medications.length % medicationColors.length],
       };
       setMedications([...medications, newMed]);
-      setCurrentMed({});
+      resetCurrentMed();
       setStep("add_another");
     }
   };
@@ -140,156 +139,30 @@ const MedicationOnboarding = ({ onComplete, onBack }: MedicationOnboardingProps)
 
       case "med_name":
         return (
-          <motion.div
-            key="med_name"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="flex-1 flex flex-col"
-          >
-            <div className="flex-1 flex flex-col justify-center">
-              <h1 className="text-h1-lg text-foreground mb-2">
-                {medications.length === 0 ? "What's your first medication?" : "Add another medication"}
-              </h1>
-              <p className="text-helper-lg text-muted-foreground mb-8">
-                Enter the medication name
-              </p>
-              
-              <input
-                type="text"
-                value={currentMed.name || ""}
-                onChange={(e) => setCurrentMed({ ...currentMed, name: e.target.value })}
-                placeholder="e.g., Levodopa, Carbidopa..."
-                className="w-full p-4 rounded-2xl border border-border bg-card text-foreground text-h2 placeholder:text-muted-foreground focus:outline-none focus:border-accent"
-                autoFocus
-              />
-            </div>
-            
-            <CTAButton 
-              size="full" 
-              onClick={handleNameSubmit}
-              disabled={!currentMed.name?.trim()}
-            >
-              Continue
-            </CTAButton>
-          </motion.div>
+          <MedicationNameStep
+            value={currentName}
+            onChange={setCurrentName}
+            onContinue={handleNameContinue}
+            medicationCount={medications.length}
+          />
         );
 
-      case "med_dosage":
+      case "med_details":
         return (
-          <motion.div
-            key="med_dosage"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="flex-1 flex flex-col"
-          >
-            <div className="flex-1 flex flex-col justify-center">
-              <h1 className="text-h1-lg text-foreground mb-2">
-                What's the dosage?
-              </h1>
-              <p className="text-helper-lg text-muted-foreground mb-8">
-                For {currentMed.name}
-              </p>
-              
-              <input
-                type="text"
-                value={currentMed.dosage || ""}
-                onChange={(e) => setCurrentMed({ ...currentMed, dosage: e.target.value })}
-                placeholder="e.g., 100mg, 1 tablet..."
-                className="w-full p-4 rounded-2xl border border-border bg-card text-foreground text-h2 placeholder:text-muted-foreground focus:outline-none focus:border-accent"
-                autoFocus
-              />
-            </div>
-            
-            <CTAButton 
-              size="full" 
-              onClick={handleDosageSubmit}
-              disabled={!currentMed.dosage?.trim()}
-            >
-              Continue
-            </CTAButton>
-          </motion.div>
-        );
-
-      case "med_frequency":
-        return (
-          <motion.div
-            key="med_frequency"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="flex-1 flex flex-col"
-          >
-            <h1 className="text-h1-lg text-foreground mb-2">
-              How often?
-            </h1>
-            <p className="text-helper-lg text-muted-foreground mb-6">
-              For {currentMed.name} ({currentMed.dosage})
-            </p>
-            
-            <div className="flex-1 space-y-3">
-              {frequencyOptions.map((freq) => (
-                <button
-                  key={freq.id}
-                  onClick={() => handleFrequencySelect(freq.id as Medication["frequency"])}
-                  className="w-full p-4 rounded-2xl border border-border bg-card text-foreground hover:border-accent/50 transition-all flex items-center gap-4"
-                >
-                  <span className="text-2xl">{freq.icon}</span>
-                  <span className="text-body font-medium">{freq.label}</span>
-                </button>
-              ))}
-            </div>
-          </motion.div>
-        );
-
-      case "med_times":
-        return (
-          <motion.div
-            key="med_times"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="flex-1 flex flex-col"
-          >
-            <h1 className="text-h1-lg text-foreground mb-2">
-              When do you take it?
-            </h1>
-            <p className="text-helper-lg text-muted-foreground mb-6">
-              Select all that apply
-            </p>
-            
-            <div className="flex-1 grid grid-cols-2 gap-3">
-              {timeOptions.map((time) => {
-                const isSelected = currentMed.times?.includes(time.id as any);
-                return (
-                  <button
-                    key={time.id}
-                    onClick={() => handleTimeToggle(time.id as any)}
-                    className={`p-6 rounded-2xl border flex flex-col items-center justify-center gap-2 transition-all ${
-                      isSelected
-                        ? "bg-accent/20 border-accent"
-                        : "bg-card border-border hover:border-accent/50"
-                    }`}
-                  >
-                    <span className="text-3xl">{time.icon}</span>
-                    <span className="text-body font-medium text-foreground">{time.label}</span>
-                    <span className="text-helper text-muted-foreground">{time.time}</span>
-                  </button>
-                );
-              })}
-            </div>
-            
-            <div className="mt-6">
-              <CTAButton 
-                size="full" 
-                onClick={handleTimesSubmit}
-                disabled={!currentMed.times?.length}
-              >
-                Add Medication
-              </CTAButton>
-            </div>
-          </motion.div>
+          <MedicationDetailsStep
+            name={currentName}
+            dosage={currentDosage}
+            quantity={currentQuantity}
+            type={currentType}
+            frequency={currentFrequency}
+            times={currentTimes}
+            onDosageChange={setCurrentDosage}
+            onQuantityChange={setCurrentQuantity}
+            onTypeChange={setCurrentType}
+            onFrequencyChange={setCurrentFrequency}
+            onTimeToggle={handleTimeToggle}
+            onSubmit={handleAddMedication}
+          />
         );
 
       case "add_another":
@@ -324,7 +197,7 @@ const MedicationOnboarding = ({ onComplete, onBack }: MedicationOnboardingProps)
                       style={{ backgroundColor: med.color }}
                     />
                     <span className="text-body text-foreground">{med.name}</span>
-                    <span className="text-helper text-muted-foreground ml-auto">{med.dosage}</span>
+                    <span className="text-helper text-muted-foreground ml-auto">{med.dosage}mg</span>
                   </div>
                 ))}
               </div>
@@ -368,7 +241,7 @@ const MedicationOnboarding = ({ onComplete, onBack }: MedicationOnboardingProps)
   const canGoBack = step !== "has_meds" && step !== "complete";
 
   const handleBack = () => {
-    const stepOrder: OnboardingStep[] = ["has_meds", "med_name", "med_dosage", "med_frequency", "med_times", "add_another"];
+    const stepOrder: OnboardingStep[] = ["has_meds", "med_name", "med_details", "add_another"];
     const currentIndex = stepOrder.indexOf(step);
     if (currentIndex > 0) {
       setStep(stepOrder[currentIndex - 1]);
@@ -411,7 +284,7 @@ const MedicationOnboarding = ({ onComplete, onBack }: MedicationOnboardingProps)
       )}
 
       {/* Content */}
-      <div className="flex-1 px-4 pb-8 flex flex-col">
+      <div className="flex-1 px-4 pb-8 flex flex-col overflow-hidden">
         <AnimatePresence mode="wait">
           {renderStep()}
         </AnimatePresence>
