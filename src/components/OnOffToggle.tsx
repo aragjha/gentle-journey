@@ -12,7 +12,7 @@ interface OnOffToggleProps {
 const OnOffToggle = ({ 
   isOn, 
   onChange, 
-  label = "Right now I'm:",
+  label = "Medicine Effect Status",
   helperText = "OFF switches to quick support mode."
 }: OnOffToggleProps) => {
   return (
