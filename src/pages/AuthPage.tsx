@@ -11,11 +11,12 @@ import { Mail, Lock, ArrowLeft, Eye, EyeOff } from "lucide-react";
 interface AuthPageProps {
   onAuthSuccess: () => void;
   onBack: () => void;
+  onSkip?: () => void;
 }
 
 type AuthMode = "login" | "signup" | "forgot";
 
-const AuthPage = ({ onAuthSuccess, onBack }: AuthPageProps) => {
+const AuthPage = ({ onAuthSuccess, onBack, onSkip }: AuthPageProps) => {
   const [mode, setMode] = useState<AuthMode>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -301,6 +302,19 @@ const AuthPage = ({ onAuthSuccess, onBack }: AuthPageProps) => {
                 </button>
               )}
             </p>
+
+            {/* Skip Login */}
+            {onSkip && (
+              <motion.button
+                onClick={onSkip}
+                className="w-full mt-4 py-3 text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                Skip for now
+              </motion.button>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
