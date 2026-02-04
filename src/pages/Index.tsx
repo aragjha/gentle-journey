@@ -16,10 +16,12 @@ import ProfilePage from "@/pages/ProfilePage";
 import MedicationOnboarding from "@/pages/MedicationOnboarding";
 import MedicationHub from "@/pages/MedicationHub";
 import MedicationLogScreen from "@/pages/MedicationLogScreen";
+import AppointmentsHub from "@/pages/AppointmentsHub";
 import GratificationScreen from "@/components/GratificationScreen";
 import { getTodaysLesson } from "@/data/lessonContent";
 import { getDiaryById } from "@/data/diaryContent";
 import { Medication, MedicationLog } from "@/data/medicationContent";
+import { Appointment, sampleAppointments } from "@/data/appointmentContent";
 
 type AppScreen = 
   | "splash"
@@ -39,7 +41,8 @@ type AppScreen =
   | "medication-onboarding"
   | "medication-onboarding-from-flow"
   | "medication-hub"
-  | "medication-log";
+  | "medication-log"
+  | "appointments";
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>("splash");
@@ -57,6 +60,9 @@ const Index = () => {
   // Medication state (in real app, this would be persisted to database)
   const [medications, setMedications] = useState<Medication[]>([]);
   const [medicationLogs, setMedicationLogs] = useState<MedicationLog[]>([]);
+  
+  // Appointments state
+  const [appointments, setAppointments] = useState<Appointment[]>(sampleAppointments);
   
   // Onboarding state for resuming after medication setup
   const [savedOnboardingState, setSavedOnboardingState] = useState<OnboardingState | undefined>();
@@ -255,6 +261,7 @@ const Index = () => {
             onStartCheckin={handleStartCheckin} 
             onNavigate={handleNavigate}
             onOpenLesson={handleOpenLesson}
+            onOpenAppointments={() => setCurrentScreen("appointments")}
             isOnMode={isOnMode}
             onToggleMode={handleToggleMode}
           />
@@ -308,6 +315,15 @@ const Index = () => {
             onOpenChat={handleOpenChat}
             onOpenDiaries={() => setCurrentScreen("diaries")}
             onOpenMedications={handleOpenMedications}
+            onOpenAppointments={() => setCurrentScreen("appointments")}
+          />
+        );
+      case "appointments":
+        return (
+          <AppointmentsHub
+            appointments={appointments}
+            onUpdateAppointments={setAppointments}
+            onBack={() => setCurrentScreen("tools")}
           />
         );
       case "medication-onboarding":

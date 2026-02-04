@@ -12,11 +12,12 @@ interface HomeHubProps {
   onStartCheckin: () => void;
   onNavigate: (tab: "home" | "maps" | "tools" | "profile") => void;
   onOpenLesson?: () => void;
+  onOpenAppointments?: () => void;
   isOnMode: boolean;
   onToggleMode: (isOn: boolean) => void;
 }
 
-const HomeHub = ({ onStartCheckin, onNavigate, onOpenLesson, isOnMode, onToggleMode }: HomeHubProps) => {
+const HomeHub = ({ onStartCheckin, onNavigate, onOpenLesson, onOpenAppointments, isOnMode, onToggleMode }: HomeHubProps) => {
   const [completedToday, setCompletedToday] = useState<string[]>([]);
   
   // Get today's lesson from the journey map
@@ -46,11 +47,11 @@ const HomeHub = ({ onStartCheckin, onNavigate, onOpenLesson, isOnMode, onToggleM
       icon: "💊" 
     },
     { 
-      id: "move", 
-      title: "Gentle Stretch", 
-      subtitle: "1-minute movement", 
+      id: "appointments", 
+      title: "Appointments", 
+      subtitle: "Track & prep for visits", 
       duration: "1 min", 
-      icon: "🧘" 
+      icon: "📅" 
     },
   ];
 
@@ -59,6 +60,8 @@ const HomeHub = ({ onStartCheckin, onNavigate, onOpenLesson, isOnMode, onToggleM
       onStartCheckin();
     } else if (stepId === "learn" && onOpenLesson) {
       onOpenLesson();
+    } else if (stepId === "appointments" && onOpenAppointments) {
+      onOpenAppointments();
     }
     // Other steps would navigate to their respective flows
   };
