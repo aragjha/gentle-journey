@@ -16,7 +16,7 @@ const QuestionSlider = ({
   max = 10, 
   value, 
   onChange,
-  labels = { min: "Not nice", max: "Awesome" },
+  labels = { min: "Awesome", max: "Awesome" },
   showValue = true
 }: QuestionSliderProps) => {
   const getEmoji = (val: number) => {
