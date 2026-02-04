@@ -212,7 +212,7 @@ const Index = () => {
       case "splash":
         return <SplashScreen onContinue={handleSplashContinue} />;
       case "auth":
-        return <AuthPage onAuthSuccess={handleAuthSuccess} onBack={handleAuthBack} />;
+        return <AuthPage onAuthSuccess={handleAuthSuccess} onBack={handleAuthBack} onSkip={handleSkipToHome} />;
       case "onboarding":
         return (
           <OnboardingFlow 
