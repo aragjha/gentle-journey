@@ -267,6 +267,7 @@ const Index = () => {
             onNavigate={handleNavigate}
             onOpenLesson={handleOpenLesson}
             onOpenAppointments={handleOpenAppointments}
+            onOpenMedications={handleOpenMedications}
             isOnMode={isOnMode}
             onToggleMode={handleToggleMode}
           />
