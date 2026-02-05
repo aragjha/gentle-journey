@@ -13,11 +13,12 @@ interface HomeHubProps {
   onNavigate: (tab: "home" | "maps" | "tools" | "profile") => void;
   onOpenLesson?: () => void;
   onOpenAppointments?: () => void;
+  onOpenMedications?: () => void;
   isOnMode: boolean;
   onToggleMode: (isOn: boolean) => void;
 }
 
-const HomeHub = ({ onStartCheckin, onNavigate, onOpenLesson, onOpenAppointments, isOnMode, onToggleMode }: HomeHubProps) => {
+const HomeHub = ({ onStartCheckin, onNavigate, onOpenLesson, onOpenAppointments, onOpenMedications, isOnMode, onToggleMode }: HomeHubProps) => {
   const [completedToday, setCompletedToday] = useState<string[]>([]);
   
   // Get today's lesson from the journey map
@@ -62,8 +63,9 @@ const HomeHub = ({ onStartCheckin, onNavigate, onOpenLesson, onOpenAppointments,
       onOpenLesson();
     } else if (stepId === "appointments" && onOpenAppointments) {
       onOpenAppointments();
+    } else if (stepId === "log" && onOpenMedications) {
+      onOpenMedications();
     }
-    // Other steps would navigate to their respective flows
   };
 
   const handleQuickAction = (action: "caregiver" | "doctor" | "911") => {

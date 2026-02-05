@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import OnboardingQuestion from "@/components/OnboardingQuestion";
 import GratificationScreen from "@/components/GratificationScreen";
@@ -86,8 +86,18 @@ const DailyCheckinFlow = ({ onComplete, onBack }: DailyCheckinFlowProps) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [showGratification, setShowGratification] = useState(false);
   const [answers, setAnswers] = useState<Record<string, string[] | number>>({});
+  const autoAdvanceTimer = useRef<NodeJS.Timeout | null>(null);
 
   const currentQuestion = checkInQuestions[currentQuestionIndex];
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (autoAdvanceTimer.current) {
+        clearTimeout(autoAdvanceTimer.current);
+      }
+    };
+  }, []);
 
   const handleSelect = (id: string) => {
     if (!currentQuestion) return;
@@ -100,7 +110,18 @@ const DailyCheckinFlow = ({ onComplete, onBack }: DailyCheckinFlowProps) => {
         setAnswers({ ...answers, [currentQuestion.id]: [...current, id] });
       }
     } else {
+      // Single-select: update answer and auto-advance after delay
       setAnswers({ ...answers, [currentQuestion.id]: [id] });
+      
+      // Clear any existing timer
+      if (autoAdvanceTimer.current) {
+        clearTimeout(autoAdvanceTimer.current);
+      }
+      
+      // Auto-advance after 300ms
+      autoAdvanceTimer.current = setTimeout(() => {
+        handleContinue();
+      }, 300);
     }
   };
 
