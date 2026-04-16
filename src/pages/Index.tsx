@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
+import { usePersistedState } from "@/hooks/usePersistedState";
 import SplashScreen from "@/components/SplashScreen";
-import OnboardingFlow, { OnboardingState } from "@/components/OnboardingFlow";
+import OnboardingFlow, { OnboardingState, Diagnosis } from "@/components/OnboardingFlow";
 import AuthPage from "@/pages/AuthPage";
 import HomeHub from "@/pages/HomeHub";
 import OffModeHome from "@/pages/OffModeHome";
@@ -12,37 +13,46 @@ import DailyCheckinFlow from "@/pages/DailyCheckinFlow";
 import MapsPage from "@/pages/MapsPage";
 import ToolsHub from "@/pages/ToolsHub";
 import NeuroQueryChat from "@/pages/NeuroQueryChat";
+import NeuroGPTChat from "@/pages/NeuroGPTChat";
 import ProfilePage from "@/pages/ProfilePage";
 import MedicationOnboarding from "@/pages/MedicationOnboarding";
 import MedicationHub from "@/pages/MedicationHub";
 import MedicationLogScreen from "@/pages/MedicationLogScreen";
 import AppointmentsHub from "@/pages/AppointmentsHub";
 import GratificationScreen from "@/components/GratificationScreen";
+import LogHeadacheFlow from "@/pages/LogHeadacheFlow";
+import PainReliefGuide from "@/pages/PainReliefGuide";
+import TriggerMedicationFlow from "@/pages/TriggerMedicationFlow";
 import { getTodaysLesson } from "@/data/lessonContent";
 import { getDiaryById } from "@/data/diaryContent";
+import { getMigraineDiaryById } from "@/data/migraineDiaryContent";
 import { Medication, MedicationLog } from "@/data/medicationContent";
 import { Appointment, sampleAppointments } from "@/data/appointmentContent";
 
-type AppScreen = 
+type AppScreen =
   | "splash"
   | "auth"
-  | "onboarding" 
+  | "onboarding"
   | "onboarding-complete"
-  | "home" 
+  | "home"
   | "home-off"
-  | "diaries" 
+  | "diaries"
   | "diary-flow"
-  | "checkin" 
-  | "maps" 
+  | "checkin"
+  | "maps"
   | "maps-lesson"
-  | "tools" 
-  | "chat" 
+  | "tools"
+  | "chat"
+  | "neurogpt"
   | "profile"
   | "medication-onboarding"
   | "medication-onboarding-from-flow"
   | "medication-hub"
   | "medication-log"
-  | "appointments";
+  | "appointments"
+  | "log-headache"
+  | "trigger-medication"
+  | "pain-relief";
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>("splash");
@@ -50,29 +60,25 @@ const Index = () => {
   const [openLessonId, setOpenLessonId] = useState<string | null>(null);
   const [openDiaryId, setOpenDiaryId] = useState<string | null>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-  
-  // Track if user is a guest (skipped login) - guests always see onboarding
+
   const [isGuestUser, setIsGuestUser] = useState(false);
-  
-  // ON/OFF mode state
   const [isOnMode, setIsOnMode] = useState(true);
-  
-  // Medication state (in real app, this would be persisted to database)
-  const [medications, setMedications] = useState<Medication[]>([]);
-  const [medicationLogs, setMedicationLogs] = useState<MedicationLog[]>([]);
-  
-  // Appointments state
+
+  // Diagnosis state - drives the entire app experience
+  const [diagnosis, setDiagnosis] = usePersistedState<Diagnosis | null>("nc-diagnosis", null);
+
+  const [medications, setMedications] = usePersistedState<Medication[]>("nc-medications", []);
+  const [medicationLogs, setMedicationLogs] = usePersistedState<MedicationLog[]>("nc-medication-logs", []);
   const [appointments, setAppointments] = useState<Appointment[]>(sampleAppointments);
-  
-  // Onboarding state for resuming after medication setup
   const [savedOnboardingState, setSavedOnboardingState] = useState<OnboardingState | undefined>();
 
-  // Check for existing session on mount and listen for auth changes
+  // Headache tracking
+  const [headacheCount, setHeadacheCount] = usePersistedState("nc-headache-count", 0);
+  const [activeMigraine, setActiveMigraine] = useState<{ startTime: Date } | null>(null);
+
   useEffect(() => {
-    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" && session) {
-        // User just signed in (e.g., from OAuth redirect)
         setIsGuestUser(false);
         setCurrentScreen("onboarding");
       } else if (event === "SIGNED_OUT") {
@@ -81,10 +87,8 @@ const Index = () => {
       }
     });
 
-    // Then check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        // User is already logged in, go to home
         setIsGuestUser(false);
         setCurrentScreen("home");
       }
@@ -94,43 +98,28 @@ const Index = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleSplashContinue = () => {
-    setCurrentScreen("auth");
-  };
+  const handleSplashContinue = () => setCurrentScreen("auth");
+  const handleAuthSuccess = () => { setIsGuestUser(false); setCurrentScreen("onboarding"); };
+  const handleAuthBack = () => setCurrentScreen("splash");
+  const handleSkipToHome = () => { setIsGuestUser(true); setCurrentScreen("onboarding"); };
+  const handleSkipOnboarding = () => setCurrentScreen("home");
 
-  const handleAuthSuccess = () => {
-    setIsGuestUser(false);
-    setCurrentScreen("onboarding");
-  };
-
-  const handleAuthBack = () => {
-    setCurrentScreen("splash");
-  };
-
-  // Skip login - mark as guest and show onboarding
-  const handleSkipToHome = () => {
-    setIsGuestUser(true);
-    setCurrentScreen("onboarding");
-  };
-
-  // Skip onboarding - go to home
-  const handleSkipOnboarding = () => {
-    setCurrentScreen("home");
-  };
-
-  const handleOnboardingComplete = () => {
+  const handleOnboardingComplete = (selectedDiagnosis: Diagnosis) => {
+    setDiagnosis(selectedDiagnosis);
     setCurrentScreen("onboarding-complete");
   };
 
-  const handleOnboardingGratificationComplete = () => {
-    setCurrentScreen("home");
-  };
+  const handleOnboardingGratificationComplete = () => setCurrentScreen("home");
 
   const handleNavigate = (tab: "home" | "maps" | "tools" | "profile") => {
-    setOpenLessonId(null); // Reset lesson when navigating via tabs
-    // When navigating to home, respect the current ON/OFF mode
+    setOpenLessonId(null);
     if (tab === "home") {
-      setCurrentScreen(isOnMode ? "home" : "home-off");
+      // Only PD has ON/OFF mode
+      if (diagnosis === "parkinsons" && !isOnMode) {
+        setCurrentScreen("home-off");
+      } else {
+        setCurrentScreen("home");
+      }
     } else {
       setCurrentScreen(tab);
     }
@@ -141,18 +130,13 @@ const Index = () => {
     setCurrentScreen(isOn ? "home" : "home-off");
   };
 
-  const handleStartCheckin = () => {
-    setPreviousScreen(currentScreen);
-    setCurrentScreen("checkin");
-  };
-
-  const handleCheckinComplete = () => {
-    setCurrentScreen("home");
-  };
-
-  const handleOpenChat = () => {
-    setCurrentScreen("chat");
-  };
+  const handleStartCheckin = () => { setPreviousScreen(currentScreen); setCurrentScreen("checkin"); };
+  const handleCheckinComplete = () => setCurrentScreen("home");
+  const handleOpenChat = () => setCurrentScreen("chat");
+  const handleOpenNeuroGPT = () => setCurrentScreen("neurogpt");
+  const handleLogHeadache = () => { setPreviousScreen(currentScreen); setCurrentScreen("log-headache"); };
+  const handleOpenTriggerMedication = () => { setPreviousScreen(currentScreen); setCurrentScreen("trigger-medication"); };
+  const handleOpenPainRelief = () => { setPreviousScreen(currentScreen); setCurrentScreen("pain-relief"); };
 
   const handleOpenAppointments = () => {
     setPreviousScreen(currentScreen);
@@ -160,7 +144,6 @@ const Index = () => {
   };
 
   const handleOpenLesson = () => {
-    // Open the current lesson from home page
     const todaysLesson = getTodaysLesson();
     setOpenLessonId(todaysLesson.id);
     setPreviousScreen("home");
@@ -168,7 +151,6 @@ const Index = () => {
   };
 
   const handleLessonClose = () => {
-    // When closing lesson opened from home, go back to home
     if (previousScreen === "home") {
       setOpenLessonId(null);
       setCurrentScreen("home");
@@ -181,40 +163,25 @@ const Index = () => {
     setCurrentScreen("diary-flow");
   };
 
-  const handleDiaryComplete = () => {
-    setOpenDiaryId(null);
-    setCurrentScreen("diaries");
-  };
+  const handleDiaryComplete = () => { setOpenDiaryId(null); setCurrentScreen("diaries"); };
 
-  // Medication handlers
   const handleOpenMedications = () => {
-    if (medications.length === 0) {
-      setCurrentScreen("medication-onboarding");
-    } else {
-      setCurrentScreen("medication-hub");
-    }
+    setCurrentScreen(medications.length === 0 ? "medication-onboarding" : "medication-hub");
   };
 
   const handleMedicationOnboardingComplete = (newMeds: Medication[]) => {
     setMedications(newMeds);
-    if (newMeds.length > 0) {
-      setCurrentScreen("medication-hub");
-    } else {
-      setCurrentScreen("tools");
-    }
+    setCurrentScreen(newMeds.length > 0 ? "medication-hub" : "tools");
   };
 
   const handleMedicationOnboardingFromFlowComplete = (newMeds: Medication[]) => {
     setMedications(newMeds);
-    // Return to onboarding flow after adding medications
     setCurrentScreen("onboarding");
   };
 
   const handleToggleMedicationReminder = (medId: string) => {
     setMedications((prev) =>
-      prev.map((m) =>
-        m.id === medId ? { ...m, reminderEnabled: !m.reminderEnabled } : m
-      )
+      prev.map((m) => m.id === medId ? { ...m, reminderEnabled: !m.reminderEnabled } : m)
     );
   };
 
@@ -223,7 +190,6 @@ const Index = () => {
     setCurrentScreen("medication-hub");
   };
 
-  // Show loading while checking auth
   if (isCheckingAuth) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -240,11 +206,12 @@ const Index = () => {
         return <AuthPage onAuthSuccess={handleAuthSuccess} onBack={handleAuthBack} onSkip={handleSkipToHome} />;
       case "onboarding":
         return (
-          <OnboardingFlow 
-            onComplete={handleOnboardingComplete} 
+          <OnboardingFlow
+            onComplete={handleOnboardingComplete}
             onSkip={handleSkipOnboarding}
             onAddMedications={(state) => {
               setSavedOnboardingState(state);
+              setDiagnosis(state.diagnosis ?? null);
               setCurrentScreen("medication-onboarding-from-flow");
             }}
             initialState={savedOnboardingState}
@@ -254,40 +221,50 @@ const Index = () => {
         return (
           <GratificationScreen
             title="Your plan is ready! 🎉"
-            subtitle="Let's start your personalized journey together."
+            subtitle={diagnosis === "migraine"
+              ? "Let's start managing your migraines together."
+              : "Let's start your personalized journey together."}
             onContinue={handleOnboardingGratificationComplete}
-            ctaText="Enter NeuraChamp"
+            ctaText="Enter NeuroCare"
             type="milestone"
           />
         );
       case "home":
         return (
-          <HomeHub 
-            onStartCheckin={handleStartCheckin} 
+          <HomeHub
+            diagnosis={diagnosis}
+            onStartCheckin={handleStartCheckin}
             onNavigate={handleNavigate}
             onOpenLesson={handleOpenLesson}
             onOpenAppointments={handleOpenAppointments}
             onOpenMedications={handleOpenMedications}
+            onOpenNeuroGPT={handleOpenNeuroGPT}
+            onOpenDiaries={() => setCurrentScreen("diaries")}
+            onLogHeadache={handleLogHeadache}
+            activeMigraine={activeMigraine}
+            onStopMigraine={() => setActiveMigraine(null)}
+            headacheCount={headacheCount}
             isOnMode={isOnMode}
             onToggleMode={handleToggleMode}
+            onOpenTriggerMedication={handleOpenTriggerMedication}
+            onOpenPainRelief={handleOpenPainRelief}
           />
         );
       case "home-off":
-        return (
-          <OffModeHome 
-            onSwitchToOn={() => handleToggleMode(true)}
-          />
-        );
+        return <OffModeHome onSwitchToOn={() => handleToggleMode(true)} />;
       case "diaries":
         return (
-          <DiariesHub 
-            onStartCheckin={handleStartCheckin} 
+          <DiariesHub
+            onStartCheckin={handleStartCheckin}
             onNavigate={handleNavigate}
             onOpenDiary={handleOpenDiary}
+            diagnosis={diagnosis}
           />
         );
       case "diary-flow":
-        const diary = openDiaryId ? getDiaryById(openDiaryId) : null;
+        const diary = openDiaryId
+          ? (diagnosis === "migraine" ? getMigraineDiaryById(openDiaryId) : getDiaryById(openDiaryId))
+          : null;
         if (!diary) return null;
         return (
           <DiaryFlow
@@ -298,24 +275,26 @@ const Index = () => {
         );
       case "checkin":
         return (
-          <DailyCheckinFlow 
+          <DailyCheckinFlow
             onComplete={handleCheckinComplete}
             onBack={() => setCurrentScreen(previousScreen)}
+            diagnosis={diagnosis}
           />
         );
       case "maps":
-        return <MapsPage onNavigate={handleNavigate} />;
+        return <MapsPage onNavigate={handleNavigate} diagnosis={diagnosis} />;
       case "maps-lesson":
         return (
-          <MapsPage 
+          <MapsPage
             onNavigate={handleNavigate}
             initialLessonId={openLessonId}
             onLessonClose={handleLessonClose}
+            diagnosis={diagnosis}
           />
         );
       case "tools":
         return (
-          <ToolsHub 
+          <ToolsHub
             onNavigate={handleNavigate}
             onStartCheckin={handleStartCheckin}
             onOpenChat={handleOpenChat}
@@ -351,10 +330,7 @@ const Index = () => {
           <MedicationHub
             medications={medications}
             onAddMedication={() => setCurrentScreen("medication-onboarding")}
-            onEditMedication={(med) => {
-              // For now, just log - would need edit flow
-              console.log("Edit medication:", med);
-            }}
+            onEditMedication={(med) => console.log("Edit medication:", med)}
             onToggleReminder={handleToggleMedicationReminder}
             onOpenLog={() => setCurrentScreen("medication-log")}
             onBack={() => setCurrentScreen("tools")}
@@ -368,8 +344,39 @@ const Index = () => {
             onBack={() => setCurrentScreen("medication-hub")}
           />
         );
+      case "log-headache":
+        return (
+          <LogHeadacheFlow
+            onComplete={() => {
+              setHeadacheCount((c) => c + 1);
+              setActiveMigraine({ startTime: new Date() });
+              // Smart dark mode
+              if (localStorage.getItem("smart-dark-mode") === "true") {
+                document.documentElement.classList.add("dark");
+                localStorage.setItem("theme", "dark");
+              }
+              setCurrentScreen("home");
+            }}
+            onBack={() => setCurrentScreen(previousScreen === "log-headache" ? "home" : previousScreen)}
+          />
+        );
+      case "trigger-medication":
+        return (
+          <TriggerMedicationFlow
+            onComplete={() => setCurrentScreen("home")}
+            onBack={() => setCurrentScreen(previousScreen === "trigger-medication" ? "home" : previousScreen)}
+          />
+        );
+      case "pain-relief":
+        return (
+          <PainReliefGuide
+            onBack={() => setCurrentScreen(previousScreen === "pain-relief" ? "home" : previousScreen)}
+          />
+        );
       case "chat":
         return <NeuroQueryChat onNavigate={handleNavigate} />;
+      case "neurogpt":
+        return <NeuroGPTChat onBack={() => setCurrentScreen("home")} />;
       case "profile":
         return <ProfilePage onNavigate={handleNavigate} />;
       default:
