@@ -167,6 +167,17 @@ const ProfilePage = ({ onNavigate }: ProfilePageProps) => {
           <NotificationSettings />
         </motion.div>
 
+        {/* Connections */}
+        <motion.div
+          className="mt-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.18 }}
+        >
+          <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">Connections</h2>
+          <ConnectionsCard />
+        </motion.div>
+
         {/* My Data */}
         <motion.div
           className="mt-6"
