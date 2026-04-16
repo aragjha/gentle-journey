@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
 import FontSizeSelector from "@/components/FontSizeSelector";
+import NotificationSettings from "@/components/NotificationSettings";
+import ConnectionsCard from "@/components/ConnectionsCard";
 import { User, Settings, Bell, Shield, HelpCircle, LogOut, ChevronRight, Sun, Moon, Download, Share2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -152,6 +154,17 @@ const ProfilePage = ({ onNavigate }: ProfilePageProps) => {
               </motion.button>
             );
           })}
+        </motion.div>
+
+        {/* Notifications */}
+        <motion.div
+          className="mt-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+        >
+          <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">Notifications</h2>
+          <NotificationSettings />
         </motion.div>
 
         {/* My Data */}
