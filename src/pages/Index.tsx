@@ -76,6 +76,19 @@ const Index = () => {
   const [headacheCount, setHeadacheCount] = usePersistedState("nc-headache-count", 0);
   const [activeMigraine, setActiveMigraine] = useState<{ startTime: Date } | null>(null);
 
+  // Load mock data when demo mode is active
+  useEffect(() => {
+    if (localStorage.getItem("nc-demo-mode") === "true") {
+      setDiagnosis("migraine");
+      setMedications([
+        { id: "med-topiramate", name: "Topiramate (Topamax)", dosage: 100, quantity: 1, type: "tablet" as const, frequency: "once" as const, times: ["evening" as const], reminderEnabled: true, color: "#4ECDC4" },
+        { id: "med-sumatriptan", name: "Sumatriptan (Imitrex)", dosage: 50, quantity: 1, type: "tablet" as const, frequency: "as_needed" as const, times: [], reminderEnabled: false, color: "#FF6B6B" },
+        { id: "med-ibuprofen", name: "Ibuprofen (Advil)", dosage: 400, quantity: 1, type: "tablet" as const, frequency: "as_needed" as const, times: [], reminderEnabled: false, color: "#45B7D1" },
+      ]);
+      setHeadacheCount(8);
+    }
+  }, []);
+
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" && session) {

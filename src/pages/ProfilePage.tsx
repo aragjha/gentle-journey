@@ -6,7 +6,7 @@ import BottomNav from "@/components/BottomNav";
 import FontSizeSelector from "@/components/FontSizeSelector";
 import NotificationSettings from "@/components/NotificationSettings";
 import ConnectionsCard from "@/components/ConnectionsCard";
-import { User, Settings, Bell, Shield, HelpCircle, LogOut, ChevronRight, Sun, Moon, Download, Share2 } from "lucide-react";
+import { User, Settings, Bell, Shield, HelpCircle, LogOut, ChevronRight, Sun, Moon, Download, Share2, Database } from "lucide-react";
 import { toast } from "sonner";
 
 interface ProfilePageProps {
@@ -208,6 +208,33 @@ const ProfilePage = ({ onNavigate }: ProfilePageProps) => {
               </div>
             </button>
           </div>
+        </motion.div>
+
+        {/* Developer */}
+        <motion.div
+          className="mt-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+        >
+          <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">Developer</h2>
+          <button
+            onClick={() => {
+              const isDemoMode = localStorage.getItem("nc-demo-mode") === "true";
+              localStorage.setItem("nc-demo-mode", isDemoMode ? "false" : "true");
+              window.location.reload();
+            }}
+            className="w-full flex items-center gap-3 p-3 rounded-xl bg-card border border-border/50 text-left"
+          >
+            <Database className="w-5 h-5 text-accent" />
+            <div className="flex-1">
+              <div className="text-sm font-semibold text-foreground">Demo Mode</div>
+              <div className="text-xs text-muted-foreground">Load Sarah's 2-year mock data</div>
+            </div>
+            <div className={`w-10 h-6 rounded-full flex items-center transition-colors ${localStorage.getItem("nc-demo-mode") === "true" ? "bg-accent justify-end" : "bg-muted justify-start"}`}>
+              <div className="w-5 h-5 rounded-full bg-white shadow-sm mx-0.5" />
+            </div>
+          </button>
         </motion.div>
 
         {/* Logout */}
