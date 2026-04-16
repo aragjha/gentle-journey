@@ -244,6 +244,36 @@ const HomeHub = ({
           </div>
         </motion.div>
 
+        {/* Monthly Insights */}
+        {isMigraine && (
+          <motion.div
+            className="mb-4 rounded-2xl bg-gradient-to-br from-accent/5 to-accent/10 border border-accent/20 p-4"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: d * 5.5 }}
+          >
+            <h3 className="text-[10px] font-semibold text-accent uppercase tracking-wider mb-2">This Month's Insights</h3>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">Attacks</span>
+                <span className="text-sm font-bold text-foreground">8 <span className="text-green-500 text-xs font-normal">(-3 vs last month)</span></span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">Avg pain</span>
+                <span className="text-sm font-bold text-foreground">6.2/10</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">Top trigger</span>
+                <span className="text-sm font-bold text-foreground">Stress (5 attacks)</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">Med adherence</span>
+                <span className="text-sm font-bold text-foreground">85%</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Medicine Schedule Card */}
         <motion.button
           onClick={onOpenMedications}
