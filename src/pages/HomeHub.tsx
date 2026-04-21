@@ -41,6 +41,7 @@ interface HomeHubProps {
   onToggleMode: (isOn: boolean) => void;
   onOpenTriggerMedication?: () => void;
   onOpenPainRelief?: () => void;
+  onOpenReliefSession?: () => void;
   onOpenTriggerAnalysis?: () => void;
 }
 
@@ -65,6 +66,7 @@ const HomeHub = ({
   isOnMode,
   onToggleMode,
   onOpenPainRelief,
+  onOpenReliefSession,
 }: HomeHubProps) => {
   const isMigraine = diagnosis === "migraine";
 
@@ -256,7 +258,7 @@ const HomeHub = ({
             <div className="absolute top-3.5 right-3.5 w-2 h-2 rounded-full bg-[#FF6B5C]" />
           </button>
           <button
-            onClick={onOpenPainRelief}
+            onClick={onOpenReliefSession ?? onOpenPainRelief}
             className="text-left bg-card border border-border rounded-[22px] p-4 active:scale-[0.98] transition-transform"
           >
             <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-3 text-accent" style={{ background: "var(--accent-soft)" }}>

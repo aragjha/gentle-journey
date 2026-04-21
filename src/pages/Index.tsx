@@ -17,6 +17,7 @@ import NeuroGPTChat from "@/pages/NeuroGPTChat";
 import NeuraChat from "@/pages/NeuraChat";
 import ProfilePage from "@/pages/ProfilePage";
 import RewardsPage from "@/pages/RewardsPage";
+import ReliefSession from "@/pages/ReliefSession";
 import MedicationOnboarding from "@/pages/MedicationOnboarding";
 import MedicationHub from "@/pages/MedicationHub";
 import MedicationLogScreen from "@/pages/MedicationLogScreen";
@@ -62,7 +63,8 @@ type AppScreen =
   | "trigger-medication"
   | "pain-relief"
   | "trigger-analysis"
-  | "rewards";
+  | "rewards"
+  | "relief-session";
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>("splash");
@@ -330,6 +332,7 @@ const Index = () => {
             onOpenNeuraWithScript={handleOpenNeuraWithScript}
             onOpenNeuraWithQuery={handleOpenNeuraWithQuery}
             onOpenRewards={() => { setPreviousScreen("home"); setCurrentScreen("rewards"); }}
+            onOpenReliefSession={() => { setPreviousScreen("home"); setCurrentScreen("relief-session"); }}
             onOpenDiaries={() => setCurrentScreen("diaries")}
             onLogHeadache={handleLogHeadache}
             activeMigraine={activeMigraine}
@@ -500,6 +503,12 @@ const Index = () => {
             onOpenNeura={() => { setPreviousScreen("profile"); handleOpenNeuroGPT(); }}
             onOpenDiary={() => setCurrentScreen("diaries")}
             onLog={() => { setPreviousScreen("profile"); handleOpenNeuraWithScript("headache-log"); }}
+          />
+        );
+      case "relief-session":
+        return (
+          <ReliefSession
+            onClose={() => setCurrentScreen(previousScreen === "relief-session" ? "home" : previousScreen)}
           />
         );
       case "rewards":
