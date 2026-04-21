@@ -75,14 +75,6 @@ export interface DiaryEntry {
   notes: string;
 }
 
-export interface MockRewardData {
-  totalPoints: number;
-  currentStreak: number;
-  longestStreak: number;
-  badges: { id: string; name: string; earnedAt: string; icon: string }[];
-  weeklyGoalProgress: number;
-}
-
 export interface MockStats {
   attacksLast30Days: number;
   attacksLast90Days: number;
@@ -497,25 +489,6 @@ export function getMockDiaries(): DiaryEntry[] {
   _diaries = entries;
   return _diaries;
 }
-
-// ─── Mock Rewards ───────────────────────────────────────────────────────────
-
-export const mockRewards: MockRewardData = {
-  totalPoints: 4280,
-  currentStreak: 12,
-  longestStreak: 47,
-  badges: [
-    { id: "first_checkin", name: "First Check-in", earnedAt: "2024-04-15", icon: "star" },
-    { id: "streak_7", name: "7-Day Streak", earnedAt: "2024-04-22", icon: "fire" },
-    { id: "streak_30", name: "30-Day Streak", earnedAt: "2024-05-15", icon: "trophy" },
-    { id: "diary_explorer", name: "Diary Explorer", earnedAt: "2024-06-02", icon: "book" },
-    { id: "trigger_detective", name: "Trigger Detective", earnedAt: "2024-08-10", icon: "magnifier" },
-    { id: "adherence_champion", name: "Adherence Champion", earnedAt: "2024-10-01", icon: "shield" },
-    { id: "century_checkin", name: "Century Check-in", earnedAt: "2024-12-20", icon: "hundred" },
-    { id: "pattern_finder", name: "Pattern Finder", earnedAt: "2025-03-05", icon: "chart" },
-  ],
-  weeklyGoalProgress: 0.72,
-};
 
 // ─── Aggregate Stats ────────────────────────────────────────────────────────
 

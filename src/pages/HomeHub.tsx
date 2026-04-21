@@ -2,12 +2,12 @@ import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
 import OnOffToggle from "@/components/OnOffToggle";
-import RewardsCard from "@/components/RewardsCard";
+import RewardProgressCard from "@/components/RewardProgressCard";
 import TriggerDiscoveryCard from "@/components/TriggerDiscoveryCard";
 import NeuraEntryCard from "@/components/NeuraEntryCard";
 import { Diagnosis } from "@/components/OnboardingFlow";
 import { ActiveMigraineTimer, PainHistoryChart, generateMockHeadacheHistory } from "@/components/PainHistory";
-import { mockRewards } from "@/data/mockUserData";
+import { getRewardState } from "@/data/rewardProgressEngine";
 import { getInsightsFromMockData } from "@/data/triggerAnalysisEngine";
 import { ScriptId } from "@/data/neuraScripts";
 import {
@@ -71,6 +71,7 @@ const HomeHub = ({
 }: HomeHubProps) => {
   const isMigraine = diagnosis === "migraine";
   const insights = isMigraine ? getInsightsFromMockData() : null;
+  const rewardState = getRewardState();
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -241,18 +242,16 @@ const HomeHub = ({
           </>
         )}
 
-        {/* Rewards & Gamification */}
+        {/* Reward Progress — Amazon gift card tiers */}
         <motion.div
           className="mb-4"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: d * 4.8 }}
         >
-          <RewardsCard
-            currentStreak={mockRewards.currentStreak}
-            totalPoints={mockRewards.totalPoints}
-            weeklyProgress={mockRewards.weeklyGoalProgress}
-            badges={mockRewards.badges}
+          <RewardProgressCard
+            state={rewardState}
+            onOpenRewards={() => onNavigate("profile")}
           />
         </motion.div>
 

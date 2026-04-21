@@ -6,6 +6,8 @@ import BottomNav from "@/components/BottomNav";
 import FontSizeSelector from "@/components/FontSizeSelector";
 import NotificationSettings from "@/components/NotificationSettings";
 import ConnectionsCard from "@/components/ConnectionsCard";
+import MyRewardsSection from "@/components/MyRewardsSection";
+import { getRewardState } from "@/data/rewardProgressEngine";
 import { User, Settings, Bell, Shield, HelpCircle, LogOut, ChevronRight, Sun, Moon, Download, Share2, Database } from "lucide-react";
 import { toast } from "sonner";
 
@@ -23,6 +25,7 @@ const menuItems = [
 const ProfilePage = ({ onNavigate }: ProfilePageProps) => {
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains("dark"));
   const [smartDark, setSmartDark] = useState(() => localStorage.getItem("smart-dark-mode") === "true");
+  const rewardState = getRewardState();
 
   const toggleDarkMode = () => {
     const next = !isDark;
@@ -72,6 +75,15 @@ const ProfilePage = ({ onNavigate }: ProfilePageProps) => {
           </div>
           <h1 className="text-h2 text-foreground mb-1">NeuroCare User</h1>
           <p className="text-body text-muted-foreground">Member since Feb 2026</p>
+        </motion.div>
+
+        {/* My Rewards */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.03 }}
+        >
+          <MyRewardsSection state={rewardState} />
         </motion.div>
 
         {/* Display Settings */}
