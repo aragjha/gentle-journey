@@ -9,13 +9,14 @@ import NeuraContentModal from "@/components/NeuraContentModal";
 import { pickPhrase } from "@/data/neuraPhrasePool";
 import { ScriptId, getScript, Script } from "@/data/neuraScripts";
 import { routeIntent, isDerailment, briefAnswerForDerailment } from "@/data/neuraIntentRouter";
-import { getMockAttacks } from "@/data/mockUserData";
+import { getMockAttacks, getMockStats } from "@/data/mockUserData";
 
 type MessageBlock =
   | { type: "text"; text: string }
   | { type: "widget"; config: WidgetConfig; submitted?: WidgetSubmission }
   | { type: "summary"; label: string }
-  | { type: "content-card"; content: NeuraContent };
+  | { type: "content-card"; content: NeuraContent }
+  | { type: "action-button"; label: string; action: "open-trigger-analysis" };
 
 interface ChatMessage {
   id: string;
@@ -27,7 +28,25 @@ interface NeuraChatProps {
   onBack: () => void;
   initialScript?: ScriptId | null;
   contextualGreeting?: string;
+  onOpenTriggerAnalysis?: () => void;
 }
+
+// Map trigger IDs (used in mock data) to human labels for chat display.
+const triggerLabels: Record<string, string> = {
+  stress: "stress",
+  lack_of_sleep: "poor sleep",
+  skipped_meal: "skipped meals",
+  variable_weather: "weather shifts",
+  hormonal_changes: "hormonal changes",
+  bright_lights: "bright lights",
+  neck_pain: "neck pain / tension",
+  caffeine: "caffeine",
+  alcohol: "alcohol",
+  dehydration: "dehydration",
+};
+
+const humanizeTrigger = (id: string): string =>
+  triggerLabels[id] || id.replace(/_/g, " ");
 
 const quickChips = [
   "Log a headache",
@@ -52,7 +71,12 @@ const countRecentAttacks = (referenceDate: Date = new Date("2026-04-15")): numbe
   }
 };
 
-const NeuraChat = ({ onBack, initialScript = null, contextualGreeting }: NeuraChatProps) => {
+const NeuraChat = ({
+  onBack,
+  initialScript = null,
+  contextualGreeting,
+  onOpenTriggerAnalysis,
+}: NeuraChatProps) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [micActive, setMicActive] = useState(false);
@@ -129,22 +153,79 @@ const NeuraChat = ({ onBack, initialScript = null, contextualGreeting }: NeuraCh
     }, delayMs);
   };
 
+  // --------- Trigger insight ---------
+  const showTriggerInsight = () => {
+    withTyping(() => {
+      try {
+        const stats = getMockStats();
+        const attacks = getMockAttacks();
+        const totalAttacksWithTriggers = attacks.filter(
+          (a) => a.triggers && a.triggers.length > 0
+        ).length;
+
+        if (
+          !stats.topTriggers ||
+          stats.topTriggers.length === 0 ||
+          totalAttacksWithTriggers < 3
+        ) {
+          appendNeura([
+            {
+              type: "text",
+              text:
+                "You don't have enough data yet — log a few more attacks with trigger info and I'll start spotting patterns.",
+            },
+          ]);
+          return;
+        }
+
+        const top = stats.topTriggers[0];
+        const second = stats.topTriggers[1];
+        const topLabel = humanizeTrigger(top.trigger);
+        const summary = `Your top trigger is ${topLabel} — it showed up in ${top.count} of your last ${totalAttacksWithTriggers} attacks with trigger data.`;
+        const secondLine = second
+          ? ` ${humanizeTrigger(second.trigger)} is #2 (${second.count} attacks).`
+          : "";
+
+        appendNeura([{ type: "text", text: summary + secondLine }]);
+
+        // Follow-up with an action affordance
+        setTimeout(() => {
+          const blocks: MessageBlock[] = [
+            {
+              type: "text",
+              text: "Want the full breakdown with charts and timing?",
+            },
+          ];
+          if (onOpenTriggerAnalysis) {
+            blocks.push({
+              type: "action-button",
+              label: "View full analysis",
+              action: "open-trigger-analysis",
+            });
+          }
+          appendNeura(blocks);
+        }, 500);
+      } catch {
+        appendNeura([
+          {
+            type: "text",
+            text:
+              "You don't have enough data yet — log a few more attacks with trigger info and I'll start spotting patterns.",
+          },
+        ]);
+      }
+    }, 500);
+  };
+
   // --------- Script engine ---------
   const startScript = (scriptId: ScriptId) => {
     const script = getScript(scriptId);
     if (!script) return;
 
-    // Trigger insights: special-case — surface a short insight text, no widgets.
+    // Trigger insights: special-case — surface a real insight using mock stats,
+    // plus an action affordance to open the full trigger analysis page.
     if (scriptId === "trigger-insights") {
-      withTyping(() => {
-        appendNeura([
-          {
-            type: "text",
-            text:
-              "Looking at your recent attacks, poor sleep and stress show up most often. Keep logging for 2-3 more weeks to get cleaner patterns.",
-          },
-        ]);
-      }, 500);
+      showTriggerInsight();
       return;
     }
 
@@ -180,7 +261,7 @@ const NeuraChat = ({ onBack, initialScript = null, contextualGreeting }: NeuraCh
 
   const advanceScript = (script: Script, nextIdx: number) => {
     if (nextIdx >= script.steps.length) {
-      // Close the script
+      // Close the script (warm close phrase — no double "Got it")
       withTyping(() => {
         appendNeura([{ type: "text", text: pickPhrase(script.closePhraseKey) }]);
       }, 500);
@@ -191,8 +272,17 @@ const NeuraChat = ({ onBack, initialScript = null, contextualGreeting }: NeuraCh
     const step = script.steps[nextIdx];
     setScriptStepIdx(nextIdx);
     withTyping(() => {
+      // Vary the lead-in between steps for warmth — first advance gets a soft
+      // acknowledgement, subsequent advances get a continuation phrase or none.
+      // Roughly 60% of steps drop the lead-in entirely (feels less robotic).
+      let lead = "";
+      if (nextIdx === 1) {
+        lead = pickPhrase("ack.gotIt") + " ";
+      } else if (Math.random() < 0.4) {
+        lead = pickPhrase("ack.continue") + " ";
+      }
       const blocks: MessageBlock[] = [
-        { type: "text", text: pickPhrase(step.phraseKey) },
+        { type: "text", text: `${lead}${pickPhrase(step.phraseKey)}`.trim() },
       ];
       if (step.widget) {
         blocks.push({ type: "widget", config: step.widget });
@@ -247,8 +337,8 @@ const NeuraChat = ({ onBack, initialScript = null, contextualGreeting }: NeuraCh
       startScript(intent.scriptId);
       return;
     }
-    if (intent.type === "insight" && intent.scriptId) {
-      startScript(intent.scriptId);
+    if (intent.type === "insight") {
+      showTriggerInsight();
       return;
     }
     if (intent.type === "content" && intent.content) {
@@ -260,18 +350,31 @@ const NeuraChat = ({ onBack, initialScript = null, contextualGreeting }: NeuraCh
       }, 600);
       return;
     }
-    if (intent.type === "appointment" && intent.text) {
+    if (intent.type === "appointment") {
+      withTyping(() => {
+        appendNeura([
+          {
+            type: "text",
+            text:
+              "Your next appointment is Thursday, April 23 at 2:00pm with Dr. Patel (Neurology). I'll remind you the day before.",
+          },
+        ]);
+      }, 500);
+      return;
+    }
+    if (intent.type === "conversational" && intent.text) {
       withTyping(() => {
         appendNeura([{ type: "text", text: intent.text! }]);
       }, 500);
       return;
     }
-    // Conversational fallback
+    // Unknown — contextual fallback
     withTyping(() => {
       appendNeura([
         {
           type: "text",
-          text: intent.text ?? "Tell me more about what's going on. Or try a quick action below.",
+          text:
+            "I'm not sure I caught that. Try 'Log a headache', 'How am I doing?', or ask me a question about migraines.",
         },
       ]);
     }, 500);
@@ -348,6 +451,21 @@ const NeuraChat = ({ onBack, initialScript = null, contextualGreeting }: NeuraCh
             onExpand={() => setModalContent(block.content)}
           />
         </div>
+      );
+    }
+    if (block.type === "action-button") {
+      return (
+        <button
+          key={idx}
+          onClick={() => {
+            if (block.action === "open-trigger-analysis" && onOpenTriggerAnalysis) {
+              onOpenTriggerAnalysis();
+            }
+          }}
+          className="px-4 py-2.5 rounded-full bg-accent text-accent-foreground text-sm font-medium shadow-cta hover:opacity-90 active:scale-95 transition-all"
+        >
+          {block.label} →
+        </button>
       );
     }
     return null;
@@ -433,7 +551,12 @@ const NeuraChat = ({ onBack, initialScript = null, contextualGreeting }: NeuraCh
           <button
             onClick={() => setMicActive((v) => !v)}
             className="relative w-14 h-14 rounded-full flex items-center justify-center"
-            aria-label={micActive ? "Stop listening" : "Start listening"}
+            aria-label={
+              micActive
+                ? "Voice input (preview) — tap to stop"
+                : "Voice input (preview) — coming soon"
+            }
+            title="Voice input — preview (coming soon)"
           >
             {micActive && (
               <motion.span
@@ -453,6 +576,9 @@ const NeuraChat = ({ onBack, initialScript = null, contextualGreeting }: NeuraCh
             </div>
           </button>
         </div>
+        <p className="text-center text-[10px] text-muted-foreground -mt-1 pb-1">
+          {micActive ? "Listening (preview)" : "Voice — preview"}
+        </p>
 
         <div className="px-4 pb-safe-bottom pb-3 flex gap-2 items-center">
           <input

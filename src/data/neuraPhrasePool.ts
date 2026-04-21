@@ -112,8 +112,15 @@ export const phrasePool: Record<string, string[]> = {
   ],
 
   // Generic acknowledgements
-  "ack.gotIt": ["Got it.", "Noted.", "Okay.", "Logged."],
+  "ack.gotIt": ["Got it.", "Noted.", "Okay.", "Logged.", "Thanks."],
   "ack.anythingElse": ["Anything else?", "More to log?", "Keep going or done?"],
+  "ack.continue": [
+    "Next —",
+    "Okay, next one.",
+    "Good. One more thing —",
+    "Alright —",
+    "Thanks. Moving on —",
+  ],
 
   // Derailment return
   "derail.return": [

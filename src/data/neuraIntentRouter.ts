@@ -14,7 +14,75 @@ interface IntentRule {
   result: Omit<IntentResult, "text"> | ((query: string) => IntentResult);
 }
 
+// Helpers — exact-word matchers for very short phrases to prevent "hi" from
+// matching "this" etc. These are checked before the generic substring rules.
+const exactWordMatchers: Array<{ words: string[]; result: IntentResult }> = [
+  {
+    words: ["hi", "hey", "hello", "yo", "sup"],
+    result: {
+      type: "conversational",
+      text:
+        "Hey! What can I help with? Try 'Log a headache' or ask me anything about migraines.",
+    },
+  },
+  {
+    words: ["yes", "yeah", "yep", "yup", "sure"],
+    result: { type: "conversational", text: "Great. What did you want to do?" },
+  },
+  {
+    words: ["no", "nope", "nah"],
+    result: {
+      type: "conversational",
+      text: "No worries. Just tap a quick action below when you're ready.",
+    },
+  },
+  {
+    words: ["thanks", "thank you", "ty", "thx"],
+    result: {
+      type: "conversational",
+      text: "Anytime. I'm here whenever you need.",
+    },
+  },
+  {
+    words: ["help", "what can you do", "what do you do", "capabilities"],
+    result: {
+      type: "conversational",
+      text:
+        "I can help you log headaches, track your check-ins, fill diaries, check medications, find patterns in your triggers, or answer questions about migraines. Just ask or tap a quick action.",
+    },
+  },
+];
+
 const rules: IntentRule[] = [
+  // Doctor share / export (specific — must come before generic "doctor" later)
+  {
+    keywords: [
+      "share with doctor",
+      "doctor share",
+      "send to doctor",
+      "export my data",
+      "export data",
+      "send data to doctor",
+    ],
+    result: {
+      type: "conversational",
+      text:
+        "I can help you share your data with your doctor. For now, head to Profile → My Data → 'Share with Doctor'.",
+    },
+  },
+  // Active migraine / start timer
+  {
+    keywords: [
+      "start migraine timer",
+      "active migraine",
+      "start a migraine timer",
+      "migraine timer",
+    ],
+    result: {
+      type: "conversational",
+      text: "Starting a migraine timer — I'll check on you in a bit.",
+    },
+  },
   // Headache / attack logging
   {
     keywords: [
@@ -83,6 +151,32 @@ const rules: IntentRule[] = [
 /** Route user input to an intent. Falls back to content lookup, then generic. */
 export function routeIntent(input: string): IntentResult {
   const query = input.toLowerCase().trim();
+  // Strip trailing punctuation for exact-word match
+  const stripped = query.replace(/[!?.,]+$/g, "").trim();
+
+  // 0. Exact-word conversational matchers (short phrases like "hi", "yes")
+  for (const matcher of exactWordMatchers) {
+    if (matcher.words.some((w) => stripped === w)) {
+      return { ...matcher.result };
+    }
+    // Also match "help" / "what can you do" as full-phrase questions
+    if (matcher.words.some((w) => w.length >= 4 && stripped === w)) {
+      return { ...matcher.result };
+    }
+  }
+  // Additional multi-word phrase check for help-style questions
+  if (
+    stripped === "help" ||
+    stripped === "what can you do" ||
+    stripped === "what do you do" ||
+    stripped.includes("what can you help")
+  ) {
+    return {
+      type: "conversational",
+      text:
+        "I can help you log headaches, track your check-ins, fill diaries, check medications, find patterns in your triggers, or answer questions about migraines. Just ask or tap a quick action.",
+    };
+  }
 
   // 1. Rule-based matching
   for (const rule of rules) {
@@ -100,11 +194,8 @@ export function routeIntent(input: string): IntentResult {
     return { type: "content", content: content[0] };
   }
 
-  // 3. Fallback conversational
-  return {
-    type: "conversational",
-    text: "Tell me more about what's going on. Or try a quick action below.",
-  };
+  // 3. Fallback unknown (caller decides fallback copy based on context)
+  return { type: "unknown" };
 }
 
 /** Detect if an in-flight script should be interrupted by a question. */

@@ -467,6 +467,10 @@ const Index = () => {
               setCurrentScreen(previousScreen === "neurogpt" ? "home" : previousScreen);
             }}
             initialScript={neuraInitialScript}
+            onOpenTriggerAnalysis={() => {
+              setNeuraInitialScript(null);
+              handleOpenTriggerAnalysis();
+            }}
           />
         );
       case "profile":
