@@ -497,6 +497,9 @@ const Index = () => {
             onNavigate={handleNavigate}
             onOpenRewards={() => { setPreviousScreen("profile"); setCurrentScreen("rewards"); }}
             onRestartOnboarding={() => setCurrentScreen("splash")}
+            onOpenNeura={() => { setPreviousScreen("profile"); handleOpenNeuroGPT(); }}
+            onOpenDiary={() => setCurrentScreen("diaries")}
+            onLog={() => { setPreviousScreen("profile"); handleOpenNeuraWithScript("headache-log"); }}
           />
         );
       case "rewards":

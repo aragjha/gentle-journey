@@ -305,7 +305,12 @@ const DiariesHub = ({
           <BookOpen className="w-4 h-4" /> Export PDF for clinician
         </button>
       </div>
-      <BottomNav activeTab="tools" onTabChange={onNavigate} />
+      <BottomNav
+        activeTab="diary"
+        onTabChange={onNavigate}
+        onOpenNeura={() => onOpenNeuraWithScript?.(null)}
+        onLog={() => onOpenNeuraWithScript?.("headache-log")}
+      />
     </div>
   );
 };

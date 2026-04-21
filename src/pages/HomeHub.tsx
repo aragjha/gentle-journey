@@ -136,7 +136,13 @@ const HomeHub = ({
             </div>
           </motion.section>
         </div>
-        <BottomNav activeTab="home" onTabChange={onNavigate} />
+        <BottomNav
+        activeTab="home"
+        onTabChange={onNavigate}
+        onOpenDiary={onOpenDiaries}
+        onOpenNeura={handleNeuroGPTClick}
+        onLog={handleLogHeadacheClick}
+      />
       </div>
     );
   }
@@ -328,7 +334,13 @@ const HomeHub = ({
         </motion.button>
       </div>
 
-      <BottomNav activeTab="home" onTabChange={onNavigate} />
+      <BottomNav
+        activeTab="home"
+        onTabChange={onNavigate}
+        onOpenDiary={onOpenDiaries}
+        onOpenNeura={handleNeuroGPTClick}
+        onLog={handleLogHeadacheClick}
+      />
     </div>
   );
 };

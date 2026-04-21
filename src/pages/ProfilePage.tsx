@@ -15,6 +15,9 @@ interface ProfilePageProps {
   onNavigate: (tab: "home" | "maps" | "tools" | "profile") => void;
   onOpenRewards?: () => void;
   onRestartOnboarding?: () => void;
+  onOpenNeura?: () => void;
+  onOpenDiary?: () => void;
+  onLog?: () => void;
 }
 
 const menuItems = [
@@ -24,7 +27,14 @@ const menuItems = [
   { id: "help", label: "Help & Support", icon: HelpCircle },
 ];
 
-const ProfilePage = ({ onNavigate, onOpenRewards, onRestartOnboarding }: ProfilePageProps) => {
+const ProfilePage = ({
+  onNavigate,
+  onOpenRewards,
+  onRestartOnboarding,
+  onOpenNeura,
+  onOpenDiary,
+  onLog,
+}: ProfilePageProps) => {
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains("dark"));
   const [smartDark, setSmartDark] = useState(() => localStorage.getItem("smart-dark-mode") === "true");
   const rewardState = getRewardState();
@@ -307,7 +317,13 @@ const ProfilePage = ({ onNavigate, onOpenRewards, onRestartOnboarding }: Profile
       </div>
 
       {/* Bottom Nav */}
-      <BottomNav activeTab="profile" onTabChange={onNavigate} />
+      <BottomNav
+        activeTab="profile"
+        onTabChange={onNavigate}
+        onOpenDiary={onOpenDiary}
+        onOpenNeura={onOpenNeura}
+        onLog={onLog}
+      />
     </div>
   );
 };
