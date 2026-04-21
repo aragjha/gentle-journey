@@ -8,11 +8,13 @@ import NotificationSettings from "@/components/NotificationSettings";
 import ConnectionsCard from "@/components/ConnectionsCard";
 import MyRewardsSection from "@/components/MyRewardsSection";
 import { getRewardState } from "@/data/rewardProgressEngine";
-import { User, Settings, Bell, Shield, HelpCircle, LogOut, ChevronRight, Sun, Moon, Download, Share2, Database } from "lucide-react";
+import { User, Settings, Bell, Shield, HelpCircle, LogOut, ChevronRight, Sun, Moon, Download, Share2, Database, Trophy, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 
 interface ProfilePageProps {
   onNavigate: (tab: "home" | "maps" | "tools" | "profile") => void;
+  onOpenRewards?: () => void;
+  onRestartOnboarding?: () => void;
 }
 
 const menuItems = [
@@ -22,7 +24,7 @@ const menuItems = [
   { id: "help", label: "Help & Support", icon: HelpCircle },
 ];
 
-const ProfilePage = ({ onNavigate }: ProfilePageProps) => {
+const ProfilePage = ({ onNavigate, onOpenRewards, onRestartOnboarding }: ProfilePageProps) => {
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains("dark"));
   const [smartDark, setSmartDark] = useState(() => localStorage.getItem("smart-dark-mode") === "true");
   const rewardState = getRewardState();
@@ -219,6 +221,48 @@ const ProfilePage = ({ onNavigate }: ProfilePageProps) => {
                 <div className="text-xs text-muted-foreground">Generate a report for your next appointment</div>
               </div>
             </button>
+          </div>
+        </motion.div>
+
+        {/* Account */}
+        <motion.div
+          className="mt-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.22 }}
+        >
+          <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">Account</h2>
+          <div className="space-y-2">
+            {onOpenRewards && (
+              <button
+                onClick={onOpenRewards}
+                className="w-full flex items-center gap-3 p-3 rounded-xl bg-card border border-border/50 text-left active:bg-muted/40 transition-colors"
+              >
+                <Trophy className="w-5 h-5 text-accent" />
+                <div className="flex-1">
+                  <div className="text-sm font-semibold text-foreground">Rewards &amp; progress</div>
+                  <div className="text-xs text-muted-foreground">Tiers, streak, quests, milestones</div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              </button>
+            )}
+            {onRestartOnboarding && (
+              <button
+                onClick={() => {
+                  if (confirm("Restart from the splash screen? Your data stays.")) {
+                    onRestartOnboarding();
+                  }
+                }}
+                className="w-full flex items-center gap-3 p-3 rounded-xl bg-card border border-border/50 text-left active:bg-muted/40 transition-colors"
+              >
+                <RotateCcw className="w-5 h-5 text-accent" />
+                <div className="flex-1">
+                  <div className="text-sm font-semibold text-foreground">Replay onboarding</div>
+                  <div className="text-xs text-muted-foreground">Walk through splash, consent, and setup again</div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              </button>
+            )}
           </div>
         </motion.div>
 

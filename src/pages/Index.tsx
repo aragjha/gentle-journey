@@ -492,7 +492,13 @@ const Index = () => {
           />
         );
       case "profile":
-        return <ProfilePage onNavigate={handleNavigate} />;
+        return (
+          <ProfilePage
+            onNavigate={handleNavigate}
+            onOpenRewards={() => { setPreviousScreen("profile"); setCurrentScreen("rewards"); }}
+            onRestartOnboarding={() => setCurrentScreen("splash")}
+          />
+        );
       case "rewards":
         return (
           <RewardsPage
