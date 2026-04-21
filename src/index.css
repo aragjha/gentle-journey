@@ -31,22 +31,22 @@
     --muted: 33 25% 93%; /* #F3EEE8 */
     --muted-foreground: 220 9% 46%; /* #6B7280 slate 500 */
 
-    /* Accent: Coral 500 — primary CTAs */
-    --accent: 4 93% 69%; /* #F97066 */
-    --accent-foreground: 222 48% 20%; /* navy text on coral, 8.9:1 contrast */
+    /* Accent: Blue 500 — primary CTAs */
+    --accent: 217 91% 60%; /* #3B82F6 */
+    --accent-foreground: 0 0% 100%; /* white on blue, 4.55:1 contrast */
 
     --destructive: 0 72% 51%; /* #DC2626 */
     --destructive-foreground: 0 0% 100%;
 
     --border: 33 24% 89%; /* #EAE4DC */
     --input: 33 24% 89%;
-    --ring: 4 93% 69%; /* coral focus rings */
+    --ring: 217 91% 60%; /* blue focus rings */
 
     --radius: 1.5rem; /* 24dp for cards */
 
     /* V2.1 extended accent tokens */
-    --accent-hover: #EF4444;
-    --accent-soft: #FFF0EE;
+    --accent-hover: #2563EB;
+    --accent-soft: #EFF6FF;
     --success: #16A34A;
     --warning: #F59E0B;
 
@@ -54,12 +54,12 @@
     --shadow-sm: 0 1px 2px rgba(27, 42, 78, 0.04);
     --shadow-md: 0 2px 4px rgba(27, 42, 78, 0.05), 0 4px 8px rgba(27, 42, 78, 0.04);
     --shadow-lg: 0 4px 12px rgba(27, 42, 78, 0.08), 0 8px 24px rgba(27, 42, 78, 0.06);
-    --shadow-cta: 0 4px 12px rgba(249, 112, 102, 0.25);
+    --shadow-cta: 0 4px 12px rgba(59, 130, 246, 0.25);
 
     /* Legacy CTA tokens retained for backwards compatibility */
-    --cta-fill: 4 93% 69%;
-    --cta-text: 222 48% 20%;
-    --cta-highlight: 4 93% 79%;
+    --cta-fill: 217 91% 60%;
+    --cta-text: 0 0% 100%;
+    --cta-highlight: 217 91% 70%;
     --cta-shadow: 222 48% 20%;
 
     /* Gamification */
@@ -82,7 +82,7 @@
     --sidebar-accent: 33 25% 93%;
     --sidebar-accent-foreground: 222 48% 20%;
     --sidebar-border: 33 24% 89%;
-    --sidebar-ring: 4 93% 69%;
+    --sidebar-ring: 217 91% 60%;
   }
 
   .dark {
@@ -105,8 +105,8 @@
     --muted: 24 7% 14%;
     --muted-foreground: 25 4% 64%; /* #A8A29E */
 
-    /* Softer coral for dark mode */
-    --accent: 4 100% 75%; /* #FF8A80 */
+    /* Softer blue for dark mode */
+    --accent: 213 94% 68%; /* #60A5FA */
     --accent-foreground: 222 48% 20%;
 
     --destructive: 0 62% 40%;
@@ -114,16 +114,16 @@
 
     --border: 20 8% 22%; /* #3D3734 */
     --input: 20 8% 22%;
-    --ring: 4 100% 75%;
+    --ring: 213 94% 68%;
 
     --sidebar-background: 20 9% 9%;
     --sidebar-foreground: 33 31% 94%;
-    --sidebar-primary: 4 100% 75%;
+    --sidebar-primary: 213 94% 68%;
     --sidebar-primary-foreground: 222 48% 20%;
     --sidebar-accent: 24 7% 14%;
     --sidebar-accent-foreground: 33 31% 94%;
     --sidebar-border: 20 8% 22%;
-    --sidebar-ring: 4 100% 75%;
+    --sidebar-ring: 213 94% 68%;
 
     /* Status */
     --warning-foreground: 0 0% 100%;

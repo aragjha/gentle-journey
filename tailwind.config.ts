@@ -108,7 +108,7 @@ export default {
         '4xl': '2rem',
       },
       boxShadow: {
-        'cta': '0 4px 12px rgba(249, 112, 102, 0.25)',
+        'cta': '0 4px 12px rgba(59, 130, 246, 0.25)',
         'cta-hover': '0 8px 24px hsla(213, 58%, 34%, 0.22)',
         'card': '0 4px 16px hsla(0, 0%, 0%, 0.05)',
         'card-dark': '0 4px 16px hsla(0, 0%, 0%, 0.2)',
