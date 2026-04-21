@@ -9,6 +9,7 @@ import { Diagnosis } from "@/components/OnboardingFlow";
 import { ActiveMigraineTimer, PainHistoryChart, generateMockHeadacheHistory } from "@/components/PainHistory";
 import { mockRewards } from "@/data/mockUserData";
 import { getInsightsFromMockData } from "@/data/triggerAnalysisEngine";
+import { ScriptId } from "@/data/neuraScripts";
 import {
   Search,
   Mic,
@@ -35,6 +36,7 @@ interface HomeHubProps {
   onOpenAppointments?: () => void;
   onOpenMedications?: () => void;
   onOpenNeuroGPT?: () => void;
+  onOpenNeuraWithScript?: (scriptId: ScriptId | null) => void;
   onOpenDiaries?: () => void;
   onLogHeadache?: () => void;
   activeMigraine?: { startTime: Date } | null;
@@ -55,6 +57,7 @@ const HomeHub = ({
   onOpenAppointments,
   onOpenMedications,
   onOpenNeuroGPT,
+  onOpenNeuraWithScript,
   onOpenDiaries,
   onLogHeadache,
   activeMigraine,
@@ -76,12 +79,24 @@ const HomeHub = ({
     return "Good evening";
   };
 
+  // Neura-first handlers: route through Neura with a pre-loaded script when available,
+  // falling back to the legacy standalone flows.
+  const handleCheckinClick = onOpenNeuraWithScript
+    ? () => onOpenNeuraWithScript("daily-checkin")
+    : onStartCheckin;
+  const handleNeuroGPTClick = onOpenNeuraWithScript
+    ? () => onOpenNeuraWithScript(null)
+    : (onOpenNeuroGPT ?? (() => {}));
+  const handleLogHeadacheClick = onOpenNeuraWithScript
+    ? () => onOpenNeuraWithScript("headache-log")
+    : (onLogHeadache ?? (() => {}));
+
   const quickActions = isMigraine
     ? [
-        { id: "checkin", label: "Check-in", icon: ClipboardCheck, bg: "bg-blue-500", onClick: onStartCheckin },
+        { id: "checkin", label: "Check-in", icon: ClipboardCheck, bg: "bg-blue-500", onClick: handleCheckinClick },
         { id: "diary", label: "Diary", icon: BookOpen, bg: "bg-violet-500", onClick: onOpenDiaries },
         { id: "learn", label: "Learn", icon: Brain, bg: "bg-pink-500", onClick: onOpenLesson },
-        { id: "neurogpt", label: "NeuroGPT", icon: Mic, bg: "bg-cyan-500", onClick: onOpenNeuroGPT },
+        { id: "neurogpt", label: "NeuroGPT", icon: Mic, bg: "bg-cyan-500", onClick: handleNeuroGPTClick },
       ]
     : [
         { id: "checkin", label: "Check-in", icon: ClipboardCheck, bg: "bg-blue-500", onClick: onStartCheckin },
@@ -138,7 +153,7 @@ const HomeHub = ({
               topTriggers={insights.topTriggers}
               coOccurrence={insights.coOccurrence}
               totalAttacks={insights.monthlyInsights.attackCount + 10 /* approximate last period */}
-              onLogHeadache={onLogHeadache ?? (() => {})}
+              onLogHeadache={handleLogHeadacheClick}
               onLearnMore={onOpenLesson ?? (() => {})}
               onViewAnalysis={onOpenTriggerAnalysis ?? (() => {})}
             />
@@ -148,7 +163,7 @@ const HomeHub = ({
         {/* LOG HEADACHE — Bold Primary CTA */}
         {isMigraine && (
           <motion.button
-            onClick={onLogHeadache}
+            onClick={handleLogHeadacheClick}
             className="w-full mb-4 flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-lg shadow-red-500/20 active:shadow-md transition-shadow"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}

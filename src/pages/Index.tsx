@@ -164,14 +164,12 @@ const Index = () => {
   const handleStartCheckin = () => { setPreviousScreen(currentScreen); setCurrentScreen("checkin"); };
   const handleCheckinComplete = () => setCurrentScreen("home");
   const handleOpenChat = () => setCurrentScreen("chat");
-  const handleOpenNeuroGPT = () => { setNeuraInitialScript(null); setCurrentScreen("neurogpt"); };
-  const handleOpenNeuraWithScript = (scriptId: ScriptId) => {
+  const handleOpenNeuroGPT = () => { setPreviousScreen(currentScreen); setNeuraInitialScript(null); setCurrentScreen("neurogpt"); };
+  const handleOpenNeuraWithScript = (scriptId: ScriptId | null) => {
     setPreviousScreen(currentScreen);
     setNeuraInitialScript(scriptId);
     setCurrentScreen("neurogpt");
   };
-  // eslint for unused-var guard: expose for later phases via window debug hook
-  void handleOpenNeuraWithScript;
   const handleLogHeadache = () => { setPreviousScreen(currentScreen); setCurrentScreen("log-headache"); };
   const handleOpenTriggerMedication = () => { setPreviousScreen(currentScreen); setCurrentScreen("trigger-medication"); };
   const handleOpenPainRelief = () => { setPreviousScreen(currentScreen); setCurrentScreen("pain-relief"); };
@@ -285,6 +283,7 @@ const Index = () => {
             onOpenAppointments={handleOpenAppointments}
             onOpenMedications={handleOpenMedications}
             onOpenNeuroGPT={handleOpenNeuroGPT}
+            onOpenNeuraWithScript={handleOpenNeuraWithScript}
             onOpenDiaries={() => setCurrentScreen("diaries")}
             onLogHeadache={handleLogHeadache}
             activeMigraine={activeMigraine}
@@ -305,6 +304,7 @@ const Index = () => {
             onStartCheckin={handleStartCheckin}
             onNavigate={handleNavigate}
             onOpenDiary={handleOpenDiary}
+            onOpenNeuraWithScript={handleOpenNeuraWithScript}
             diagnosis={diagnosis}
           />
         );

@@ -8,7 +8,20 @@ import { diaryCategories } from "@/data/diaryContent";
 import { migraineDiaryCategories } from "@/data/migraineDiaryContent";
 import { WeeklyAdherenceChart, generateMockAdherenceData } from "@/components/AdherenceChart";
 import { Diagnosis } from "@/components/OnboardingFlow";
+import { ScriptId } from "@/data/neuraScripts";
 import { Lightbulb } from "lucide-react";
+
+// Map diary category IDs to Neura scripts so tapping a diary tile opens Neura
+// pre-loaded with the matching script.
+const diaryCategoryToScript: Record<string, ScriptId> = {
+  headache_pain: "diary-pain",
+  aura_warning: "diary-aura",
+  triggers: "diary-triggers",
+  associated_symptoms: "diary-symptoms",
+  relief_methods: "diary-relief",
+  sleep_quality: "diary-sleep",
+  mood_stress: "diary-mood",
+};
 
 const migraineTips = [
   "Consistent sleep schedule reduces migraine frequency by up to 30%",
@@ -27,10 +40,11 @@ interface DiariesHubProps {
   onStartCheckin: () => void;
   onNavigate: (tab: "home" | "maps" | "tools" | "profile") => void;
   onOpenDiary: (diaryId: string) => void;
+  onOpenNeuraWithScript?: (scriptId: ScriptId | null) => void;
   diagnosis?: Diagnosis | null;
 }
 
-const DiariesHub = ({ onStartCheckin, onNavigate, onOpenDiary, diagnosis }: DiariesHubProps) => {
+const DiariesHub = ({ onStartCheckin, onNavigate, onOpenDiary, onOpenNeuraWithScript, diagnosis }: DiariesHubProps) => {
   const [todayCompleted, setTodayCompleted] = useState(false);
   const isMigraine = diagnosis === "migraine";
   const categories = isMigraine ? migraineDiaryCategories : diaryCategories;
@@ -138,7 +152,14 @@ const DiariesHub = ({ onStartCheckin, onNavigate, onOpenDiary, diagnosis }: Diar
                 key={diary.id}
                 title={diary.title}
                 icon={diary.icon}
-                onClick={() => onOpenDiary(diary.id)}
+                onClick={() => {
+                  const scriptId = diaryCategoryToScript[diary.id];
+                  if (scriptId && onOpenNeuraWithScript) {
+                    onOpenNeuraWithScript(scriptId);
+                  } else {
+                    onOpenDiary(diary.id); // fallback to legacy DiaryFlow
+                  }
+                }}
                 delay={0.03 * index}
               />
             ))}
