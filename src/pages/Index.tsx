@@ -22,6 +22,7 @@ import MedicationLogScreen from "@/pages/MedicationLogScreen";
 import AppointmentsHub from "@/pages/AppointmentsHub";
 import GratificationScreen from "@/components/GratificationScreen";
 import ConsentScreen from "@/components/ConsentScreen";
+import ValuePropScreens from "@/components/ValuePropScreens";
 import LogHeadacheFlow from "@/pages/LogHeadacheFlow";
 import PainReliefGuide from "@/pages/PainReliefGuide";
 import TriggerMedicationFlow from "@/pages/TriggerMedicationFlow";
@@ -37,6 +38,7 @@ type AppScreen =
   | "splash"
   | "auth"
   | "consent"
+  | "value-prop"
   | "onboarding"
   | "onboarding-complete"
   | "home"
@@ -115,7 +117,7 @@ const Index = () => {
         } else if (hasOnboarded) {
           setCurrentScreen("home");
         } else {
-          setCurrentScreen("onboarding");
+          setCurrentScreen("value-prop");
         }
       } else if (event === "SIGNED_OUT") {
         setIsGuestUser(false);
@@ -140,7 +142,7 @@ const Index = () => {
     const hasOnboarded = localStorage.getItem("nc-onboarding-complete") === "true";
     if (!hasConsent) return "consent";
     if (hasOnboarded) return "home";
-    return "onboarding";
+    return "value-prop";
   };
   const handleAuthSuccess = () => {
     setIsGuestUser(false);
@@ -265,8 +267,16 @@ const Index = () => {
       case "consent":
         return (
           <ConsentScreen
-            onConsent={() => setCurrentScreen("onboarding")}
+            onConsent={() => setCurrentScreen("value-prop")}
             onSignOut={() => supabase.auth.signOut()}
+          />
+        );
+      case "value-prop":
+        return (
+          <ValuePropScreens
+            diagnosis={diagnosis ?? "migraine"}
+            onComplete={() => setCurrentScreen("onboarding")}
+            onBack={() => setCurrentScreen("consent")}
           />
         );
       case "onboarding":

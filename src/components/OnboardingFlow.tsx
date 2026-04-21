@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import OnboardingQuestion from "@/components/OnboardingQuestion";
 import GratificationScreen from "@/components/GratificationScreen";
 import MigraineOnboarding from "@/components/MigraineOnboarding";
-import ValuePropScreens from "@/components/ValuePropScreens";
 
 export type Diagnosis = "migraine" | "parkinsons";
 
@@ -308,7 +307,6 @@ interface OnboardingFlowProps {
 const OnboardingFlow = ({ onComplete, onSkip, onAddMedications, initialState }: OnboardingFlowProps) => {
   const [diagnosis, setDiagnosis] = useState<Diagnosis | null>(initialState?.diagnosis ?? null);
   const [showDiagnosisQuestion, setShowDiagnosisQuestion] = useState(!initialState?.diagnosis);
-  const [showValueProp, setShowValueProp] = useState(false);
   const [currentPhaseIndex, setCurrentPhaseIndex] = useState(initialState?.phaseIndex ?? 0);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(initialState?.questionIndex ?? 0);
   const [showGratification, setShowGratification] = useState(false);
@@ -380,7 +378,6 @@ const OnboardingFlow = ({ onComplete, onSkip, onAddMedications, initialState }: 
     setDiagnosis(selectedDiagnosis);
     setTimeout(() => {
       setShowDiagnosisQuestion(false);
-      setShowValueProp(true);
       setCurrentPhaseIndex(0);
       setCurrentQuestionIndex(0);
     }, 300);
@@ -513,20 +510,6 @@ const OnboardingFlow = ({ onComplete, onSkip, onAddMedications, initialState }: 
         subtitle={message.subtitle}
         onContinue={handleGratificationContinue}
         type="celebration"
-      />
-    );
-  }
-
-  // Show value proposition screens after diagnosis selection, before diagnosis-specific onboarding
-  if (showValueProp && diagnosis) {
-    return (
-      <ValuePropScreens
-        diagnosis={diagnosis}
-        onComplete={() => setShowValueProp(false)}
-        onBack={() => {
-          setShowValueProp(false);
-          setShowDiagnosisQuestion(true);
-        }}
       />
     );
   }
