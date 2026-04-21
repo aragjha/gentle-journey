@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import {
@@ -25,6 +25,17 @@ const categoryOrder: ReliefItem["category"][] = ["activity", "remedy", "lifestyl
 
 const PainReliefGuide = ({ onBack }: PainReliefGuideProps) => {
   const [selectedType, setSelectedType] = useState<PainType | null>(null);
+
+  // Force dark mode while the relief guide is open — matches the prototype's
+  // "DARK MODE · MOTION REDUCED" affordance. Restore prior state on unmount.
+  useEffect(() => {
+    const root = document.documentElement;
+    const wasDark = root.classList.contains("dark");
+    root.classList.add("dark");
+    return () => {
+      if (!wasDark) root.classList.remove("dark");
+    };
+  }, []);
 
   const reliefs = selectedType ? getReliefsForPainType(selectedType.id) : [];
 
