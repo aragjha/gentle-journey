@@ -16,6 +16,7 @@ import NeuroQueryChat from "@/pages/NeuroQueryChat";
 import NeuroGPTChat from "@/pages/NeuroGPTChat";
 import NeuraChat from "@/pages/NeuraChat";
 import ProfilePage from "@/pages/ProfilePage";
+import RewardsPage from "@/pages/RewardsPage";
 import MedicationOnboarding from "@/pages/MedicationOnboarding";
 import MedicationHub from "@/pages/MedicationHub";
 import MedicationLogScreen from "@/pages/MedicationLogScreen";
@@ -60,7 +61,8 @@ type AppScreen =
   | "log-headache"
   | "trigger-medication"
   | "pain-relief"
-  | "trigger-analysis";
+  | "trigger-analysis"
+  | "rewards";
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>("splash");
@@ -327,6 +329,7 @@ const Index = () => {
             onOpenNeuroGPT={handleOpenNeuroGPT}
             onOpenNeuraWithScript={handleOpenNeuraWithScript}
             onOpenNeuraWithQuery={handleOpenNeuraWithQuery}
+            onOpenRewards={() => { setPreviousScreen("home"); setCurrentScreen("rewards"); }}
             onOpenDiaries={() => setCurrentScreen("diaries")}
             onLogHeadache={handleLogHeadache}
             activeMigraine={activeMigraine}
@@ -490,6 +493,17 @@ const Index = () => {
         );
       case "profile":
         return <ProfilePage onNavigate={handleNavigate} />;
+      case "rewards":
+        return (
+          <RewardsPage
+            onBack={() => setCurrentScreen(previousScreen === "rewards" ? "home" : previousScreen)}
+            onOpenNeura={() => { setPreviousScreen("rewards"); handleOpenNeuroGPT(); }}
+            onOpenNeuraWithScript={(id) => {
+              setPreviousScreen("rewards");
+              handleOpenNeuraWithScript(id as ScriptId);
+            }}
+          />
+        );
       default:
         return <SplashScreen onContinue={handleSplashGetStarted} onSignIn={handleSplashSignIn} />;
     }

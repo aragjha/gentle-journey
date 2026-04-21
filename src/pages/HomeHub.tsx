@@ -31,6 +31,7 @@ interface HomeHubProps {
   onOpenNeuroGPT?: () => void;
   onOpenNeuraWithScript?: (scriptId: ScriptId | null) => void;
   onOpenNeuraWithQuery?: (query: string) => void;
+  onOpenRewards?: () => void;
   onOpenDiaries?: () => void;
   onLogHeadache?: () => void;
   activeMigraine?: { startTime: Date } | null;
@@ -54,6 +55,7 @@ const HomeHub = ({
   onOpenNeuroGPT,
   onOpenNeuraWithScript,
   onOpenNeuraWithQuery,
+  onOpenRewards,
   onOpenDiaries,
   onOpenMedications,
   onLogHeadache,
@@ -163,7 +165,7 @@ const HomeHub = ({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <StreakPill streak={12} points={480} onClick={() => onNavigate("profile")} />
+            <StreakPill streak={12} points={480} onClick={() => (onOpenRewards ?? (() => onNavigate("profile")))()} />
             <ThemeToggle />
           </div>
         </motion.div>
@@ -305,7 +307,7 @@ const HomeHub = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: d * 8, duration: 0.4 }}
         >
-          <RewardsNudge onClick={() => onNavigate("profile")} />
+          <RewardsNudge onClick={() => (onOpenRewards ?? (() => onNavigate("profile")))()} />
         </motion.div>
 
         {/* Quick-access Neura chip */}
