@@ -94,7 +94,13 @@ const Index = () => {
         { id: "med-sumatriptan", name: "Sumatriptan (Imitrex)", dosage: 50, quantity: 1, type: "tablet" as const, frequency: "as_needed" as const, times: [], reminderEnabled: false, color: "#FF6B6B" },
         { id: "med-ibuprofen", name: "Ibuprofen (Advil)", dosage: 400, quantity: 1, type: "tablet" as const, frequency: "as_needed" as const, times: [], reminderEnabled: false, color: "#45B7D1" },
       ]);
-      setHeadacheCount(8);
+      setHeadacheCount(12);
+      if (!localStorage.getItem("nc-consent-at")) {
+        localStorage.setItem("nc-consent-at", new Date().toISOString());
+      }
+      if (!localStorage.getItem("nc-onboarding-complete")) {
+        localStorage.setItem("nc-onboarding-complete", "true");
+      }
     }
   }, []);
 
@@ -103,7 +109,14 @@ const Index = () => {
       if (event === "SIGNED_IN" && session) {
         setIsGuestUser(false);
         const hasConsent = !!localStorage.getItem("nc-consent-at");
-        setCurrentScreen(hasConsent ? "onboarding" : "consent");
+        const hasOnboarded = localStorage.getItem("nc-onboarding-complete") === "true";
+        if (!hasConsent) {
+          setCurrentScreen("consent");
+        } else if (hasOnboarded) {
+          setCurrentScreen("home");
+        } else {
+          setCurrentScreen("onboarding");
+        }
       } else if (event === "SIGNED_OUT") {
         setIsGuestUser(false);
         setCurrentScreen("splash");
@@ -122,16 +135,21 @@ const Index = () => {
   }, []);
 
   const handleSplashContinue = () => setCurrentScreen("auth");
+  const resolvePostAuthScreen = (): AppScreen => {
+    const hasConsent = !!localStorage.getItem("nc-consent-at");
+    const hasOnboarded = localStorage.getItem("nc-onboarding-complete") === "true";
+    if (!hasConsent) return "consent";
+    if (hasOnboarded) return "home";
+    return "onboarding";
+  };
   const handleAuthSuccess = () => {
     setIsGuestUser(false);
-    const hasConsent = !!localStorage.getItem("nc-consent-at");
-    setCurrentScreen(hasConsent ? "onboarding" : "consent");
+    setCurrentScreen(resolvePostAuthScreen());
   };
   const handleAuthBack = () => setCurrentScreen("splash");
   const handleSkipToHome = () => {
     setIsGuestUser(true);
-    const hasConsent = !!localStorage.getItem("nc-consent-at");
-    setCurrentScreen(hasConsent ? "onboarding" : "consent");
+    setCurrentScreen(resolvePostAuthScreen());
   };
   const handleSkipOnboarding = () => setCurrentScreen("home");
 
@@ -140,7 +158,10 @@ const Index = () => {
     setCurrentScreen("onboarding-complete");
   };
 
-  const handleOnboardingGratificationComplete = () => setCurrentScreen("home");
+  const handleOnboardingGratificationComplete = () => {
+    localStorage.setItem("nc-onboarding-complete", "true");
+    setCurrentScreen("home");
+  };
 
   const handleNavigate = (tab: "home" | "maps" | "tools" | "profile") => {
     setOpenLessonId(null);

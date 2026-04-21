@@ -385,7 +385,7 @@ const NeuroGPTChat = ({ onBack }: NeuroGPTChatProps) => {
             <Brain className="w-5 h-5 text-accent" />
           </div>
           <div className="flex-1">
-            <h1 className="text-h2 text-white">NeuroGPT</h1>
+            <h1 className="text-h2 text-white">Neura</h1>
             <div className="flex items-center">
               <span className="text-helper text-accent">
                 {isMicActive ? "Listening" : "Online"}

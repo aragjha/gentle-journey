@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { Bell, Clock, Pill, ClipboardCheck, Calendar, Brain } from "lucide-react";
+import {
+  Sparkles,
+  CloudRain,
+  Calendar,
+  BookOpen,
+  ClipboardCheck,
+  Pill,
+  FileText,
+} from "lucide-react";
 import { motion } from "framer-motion";
 
 interface NotificationSetting {
@@ -12,45 +20,52 @@ interface NotificationSetting {
 
 const defaultSettings: NotificationSetting[] = [
   {
+    id: "pattern-found",
+    label: "Pattern Insights",
+    description: "Tell me when you find a new trigger pattern",
+    icon: Sparkles,
+    enabled: true,
+  },
+  {
+    id: "weather-alert",
+    label: "Weather Alerts",
+    description: "Warn me when weather could trigger a migraine",
+    icon: CloudRain,
+    enabled: true,
+  },
+  {
+    id: "cycle-alert",
+    label: "Cycle Alerts",
+    description: "Remind me before high-risk menstrual days",
+    icon: Calendar,
+    enabled: true,
+  },
+  {
+    id: "diary-nudge",
+    label: "Diary Nudges",
+    description: "Remind me if I haven't logged in a few days",
+    icon: BookOpen,
+    enabled: true,
+  },
+  {
     id: "daily-checkin",
-    label: "Daily Check-in Reminder",
-    description: "Remind me to check in every day",
+    label: "Daily Check-in",
+    description: "Morning check-in reminder",
     icon: ClipboardCheck,
     enabled: true,
   },
   {
     id: "medication",
     label: "Medication Reminders",
-    description: "Remind me to take my medications",
+    description: "Remind me to take my meds on time",
     icon: Pill,
     enabled: true,
   },
   {
-    id: "diary",
-    label: "Diary Prompts",
-    description: "Encourage me to complete diary entries",
-    icon: Brain,
-    enabled: true,
-  },
-  {
-    id: "appointments",
-    label: "Appointment Reminders",
-    description: "Notify before upcoming appointments",
-    icon: Calendar,
-    enabled: true,
-  },
-  {
-    id: "streak",
-    label: "Streak Alerts",
-    description: "Warn me before I lose my streak",
-    icon: Clock,
-    enabled: false,
-  },
-  {
-    id: "weekly-insights",
-    label: "Weekly Insights",
-    description: "Summary of my weekly patterns",
-    icon: Bell,
+    id: "weekly-summary",
+    label: "Weekly Pattern Report",
+    description: "Send me a weekly summary of trends",
+    icon: FileText,
     enabled: true,
   },
 ];

@@ -8,7 +8,7 @@ import NeuraEntryCard from "@/components/NeuraEntryCard";
 import { Diagnosis } from "@/components/OnboardingFlow";
 import { ActiveMigraineTimer, PainHistoryChart, generateMockHeadacheHistory } from "@/components/PainHistory";
 import { getRewardState } from "@/data/rewardProgressEngine";
-import { getInsightsFromMockData } from "@/data/triggerAnalysisEngine";
+import { getInsightsFromMockData, getTriggerLabel } from "@/data/triggerAnalysisEngine";
 import { ScriptId } from "@/data/neuraScripts";
 import {
   Search,
@@ -97,7 +97,7 @@ const HomeHub = ({
         { id: "checkin", label: "Check-in", icon: ClipboardCheck, bg: "bg-blue-500", onClick: handleCheckinClick },
         { id: "diary", label: "Diary", icon: BookOpen, bg: "bg-violet-500", onClick: onOpenDiaries },
         { id: "learn", label: "Learn", icon: Brain, bg: "bg-pink-500", onClick: onOpenLesson },
-        { id: "neurogpt", label: "NeuroGPT", icon: Mic, bg: "bg-cyan-500", onClick: handleNeuroGPTClick },
+        { id: "neurogpt", label: "Neura", icon: Mic, bg: "bg-accent", onClick: handleNeuroGPTClick },
       ]
     : [
         { id: "checkin", label: "Check-in", icon: ClipboardCheck, bg: "bg-blue-500", onClick: onStartCheckin },
@@ -280,7 +280,7 @@ const HomeHub = ({
         </motion.div>
 
         {/* Monthly Insights */}
-        {isMigraine && (
+        {isMigraine && insights && (
           <motion.div
             className="mb-4 rounded-2xl bg-gradient-to-br from-accent/5 to-accent/10 border border-accent/20 p-4"
             initial={{ opacity: 0, y: 12 }}
@@ -288,24 +288,41 @@ const HomeHub = ({
             transition={{ delay: d * 5.5 }}
           >
             <h3 className="text-[10px] font-semibold text-accent uppercase tracking-wider mb-2">This Month's Insights</h3>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">Attacks</span>
-                <span className="text-sm font-bold text-foreground">8 <span className="text-green-500 text-xs font-normal">(-3 vs last month)</span></span>
+            {insights.monthlyInsights.attackCount < 5 ? (
+              <p className="text-sm text-muted-foreground">
+                Keep logging — we need a few more entries before we can spot patterns. You're almost there.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Attacks</span>
+                  <span className="text-sm font-bold text-foreground">
+                    {insights.monthlyInsights.attackCount}
+                    {insights.monthlyInsights.delta !== 0 && (
+                      <span className={`text-xs font-normal ml-1 ${insights.monthlyInsights.delta < 0 ? "text-success" : "text-destructive"}`}>
+                        ({insights.monthlyInsights.delta > 0 ? "+" : ""}{insights.monthlyInsights.delta} vs last month)
+                      </span>
+                    )}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Avg pain</span>
+                  <span className="text-sm font-bold text-foreground">{insights.monthlyInsights.avgPainLevel}/10</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Top trigger</span>
+                  <span className="text-sm font-bold text-foreground">
+                    {insights.monthlyInsights.topTrigger
+                      ? `${getTriggerLabel(insights.monthlyInsights.topTrigger.trigger)} (${insights.monthlyInsights.topTrigger.count} of ${insights.monthlyInsights.attackCount})`
+                      : "—"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Med adherence</span>
+                  <span className="text-sm font-bold text-foreground">{insights.monthlyInsights.medicationAdherenceRate}%</span>
+                </div>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">Avg pain</span>
-                <span className="text-sm font-bold text-foreground">6.2/10</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">Top trigger</span>
-                <span className="text-sm font-bold text-foreground">Stress (5 attacks)</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">Med adherence</span>
-                <span className="text-sm font-bold text-foreground">85%</span>
-              </div>
-            </div>
+            )}
           </motion.div>
         )}
 
