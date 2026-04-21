@@ -20,6 +20,7 @@ import MedicationHub from "@/pages/MedicationHub";
 import MedicationLogScreen from "@/pages/MedicationLogScreen";
 import AppointmentsHub from "@/pages/AppointmentsHub";
 import GratificationScreen from "@/components/GratificationScreen";
+import ConsentScreen from "@/components/ConsentScreen";
 import LogHeadacheFlow from "@/pages/LogHeadacheFlow";
 import PainReliefGuide from "@/pages/PainReliefGuide";
 import TriggerMedicationFlow from "@/pages/TriggerMedicationFlow";
@@ -32,6 +33,7 @@ import { Appointment, sampleAppointments } from "@/data/appointmentContent";
 type AppScreen =
   | "splash"
   | "auth"
+  | "consent"
   | "onboarding"
   | "onboarding-complete"
   | "home"
@@ -93,7 +95,8 @@ const Index = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" && session) {
         setIsGuestUser(false);
-        setCurrentScreen("onboarding");
+        const hasConsent = !!localStorage.getItem("nc-consent-at");
+        setCurrentScreen(hasConsent ? "onboarding" : "consent");
       } else if (event === "SIGNED_OUT") {
         setIsGuestUser(false);
         setCurrentScreen("splash");
@@ -112,9 +115,17 @@ const Index = () => {
   }, []);
 
   const handleSplashContinue = () => setCurrentScreen("auth");
-  const handleAuthSuccess = () => { setIsGuestUser(false); setCurrentScreen("onboarding"); };
+  const handleAuthSuccess = () => {
+    setIsGuestUser(false);
+    const hasConsent = !!localStorage.getItem("nc-consent-at");
+    setCurrentScreen(hasConsent ? "onboarding" : "consent");
+  };
   const handleAuthBack = () => setCurrentScreen("splash");
-  const handleSkipToHome = () => { setIsGuestUser(true); setCurrentScreen("onboarding"); };
+  const handleSkipToHome = () => {
+    setIsGuestUser(true);
+    const hasConsent = !!localStorage.getItem("nc-consent-at");
+    setCurrentScreen(hasConsent ? "onboarding" : "consent");
+  };
   const handleSkipOnboarding = () => setCurrentScreen("home");
 
   const handleOnboardingComplete = (selectedDiagnosis: Diagnosis) => {
@@ -217,6 +228,13 @@ const Index = () => {
         return <SplashScreen onContinue={handleSplashContinue} />;
       case "auth":
         return <AuthPage onAuthSuccess={handleAuthSuccess} onBack={handleAuthBack} onSkip={handleSkipToHome} />;
+      case "consent":
+        return (
+          <ConsentScreen
+            onConsent={() => setCurrentScreen("onboarding")}
+            onSignOut={() => supabase.auth.signOut()}
+          />
+        );
       case "onboarding":
         return (
           <OnboardingFlow
@@ -233,9 +251,9 @@ const Index = () => {
       case "onboarding-complete":
         return (
           <GratificationScreen
-            title="Your plan is ready! 🎉"
+            title={diagnosis === "migraine" ? "You're all set!" : "Your plan is ready! 🎉"}
             subtitle={diagnosis === "migraine"
-              ? "Let's start managing your migraines together."
+              ? "NeuroCare is personalized and ready. Let's start finding your patterns."
               : "Let's start your personalized journey together."}
             onContinue={handleOnboardingGratificationComplete}
             ctaText="Enter NeuroCare"

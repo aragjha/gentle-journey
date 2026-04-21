@@ -31,7 +31,7 @@ const migraineStory = [
     id: "control",
     title: "Take control, one day at a time",
     subtitle:
-      "NeuroCare connects your triggers, medications, and relief methods into a single story — so you can finally have that informed conversation with your doctor.",
+      "NeuroCare connects your triggers, medications, and relief methods into one story — so your next doctor visit actually moves the needle.",
     visual: "💪",
     accent: "from-emerald-500 to-teal-600",
     stat: "Built with neurologists at NDAI",
