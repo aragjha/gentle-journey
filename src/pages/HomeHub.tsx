@@ -2,30 +2,19 @@ import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
 import OnOffToggle from "@/components/OnOffToggle";
-import RewardProgressCard from "@/components/RewardProgressCard";
-import TriggerDiscoveryCard from "@/components/TriggerDiscoveryCard";
 import NeuraEntryCard from "@/components/NeuraEntryCard";
 import { Diagnosis } from "@/components/OnboardingFlow";
-import { ActiveMigraineTimer, PainHistoryChart, generateMockHeadacheHistory } from "@/components/PainHistory";
-import { getRewardState } from "@/data/rewardProgressEngine";
-import { getInsightsFromMockData, getTriggerLabel } from "@/data/triggerAnalysisEngine";
+import { ActiveMigraineTimer } from "@/components/PainHistory";
 import { ScriptId } from "@/data/neuraScripts";
 import {
-  Search,
-  Mic,
   ClipboardCheck,
-  Pill,
   BookOpen,
-  Calendar,
   Brain,
   Activity,
   Phone,
   PhoneCall,
   AlertCircle,
   Zap,
-  Plus,
-  Clock,
-  ChevronRight,
 } from "lucide-react";
 
 interface HomeHubProps {
@@ -54,8 +43,6 @@ const HomeHub = ({
   onStartCheckin,
   onNavigate,
   onOpenLesson,
-  onOpenAppointments,
-  onOpenMedications,
   onOpenNeuroGPT,
   onOpenNeuraWithScript,
   onOpenDiaries,
@@ -65,13 +52,9 @@ const HomeHub = ({
   headacheCount = 0,
   isOnMode,
   onToggleMode,
-  onOpenTriggerMedication,
   onOpenPainRelief,
-  onOpenTriggerAnalysis,
 }: HomeHubProps) => {
   const isMigraine = diagnosis === "migraine";
-  const insights = isMigraine ? getInsightsFromMockData() : null;
-  const rewardState = getRewardState();
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -82,9 +65,6 @@ const HomeHub = ({
 
   // Neura-first handlers: route through Neura with a pre-loaded script when available,
   // falling back to the legacy standalone flows.
-  const handleCheckinClick = onOpenNeuraWithScript
-    ? () => onOpenNeuraWithScript("daily-checkin")
-    : onStartCheckin;
   const handleNeuroGPTClick = onOpenNeuraWithScript
     ? () => onOpenNeuraWithScript(null)
     : (onOpenNeuroGPT ?? (() => {}));
@@ -92,19 +72,13 @@ const HomeHub = ({
     ? () => onOpenNeuraWithScript("headache-log")
     : (onLogHeadache ?? (() => {}));
 
-  const quickActions = isMigraine
-    ? [
-        { id: "checkin", label: "Check-in", icon: ClipboardCheck, bg: "bg-blue-500", onClick: handleCheckinClick },
-        { id: "diary", label: "Diary", icon: BookOpen, bg: "bg-violet-500", onClick: onOpenDiaries },
-        { id: "learn", label: "Learn", icon: Brain, bg: "bg-pink-500", onClick: onOpenLesson },
-        { id: "neurogpt", label: "Neura", icon: Mic, bg: "bg-accent", onClick: handleNeuroGPTClick },
-      ]
-    : [
-        { id: "checkin", label: "Check-in", icon: ClipboardCheck, bg: "bg-blue-500", onClick: onStartCheckin },
-        { id: "diary", label: "Diary", icon: BookOpen, bg: "bg-violet-500", onClick: onOpenDiaries },
-        { id: "learn", label: "Learn", icon: Brain, bg: "bg-pink-500", onClick: onOpenLesson },
-        { id: "activity", label: "Activity", icon: Activity, bg: "bg-teal-500", onClick: () => {} },
-      ];
+  // PD quick actions remain available for the parkinsons branch.
+  const pdQuickActions = [
+    { id: "checkin", label: "Check-in", icon: ClipboardCheck, bg: "bg-blue-500", onClick: onStartCheckin },
+    { id: "diary", label: "Diary", icon: BookOpen, bg: "bg-violet-500", onClick: onOpenDiaries },
+    { id: "learn", label: "Learn", icon: Brain, bg: "bg-pink-500", onClick: onOpenLesson },
+    { id: "activity", label: "Activity", icon: Activity, bg: "bg-teal-500", onClick: () => {} },
+  ];
 
   const d = 0.03; // animation delay step
 
@@ -130,132 +104,91 @@ const HomeHub = ({
           </p>
         </motion.div>
 
-        {/* Neura entry card (replaces old search bar) */}
+        {/* Neura entry card — primary way to do everything */}
         <motion.div
           className="mb-4"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: d * 2 }}
         >
-          <NeuraEntryCard onOpen={() => onOpenNeuroGPT?.()} />
+          <NeuraEntryCard onOpen={handleNeuroGPTClick} />
         </motion.div>
 
-        {/* Trigger Discovery — primary visual anchor for migraine users */}
-        {isMigraine && insights && (
-          <motion.div
-            className="mb-4"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: d * 2.5 }}
-          >
-            <TriggerDiscoveryCard
-              hasEnoughData={insights.hasEnoughData}
-              progress={insights.progress}
-              topTriggers={insights.topTriggers}
-              coOccurrence={insights.coOccurrence}
-              totalAttacks={insights.monthlyInsights.attackCount + 10 /* approximate last period */}
-              onLogHeadache={handleLogHeadacheClick}
-              onLearnMore={onOpenLesson ?? (() => {})}
-              onViewAnalysis={onOpenTriggerAnalysis ?? (() => {})}
-            />
-          </motion.div>
-        )}
-
-        {/* LOG HEADACHE — Bold Primary CTA */}
-        {isMigraine && (
-          <motion.button
-            onClick={handleLogHeadacheClick}
-            className="w-full mb-4 flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-lg shadow-red-500/20 active:shadow-md transition-shadow"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: d * 3 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
-              <svg viewBox="0 0 48 48" className="w-9 h-9">
-                <ellipse cx="24" cy="20" rx="16" ry="18" fill="white" fillOpacity="0.15" stroke="white" strokeWidth="2" />
-                <circle cx="18" cy="18" r="1.5" fill="white" />
-                <circle cx="30" cy="18" r="1.5" fill="white" />
-                <line x1="10" y1="10" x2="14" y2="14" stroke="#fbbf24" strokeWidth="2" strokeLinecap="round" />
-                <line x1="12" y1="8" x2="12" y2="14" stroke="#fbbf24" strokeWidth="2" strokeLinecap="round" />
-                <line x1="38" y1="10" x2="34" y2="14" stroke="#fbbf24" strokeWidth="2" strokeLinecap="round" />
-                <line x1="36" y1="8" x2="36" y2="14" stroke="#fbbf24" strokeWidth="2" strokeLinecap="round" />
-                <rect x="20" y="36" width="8" height="5" rx="2" fill="none" stroke="white" strokeWidth="1.5" />
-              </svg>
-            </div>
-            <div className="flex-1 text-left">
-              <div className="text-base font-bold leading-tight">Log Headache</div>
-              <div className="text-[11px] text-white/80 mt-0.5">Track pain, triggers & symptoms</div>
-            </div>
-            <Zap className="w-5 h-5 text-yellow-300" />
-          </motion.button>
-        )}
-
-        {/* Active Migraine Timer */}
-        {isMigraine && activeMigraine && onStopMigraine && (
-          <motion.div className="mb-4" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: d * 4 }}>
-            <ActiveMigraineTimer startTime={activeMigraine.startTime} onStopTimer={onStopMigraine} onOpenReliefGuide={onOpenPainRelief} />
-          </motion.div>
-        )}
-
-        {/* Pain History (when headaches logged, no active migraine) */}
-        {isMigraine && headacheCount > 0 && !activeMigraine && (
-          <motion.div className="mb-4" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: d * 4 }}>
-            <PainHistoryChart entries={generateMockHeadacheHistory()} />
-          </motion.div>
-        )}
-
-        {/* Trigger-Medication & Pain Relief Cards — migraine only */}
+        {/* MIGRAINE — simplified layout */}
         {isMigraine && (
           <>
+            {/* LOG HEADACHE — Bold Primary CTA (fast-access for most common task) */}
             <motion.button
-              onClick={onOpenTriggerMedication}
-              className="w-full mb-3 flex items-center gap-3 p-3.5 rounded-2xl bg-card border border-border/50 text-left"
-              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: d * 4.5 }}
+              onClick={handleLogHeadacheClick}
+              className="w-full mb-4 flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-lg shadow-red-500/20 active:shadow-md transition-shadow"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: d * 3 }}
               whileTap={{ scale: 0.98 }}
             >
-              <div className="w-10 h-10 rounded-xl bg-violet-500 flex items-center justify-center shrink-0">
-                <Zap className="w-5 h-5 text-white" />
+              <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                <svg viewBox="0 0 48 48" className="w-9 h-9">
+                  <ellipse cx="24" cy="20" rx="16" ry="18" fill="white" fillOpacity="0.15" stroke="white" strokeWidth="2" />
+                  <circle cx="18" cy="18" r="1.5" fill="white" />
+                  <circle cx="30" cy="18" r="1.5" fill="white" />
+                  <line x1="10" y1="10" x2="14" y2="14" stroke="#fbbf24" strokeWidth="2" strokeLinecap="round" />
+                  <line x1="12" y1="8" x2="12" y2="14" stroke="#fbbf24" strokeWidth="2" strokeLinecap="round" />
+                  <line x1="38" y1="10" x2="34" y2="14" stroke="#fbbf24" strokeWidth="2" strokeLinecap="round" />
+                  <line x1="36" y1="8" x2="36" y2="14" stroke="#fbbf24" strokeWidth="2" strokeLinecap="round" />
+                  <rect x="20" y="36" width="8" height="5" rx="2" fill="none" stroke="white" strokeWidth="1.5" />
+                </svg>
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold text-foreground">Set Triggers & Medicines</div>
-                <div className="text-[11px] text-muted-foreground mt-0.5">Link triggers to meds & set reminders</div>
+              <div className="flex-1 text-left">
+                <div className="text-base font-bold leading-tight">Log Headache</div>
+                <div className="text-[11px] text-white/80 mt-0.5">Track pain, triggers & symptoms</div>
               </div>
-              <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+              <Zap className="w-5 h-5 text-yellow-300" />
             </motion.button>
 
-            <motion.button
-              onClick={onOpenPainRelief}
-              className="w-full mb-3 flex items-center gap-3 p-3.5 rounded-2xl bg-card border border-border/50 text-left"
-              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: d * 4.7 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <div className="w-10 h-10 rounded-xl bg-teal-500 flex items-center justify-center shrink-0">
-                <Activity className="w-5 h-5 text-white" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold text-foreground">Pain Relief Guide</div>
-                <div className="text-[11px] text-muted-foreground mt-0.5">What to do for different pain types</div>
-              </div>
-              <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-            </motion.button>
+            {/* Active Migraine Timer — only when an attack is in progress */}
+            {activeMigraine && onStopMigraine && (
+              <motion.div className="mb-4" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: d * 4 }}>
+                <ActiveMigraineTimer
+                  startTime={activeMigraine.startTime}
+                  onStopTimer={onStopMigraine}
+                  onOpenReliefGuide={onOpenPainRelief}
+                />
+              </motion.div>
+            )}
           </>
         )}
 
-        {/* Reward Progress — Amazon gift card tiers */}
-        <motion.div
-          className="mb-4"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: d * 4.8 }}
-        >
-          <RewardProgressCard
-            state={rewardState}
-            onOpenRewards={() => onNavigate("profile")}
-          />
-        </motion.div>
+        {/* PD — keep existing PD-specific affordances (unchanged) */}
+        {diagnosis === "parkinsons" && (
+          <motion.section
+            className="mb-4"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: d * 3 }}
+          >
+            <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2.5">Quick Access</h2>
+            <div className="grid grid-cols-4 gap-2">
+              {pdQuickActions.map((action) => {
+                const Icon = action.icon;
+                return (
+                  <motion.button
+                    key={action.id}
+                    onClick={action.onClick}
+                    className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-card border border-border/50 active:bg-muted transition-colors"
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${action.bg}`}>
+                      <Icon className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="text-[10px] font-semibold text-foreground">{action.label}</span>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </motion.section>
+        )}
 
-        {/* Today's Summary */}
+        {/* Today's Summary — compact and useful, shown for both tracks */}
         <motion.div
           className="mb-4 rounded-2xl bg-card border border-border/50 p-3.5"
           initial={{ opacity: 0, y: 12 }}
@@ -279,132 +212,12 @@ const HomeHub = ({
           </div>
         </motion.div>
 
-        {/* Monthly Insights */}
-        {isMigraine && insights && (
-          <motion.div
-            className="mb-4 rounded-2xl bg-gradient-to-br from-accent/5 to-accent/10 border border-accent/20 p-4"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: d * 5.5 }}
-          >
-            <h3 className="text-[10px] font-semibold text-accent uppercase tracking-wider mb-2">This Month's Insights</h3>
-            {insights.monthlyInsights.attackCount < 5 ? (
-              <p className="text-sm text-muted-foreground">
-                Keep logging — we need a few more entries before we can spot patterns. You're almost there.
-              </p>
-            ) : (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">Attacks</span>
-                  <span className="text-sm font-bold text-foreground">
-                    {insights.monthlyInsights.attackCount}
-                    {insights.monthlyInsights.delta !== 0 && (
-                      <span className={`text-xs font-normal ml-1 ${insights.monthlyInsights.delta < 0 ? "text-success" : "text-destructive"}`}>
-                        ({insights.monthlyInsights.delta > 0 ? "+" : ""}{insights.monthlyInsights.delta} vs last month)
-                      </span>
-                    )}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">Avg pain</span>
-                  <span className="text-sm font-bold text-foreground">{insights.monthlyInsights.avgPainLevel}/10</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">Top trigger</span>
-                  <span className="text-sm font-bold text-foreground">
-                    {insights.monthlyInsights.topTrigger
-                      ? `${getTriggerLabel(insights.monthlyInsights.topTrigger.trigger)} (${insights.monthlyInsights.topTrigger.count} of ${insights.monthlyInsights.attackCount})`
-                      : "—"}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">Med adherence</span>
-                  <span className="text-sm font-bold text-foreground">{insights.monthlyInsights.medicationAdherenceRate}%</span>
-                </div>
-              </div>
-            )}
-          </motion.div>
-        )}
-
-        {/* Medicine Schedule Card */}
-        <motion.button
-          onClick={onOpenMedications}
-          className="w-full mb-3 flex items-center gap-3 p-3.5 rounded-2xl bg-card border border-border/50 text-left"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: d * 6 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center shrink-0">
-            <Pill className="w-5 h-5 text-white" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-foreground">Medicine Schedule</div>
-            <div className="text-[11px] text-muted-foreground mt-0.5">
-              {isMigraine
-                ? "We'll remind you about your medications"
-                : "Track your daily doses"}
-            </div>
-          </div>
-          <div className="flex items-center gap-1 shrink-0">
-            <Plus className="w-4 h-4 text-accent" />
-            <span className="text-[10px] text-accent font-semibold">Add</span>
-          </div>
-        </motion.button>
-
-        {/* Appointments Card */}
-        <motion.button
-          onClick={onOpenAppointments}
-          className="w-full mb-4 flex items-center gap-3 p-3.5 rounded-2xl bg-card border border-border/50 text-left"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: d * 7 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center shrink-0">
-            <Calendar className="w-5 h-5 text-white" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-foreground">Appointments</div>
-            <div className="text-[11px] text-muted-foreground mt-0.5">Your next visit • Add appointment</div>
-          </div>
-          <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-        </motion.button>
-
-        {/* Quick Access */}
-        <motion.section
-          className="mb-4"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: d * 8 }}
-        >
-          <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2.5">Quick Access</h2>
-          <div className="grid grid-cols-4 gap-2">
-            {quickActions.map((action, index) => {
-              const Icon = action.icon;
-              return (
-                <motion.button
-                  key={action.id}
-                  onClick={action.onClick}
-                  className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-card border border-border/50 active:bg-muted transition-colors"
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${action.bg}`}>
-                    <Icon className="w-4 h-4 text-white" />
-                  </div>
-                  <span className="text-[10px] font-semibold text-foreground">{action.label}</span>
-                </motion.button>
-              );
-            })}
-          </div>
-        </motion.section>
-
-        {/* Emergency Contacts */}
+        {/* Emergency Contacts — safety, always visible */}
         <motion.div
           className="flex gap-2"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: d * 9 }}
+          transition={{ delay: d * 6 }}
         >
           <button className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-card border border-border/50 active:bg-muted">
             <Phone className="w-3.5 h-3.5 text-accent" />
