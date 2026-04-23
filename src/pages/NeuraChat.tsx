@@ -459,9 +459,8 @@ const NeuraChat = ({
         return (
           <div
             key={idx}
-            className="text-sm leading-[1.4] max-w-[82%] text-white"
+            className="text-sm leading-[1.4] max-w-[82%] bg-foreground text-background"
             style={{
-              background: "var(--ink)",
               padding: "11px 14px",
               borderRadius: "18px 18px 6px 18px",
             }}
@@ -473,10 +472,8 @@ const NeuraChat = ({
       return (
         <div
           key={idx}
-          className="text-sm leading-[1.4] max-w-[82%] text-foreground"
+          className="text-sm leading-[1.4] max-w-[82%] text-foreground bg-card border border-border"
           style={{
-            background: "var(--nc-card)",
-            border: "1px solid var(--nc-border)",
             padding: "11px 14px",
             borderRadius: "18px 18px 18px 6px",
             boxShadow: "var(--shadow-sm-proto)",
@@ -602,13 +599,15 @@ const NeuraChat = ({
                   if (m === "speak") setMicActive(true);
                   else setMicActive(false);
                 }}
-                className="flex items-center justify-center border-0 cursor-pointer"
+                className={`flex items-center justify-center border-0 cursor-pointer ${
+                  inputMode === m
+                    ? "bg-foreground text-background"
+                    : "bg-transparent text-muted-foreground"
+                }`}
                 style={{
                   width: 30,
                   height: 28,
                   borderRadius: 999,
-                  background: inputMode === m ? "var(--ink)" : "transparent",
-                  color: inputMode === m ? "#fff" : "var(--nc-muted)",
                   transition: "background .15s",
                 }}
                 aria-pressed={inputMode === m}
@@ -900,12 +899,11 @@ const NeuraChat = ({
             </button>
             <button
               onClick={() => input.trim() && sendUserMessage(input.trim())}
-              className="flex items-center justify-center shrink-0 text-white active:scale-95 transition-transform border-0 cursor-pointer"
+              className="flex items-center justify-center shrink-0 bg-foreground text-background active:scale-95 transition-transform border-0 cursor-pointer"
               style={{
                 width: 34,
                 height: 34,
                 borderRadius: "50%",
-                background: "var(--ink)",
               }}
               aria-label="Send"
             >

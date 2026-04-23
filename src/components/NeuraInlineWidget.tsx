@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import HeadDiagram, { HEAD_ZONES, BACK_ZONES } from "@/components/HeadDiagram";
 
 export type WidgetType =
   | "head-diagram"
@@ -43,25 +44,6 @@ const PAIN_COLORS = [
 ];
 const PAIN_FACES = ["😊", "🙂", "🙂", "😐", "😐", "🙁", "😣", "😣", "😖", "😫", "😭"];
 const PAIN_LABELS = ["None", "", "Mild", "", "", "Moderate", "", "", "Severe", "", "Worst"];
-
-// ─── Prototype head-zone geometry (neuragpt.jsx:48-62) ───────────────────────
-interface HeadZone { id: string; cx: number; cy: number; r: number; label: string; }
-const FRONT_ZONES: HeadZone[] = [
-  { id: "left-temple", cx: 68, cy: 120, r: 22, label: "L. temple" },
-  { id: "right-temple", cx: 192, cy: 120, r: 22, label: "R. temple" },
-  { id: "forehead", cx: 130, cy: 80, r: 28, label: "Forehead" },
-  { id: "left-eye", cx: 100, cy: 145, r: 15, label: "L. eye" },
-  { id: "right-eye", cx: 160, cy: 145, r: 15, label: "R. eye" },
-  { id: "sinus", cx: 130, cy: 170, r: 17, label: "Sinus" },
-  { id: "jaw", cx: 130, cy: 220, r: 20, label: "Jaw" },
-];
-const BACK_ZONES_PROTO: HeadZone[] = [
-  { id: "crown", cx: 130, cy: 60, r: 28, label: "Crown" },
-  { id: "left-back", cx: 80, cy: 130, r: 22, label: "L. back" },
-  { id: "right-back", cx: 180, cy: 130, r: 22, label: "R. back" },
-  { id: "occipital", cx: 130, cy: 170, r: 22, label: "Occipital" },
-  { id: "neck", cx: 130, cy: 230, r: 22, label: "Neck" },
-];
 
 // ─── Prototype option sets (neuragpt.jsx:161-202) ────────────────────────────
 const symptomOptions: WidgetOption[] = [
@@ -126,50 +108,20 @@ const widgetCardStyle: React.CSSProperties = {
   boxShadow: "var(--shadow-sm)",
 };
 
-const chipPillStyle = (on: boolean): React.CSSProperties => ({
-  display: "inline-flex",
-  alignItems: "center",
-  gap: 5,
-  padding: "7px 12px",
-  borderRadius: 999,
-  background: on ? "var(--ink)" : "var(--bg-deep)",
-  border: `1.5px solid ${on ? "var(--ink)" : "transparent"}`,
-  color: on ? "#fff" : "var(--ink)",
-  fontSize: 12,
-  fontWeight: 600,
-  cursor: "pointer",
-  fontFamily: "inherit",
-  transition: "all .12s",
-});
+const chipPillClass = (on: boolean): string =>
+  on
+    ? "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-foreground text-background border-[1.5px] border-foreground text-xs font-semibold cursor-pointer transition-all"
+    : "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted text-foreground border-[1.5px] border-transparent text-xs font-semibold cursor-pointer transition-all";
 
-const segStyle = (on: boolean): React.CSSProperties => ({
-  padding: "5px 14px",
-  borderRadius: 999,
-  background: on ? "var(--ink)" : "transparent",
-  border: 0,
-  fontSize: 11,
-  fontWeight: 600,
-  color: on ? "#fff" : "var(--muted-foreground)",
-  cursor: "pointer",
-  fontFamily: "inherit",
-  textTransform: "uppercase",
-  letterSpacing: "0.08em",
-});
+const segClass = (on: boolean): string =>
+  on
+    ? "px-3.5 py-1 rounded-full bg-foreground text-background border-0 text-[11px] font-semibold cursor-pointer uppercase tracking-wider"
+    : "px-3.5 py-1 rounded-full bg-transparent text-muted-foreground border-0 text-[11px] font-semibold cursor-pointer uppercase tracking-wider";
 
-const submitStyle = (disabled: boolean): React.CSSProperties => ({
-  width: "100%",
-  background: disabled ? "var(--border)" : "var(--ink)",
-  color: disabled ? "var(--muted-foreground)" : "#fff",
-  border: 0,
-  borderRadius: 14,
-  padding: "12px 16px",
-  fontSize: 13,
-  fontWeight: 700,
-  cursor: disabled ? "not-allowed" : "pointer",
-  fontFamily: "inherit",
-  transition: "all .15s",
-  minHeight: 44,
-});
+const submitClass = (disabled: boolean): string =>
+  disabled
+    ? "w-full bg-border text-muted-foreground border-0 rounded-xl px-4 py-3 text-[13px] font-bold cursor-not-allowed transition-all min-h-[44px]"
+    : "w-full bg-accent text-accent-foreground border-0 rounded-xl px-4 py-3 text-[13px] font-bold cursor-pointer transition-all min-h-[44px]";
 
 const NeuraInlineWidget = ({ config, onSubmit }: NeuraInlineWidgetProps) => {
   const [selected, setSelected] = useState<string[]>([]);
@@ -188,7 +140,7 @@ const NeuraInlineWidget = ({ config, onSubmit }: NeuraInlineWidgetProps) => {
   const handleDone = () => {
     switch (config.type) {
       case "head-diagram": {
-        const allZones = [...FRONT_ZONES, ...BACK_ZONES_PROTO];
+        const allZones = [...HEAD_ZONES, ...BACK_ZONES];
         const labels = painZones
           .map((z) => allZones.find((zd) => zd.id === z)?.label ?? z);
         const summary =
@@ -225,57 +177,31 @@ const NeuraInlineWidget = ({ config, onSubmit }: NeuraInlineWidgetProps) => {
 
   // ─── Head widget ───────────────────────────────────────────────────────────
   const renderHead = () => {
-    const Z = headView === "front" ? FRONT_ZONES : BACK_ZONES_PROTO;
+    const toggleZone = (z: string) =>
+      setPainZones((prev) =>
+        prev.includes(z) ? prev.filter((p) => p !== z) : [...prev, z]
+      );
     return (
       <div className="fade-up">
-        <div style={{ display: "flex", justifyContent: "center", gap: 4, marginBottom: 4 }}>
+        <div className="flex justify-center gap-1 mb-1">
           {(["front", "back"] as const).map((v) => (
             <button
               key={v}
               onClick={() => setHeadView(v)}
-              style={segStyle(headView === v)}
+              className={segClass(headView === v)}
             >
               {v === "front" ? "Front" : "Back"}
             </button>
           ))}
         </div>
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <svg viewBox="0 0 260 280" width="200" height="220">
-            <ellipse cx="130" cy="130" rx="90" ry="110" fill="#F3EEE8" stroke="#EAE4DC" strokeWidth="2" />
-            {headView === "front" && (
-              <>
-                <ellipse cx="100" cy="145" rx="9" ry="5" fill="none" stroke="#CFC6BA" strokeWidth="1.5" />
-                <ellipse cx="160" cy="145" rx="9" ry="5" fill="none" stroke="#CFC6BA" strokeWidth="1.5" />
-                <path d="M115 175 Q130 180 145 175" fill="none" stroke="#CFC6BA" strokeWidth="1.5" strokeLinecap="round" />
-                <path d="M120 210 Q130 215 140 210" fill="none" stroke="#CFC6BA" strokeWidth="1.5" strokeLinecap="round" />
-              </>
-            )}
-            {Z.map((z) => {
-              const on = painZones.includes(z.id);
-              return (
-                <g
-                  key={z.id}
-                  onClick={() =>
-                    setPainZones((prev) =>
-                      prev.includes(z.id) ? prev.filter((p) => p !== z.id) : [...prev, z.id]
-                    )
-                  }
-                  style={{ cursor: "pointer" }}
-                >
-                  <circle
-                    cx={z.cx}
-                    cy={z.cy}
-                    r={z.r}
-                    fill={on ? "rgba(255,107,92,0.35)" : "rgba(59,130,246,0.08)"}
-                    stroke={on ? "#FF6B5C" : "rgba(59,130,246,0.3)"}
-                    strokeWidth={on ? 2.5 : 1.5}
-                    strokeDasharray={on ? "0" : "3 3"}
-                  />
-                  {on && <circle cx={z.cx} cy={z.cy} r={3.5} fill="#FF6B5C" />}
-                </g>
-              );
-            })}
-          </svg>
+        <div className="flex justify-center">
+          <div className="scale-90 origin-center w-full">
+            <HeadDiagram
+              selectedZones={painZones}
+              onToggleZone={toggleZone}
+              view={headView}
+            />
+          </div>
         </div>
       </div>
     );
@@ -360,7 +286,7 @@ const NeuraInlineWidget = ({ config, onSubmit }: NeuraInlineWidgetProps) => {
           <button
             key={opt.id}
             onClick={() => (allowMulti ? toggleSelect(opt.id) : setSelected([opt.id]))}
-            style={chipPillStyle(on)}
+            className={chipPillClass(on)}
           >
             {opt.icon && <span style={{ fontSize: 14 }}>{opt.icon}</span>}
             <span>{opt.label}</span>
@@ -439,7 +365,7 @@ const NeuraInlineWidget = ({ config, onSubmit }: NeuraInlineWidgetProps) => {
       <button
         onClick={handleDone}
         disabled={submitDisabled()}
-        style={submitStyle(submitDisabled())}
+        className={submitClass(submitDisabled())}
       >
         {submitLabel()}
       </button>
