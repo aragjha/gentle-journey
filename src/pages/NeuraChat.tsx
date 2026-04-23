@@ -459,7 +459,7 @@ const NeuraChat = ({
         return (
           <div
             key={idx}
-            className="text-sm leading-[1.4] max-w-[82%] bg-foreground text-background"
+            className="text-sm leading-[1.4] max-w-[80%] bg-foreground text-background"
             style={{
               padding: "11px 14px",
               borderRadius: "18px 18px 6px 18px",
@@ -472,7 +472,7 @@ const NeuraChat = ({
       return (
         <div
           key={idx}
-          className="text-sm leading-[1.4] max-w-[82%] text-foreground bg-card border border-border"
+          className="text-sm leading-[1.4] max-w-[80%] text-foreground bg-card border border-border"
           style={{
             padding: "11px 14px",
             borderRadius: "18px 18px 18px 6px",
@@ -814,7 +814,7 @@ const NeuraChat = ({
           {messages.map((msg) => (
             <motion.div
               key={msg.id}
-              className={`mb-3 flex flex-col gap-1.5 ${
+              className={`mb-2 flex flex-col gap-1 ${
                 msg.role === "user" ? "items-end" : "items-start"
               }`}
               initial={{ opacity: 0, y: 12 }}
@@ -826,7 +826,7 @@ const NeuraChat = ({
           ))}
           {isTyping && (
             <motion.div
-              className="mb-3 flex items-center gap-2"
+              className="mb-2 flex items-center gap-2"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             >

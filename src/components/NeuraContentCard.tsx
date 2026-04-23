@@ -37,11 +37,11 @@ const NeuraContentCard = ({ content, onExpand }: NeuraContentCardProps) => {
       className="w-full rounded-2xl bg-card border border-border overflow-hidden shadow-sm-soft my-2 text-left"
     >
       {/* Thumbnail area */}
-      <div className="h-32 bg-gradient-to-br from-accent/10 to-accent/20 flex items-center justify-center">
+      <div className="h-24 bg-gradient-to-br from-accent/10 to-accent/20 flex items-center justify-center">
         {content.thumbnail ? (
-          <span className="text-5xl">{content.thumbnail}</span>
+          <span className="text-4xl">{content.thumbnail}</span>
         ) : (
-          <Icon className="w-10 h-10 text-accent" />
+          <Icon className="w-8 h-8 text-accent" />
         )}
       </div>
       {/* Content */}

@@ -103,8 +103,8 @@ const moodOptions: WidgetOption[] = [
 const widgetCardStyle: React.CSSProperties = {
   background: "var(--card)",
   border: "1px solid var(--border)",
-  borderRadius: 20,
-  padding: 14,
+  borderRadius: 16,
+  padding: 12,
   boxShadow: "var(--shadow-sm)",
 };
 
@@ -120,8 +120,8 @@ const segClass = (on: boolean): string =>
 
 const submitClass = (disabled: boolean): string =>
   disabled
-    ? "w-full bg-border text-muted-foreground border-0 rounded-xl px-4 py-3 text-[13px] font-bold cursor-not-allowed transition-all min-h-[44px]"
-    : "w-full bg-accent text-accent-foreground border-0 rounded-xl px-4 py-3 text-[13px] font-bold cursor-pointer transition-all min-h-[44px]";
+    ? "w-full bg-border text-muted-foreground border-0 rounded-xl px-4 py-2 text-sm font-bold cursor-not-allowed transition-all min-h-[40px]"
+    : "w-full bg-accent text-accent-foreground border-0 rounded-xl px-4 py-2 text-sm font-bold cursor-pointer transition-all min-h-[40px]";
 
 const NeuraInlineWidget = ({ config, onSubmit }: NeuraInlineWidgetProps) => {
   const [selected, setSelected] = useState<string[]>([]);
@@ -195,7 +195,7 @@ const NeuraInlineWidget = ({ config, onSubmit }: NeuraInlineWidgetProps) => {
           ))}
         </div>
         <div className="flex justify-center">
-          <div className="scale-90 origin-center w-full">
+          <div className="scale-[0.8] origin-center w-full">
             <HeadDiagram
               selectedZones={painZones}
               onToggleZone={toggleZone}

@@ -100,12 +100,12 @@ const MonthCalendar = ({ attacks, checkins }: { attacks: Record<number, number>;
                 className={`text-[11px] ${
                   today ? "font-extrabold" : "font-semibold"
                 }`}
-                style={{ color: p ? "#FF6B5C" : "hsl(var(--foreground))" }}
+                style={{ color: p ? "var(--coral)" : "hsl(var(--foreground))" }}
               >
                 {d}
               </div>
               {p !== undefined && (
-                <div className="text-[8px] text-[#FF6B5C] font-bold tabular-nums">{p}/10</div>
+                <div className="text-[8px] font-bold tabular-nums" style={{ color: "var(--coral)" }}>{p}/10</div>
               )}
               {c && p === undefined && (
                 <div className="w-1 h-1 rounded-full bg-accent mt-0.5" />

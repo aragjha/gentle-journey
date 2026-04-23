@@ -249,12 +249,12 @@ const HomeHub = ({
             onClick={handleDailyCheckinClick}
             className="relative text-left bg-card border border-border rounded-[22px] p-4 active:scale-[0.98] transition-transform"
           >
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-3 bg-[#FEF3D6] text-[#B97B12]">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-3" style={{ background: "var(--gold-soft)", color: "var(--gold)" }}>
               <Check className="w-4 h-4" strokeWidth={2.5} />
             </div>
             <div className="text-sm font-bold text-foreground mb-0.5">Daily check-in</div>
             <div className="text-[11px] text-muted-foreground">3 taps · +30 pts</div>
-            <div className="absolute top-3.5 right-3.5 w-2 h-2 rounded-full bg-[#FF6B5C]" />
+            <div className="absolute top-3.5 right-3.5 w-2 h-2 rounded-full" style={{ background: "var(--coral)" }} />
           </button>
           <button
             onClick={onOpenReliefSession ?? onOpenPainRelief}

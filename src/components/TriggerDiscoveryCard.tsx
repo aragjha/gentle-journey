@@ -30,7 +30,7 @@ const TriggerDiscoveryCard = ({
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-3xl bg-gradient-to-br from-[#EFF6FF] to-white border border-accent/20 p-5 shadow-md-soft"
+        className="rounded-2xl bg-gradient-to-br from-accent/5 to-transparent bg-card border border-accent/20 p-5 shadow-md-soft"
       >
         <div className="flex items-center gap-2 mb-3">
           <div className="w-8 h-8 rounded-xl bg-accent/10 flex items-center justify-center">
@@ -85,7 +85,7 @@ const TriggerDiscoveryCard = ({
       animate={{ opacity: 1, y: 0 }}
       whileTap={{ scale: 0.98 }}
       onClick={onViewAnalysis}
-      className="w-full text-left rounded-3xl bg-gradient-to-br from-[#EFF6FF] to-white border border-accent/20 p-5 shadow-md-soft"
+      className="w-full text-left rounded-2xl bg-gradient-to-br from-accent/5 to-transparent bg-card border border-accent/20 p-5 shadow-md-soft"
     >
       <div className="flex items-center gap-2 mb-3">
         <div className="w-8 h-8 rounded-xl bg-accent/10 flex items-center justify-center">
