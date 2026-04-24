@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import CTAButton from "@/components/CTAButton";
@@ -111,8 +111,10 @@ const LogHeadacheFlow = ({ onComplete, onBack }: LogHeadacheFlowProps) => {
   // Get attack question by id
   const getQuestion = (id: string) => migraineAttackQuestions.find((q) => q.id === id);
 
-  if (currentStep === "complete") {
-    const log: HeadacheLog = {
+  // Stabilize log construction with useMemo
+  const completedLog = useMemo(() => {
+    if (currentStep !== "complete") return null;
+    return {
       id: crypto.randomUUID(),
       startTime: timingToStartTime(timing ?? "just_now"),
       zones: selectedZones,
@@ -120,14 +122,18 @@ const LogHeadacheFlow = ({ onComplete, onBack }: LogHeadacheFlowProps) => {
       symptoms: answers["symptoms_during"] ?? [],
       triggers: answers["triggers"] ?? [],
       medications: answers["medications_taken"] ?? [],
+      reliefEffectiveness: (answers["relief_methods"] ?? []).length > 0 ? 7 : undefined,
       notes: notes || undefined,
-      status: "active",
-    };
+      status: "active" as const,
+    } satisfies HeadacheLog;
+  }, [currentStep]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (currentStep === "complete") {
     return (
       <GratificationScreen
         title="Headache Logged ✅"
         subtitle="Tracking attacks helps identify patterns and triggers."
-        onContinue={() => onComplete(log)}
+        onContinue={() => onComplete(completedLog!)}
         ctaText="Back to Home"
         type="success"
       />
