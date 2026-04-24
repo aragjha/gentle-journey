@@ -71,12 +71,12 @@ const defaultSettings: NotificationSetting[] = [
 ];
 
 const NotificationSettings = () => {
-  const menstrualEnabled = localStorage.getItem("nc-menstrual-enabled") === "true";
-  const filteredDefaults = menstrualEnabled
-    ? defaultSettings
-    : defaultSettings.filter((s) => s.id !== "cycle-alert");
-
-  const [settings, setSettings] = useState<NotificationSetting[]>(filteredDefaults);
+  const [settings, setSettings] = useState<NotificationSetting[]>(() => {
+    const menstrualEnabled = localStorage.getItem("nc-menstrual-enabled") === "true";
+    return menstrualEnabled
+      ? defaultSettings
+      : defaultSettings.filter((s) => s.id !== "cycle-alert");
+  });
 
   const toggleSetting = (id: string) => {
     setSettings((prev) =>
