@@ -155,7 +155,7 @@ const HomeHub = ({
       <div className="flex-1 px-5 pt-3 pb-24 overflow-y-auto">
         {/* Top bar: brand + streak pill */}
         <motion.div
-          className="flex items-center justify-between mb-5"
+          className="flex items-center justify-between mb-4"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35 }}
@@ -180,16 +180,16 @@ const HomeHub = ({
 
         {/* Editorial greeting */}
         <motion.div
-          className="mb-4"
+          className="mb-3"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: d, duration: 0.4 }}
         >
-          <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.15em] mb-2">
+          <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.15em] mb-1.5">
             {getGreeting()} · {formatDate(new Date())}
           </div>
           <h1
-            className="display text-[42px] text-foreground m-0"
+            className="display text-[30px] text-foreground m-0"
           >
             How's your <em className="italic text-accent">head</em>
             <br />
@@ -199,7 +199,7 @@ const HomeHub = ({
 
         {/* Ask anything — opens Neura with the query */}
         <motion.div
-          className="mb-4"
+          className="mb-3"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: d * 2, duration: 0.4 }}
@@ -210,7 +210,7 @@ const HomeHub = ({
         {/* Hero action — Log headache via Neura */}
         <motion.button
           onClick={handleLogHeadacheClick}
-          className="relative w-full text-left rounded-[28px] px-5 py-6 overflow-hidden text-white mb-3"
+          className="relative w-full text-left rounded-[24px] px-5 py-5 overflow-hidden text-white mb-3"
           style={{
             background:
               "linear-gradient(145deg, #1B2A4E 0%, #2A3E6E 60%, #3B82F6 140%)",
@@ -230,8 +230,8 @@ const HomeHub = ({
           />
           <div className="relative">
             <div className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/65 mb-2">Right now</div>
-            <div className="text-[26px] font-bold leading-[1.1] tracking-tight mb-1">Log a headache</div>
-            <div className="text-[13px] text-white/75 mb-4">Neura will walk you through it · ~45 sec</div>
+            <div className="text-[22px] font-bold leading-[1.1] tracking-tight mb-1">Log a headache</div>
+            <div className="text-[13px] text-white/75 mb-3">Neura will walk you through it · ~45 sec</div>
             <div className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[13px] font-semibold bg-white/15 backdrop-blur-sm">
               <Sparkles className="w-3.5 h-3.5" strokeWidth={2} /> Start with Neura
             </div>
@@ -240,16 +240,16 @@ const HomeHub = ({
 
         {/* Secondary row — check-in + relief */}
         <motion.div
-          className="grid grid-cols-2 gap-2.5 mb-6"
+          className="grid grid-cols-2 gap-2 mb-4"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: d * 4, duration: 0.4 }}
         >
           <button
             onClick={handleDailyCheckinClick}
-            className="relative text-left bg-card border border-border rounded-[22px] p-4 active:scale-[0.98] transition-transform"
+            className="relative text-left bg-card border border-border rounded-[20px] p-3.5 active:scale-[0.98] transition-transform"
           >
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-3" style={{ background: "var(--gold-soft)", color: "var(--gold)" }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center mb-2.5" style={{ background: "var(--gold-soft)", color: "var(--gold)" }}>
               <Check className="w-4 h-4" strokeWidth={2.5} />
             </div>
             <div className="text-sm font-bold text-foreground mb-0.5">Daily check-in</div>
@@ -258,9 +258,9 @@ const HomeHub = ({
           </button>
           <button
             onClick={onOpenReliefSession ?? onOpenPainRelief}
-            className="text-left bg-card border border-border rounded-[22px] p-4 active:scale-[0.98] transition-transform"
+            className="text-left bg-card border border-border rounded-[20px] p-3.5 active:scale-[0.98] transition-transform"
           >
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-3 text-accent" style={{ background: "var(--accent-soft)" }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center mb-2.5 text-accent" style={{ background: "var(--accent-soft)" }}>
               <Play className="w-4 h-4" strokeWidth={0} fill="currentColor" />
             </div>
             <div className="text-sm font-bold text-foreground mb-0.5">Relief guide</div>
@@ -286,7 +286,7 @@ const HomeHub = ({
 
         {/* Pattern insight */}
         <motion.div
-          className="mb-5"
+          className="mb-4"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: d * 6, duration: 0.4 }}
@@ -300,7 +300,7 @@ const HomeHub = ({
 
         {/* Today's meds */}
         <motion.div
-          className="mb-5"
+          className="mb-4"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: d * 7, duration: 0.4 }}

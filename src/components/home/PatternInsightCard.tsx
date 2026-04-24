@@ -31,11 +31,11 @@ const PatternInsightCard = ({
         </button>
       </div>
 
-      <div className="bg-card rounded-3xl border border-border p-5">
-        <div className="flex justify-between items-start mb-4">
+      <div className="bg-card rounded-3xl border border-border p-4">
+        <div className="flex justify-between items-start mb-3">
           <div>
             <div
-              className="text-[36px] font-extrabold text-foreground leading-none"
+              className="text-[28px] font-extrabold text-foreground leading-none"
               style={{
                 fontFamily: "'Fraunces', Georgia, serif",
                 letterSpacing: "-0.02em",
