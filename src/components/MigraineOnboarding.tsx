@@ -12,6 +12,7 @@ interface MigraineOnboardingProps {
   onSkip?: () => void;
   onBack?: () => void;
   onAddMedications?: (profile: MigraineProfile) => void;
+  onMenstrualEnabled?: () => void;
 }
 
 export interface MigraineProfile {
@@ -211,6 +212,7 @@ const MigraineOnboarding = ({
   onComplete,
   onBack,
   onAddMedications,
+  onMenstrualEnabled,
 }: MigraineOnboardingProps) => {
   const [stepId, setStepId] = useState<StepId>("intro");
   const [data, setData] = useState<MigraineProfile>({
@@ -515,6 +517,9 @@ const MigraineOnboarding = ({
             <div className="px-6 pb-7 flex flex-col gap-3">
               <PrimaryBtn
                 onClick={() => {
+                  if (["yes", "irregular", "peri"].includes(data.menstrual ?? "")) {
+                    onMenstrualEnabled?.();
+                  }
                   if (onAddMedications) onAddMedications(data);
                   else onComplete(data);
                 }}

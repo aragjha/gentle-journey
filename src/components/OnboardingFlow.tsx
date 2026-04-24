@@ -209,7 +209,7 @@ const migrainePhases = [
       {
         id: "warning_signs",
         title: "Do you have warning signs before an attack?",
-        helper: "Light sensitivity, visual disturbances, nausea, excessive yawning or fatigue etc.",
+        helper: "Examples of warning signs may include: light sensitivity, visual disturbances, nausea, excessive yawning, fatigue, mood changes, or neck stiffness.",
         type: "single" as const,
         options: [
           { id: "no", label: "No", icon: "❌" },
@@ -302,9 +302,10 @@ interface OnboardingFlowProps {
   onSkip?: () => void;
   onAddMedications?: (state: OnboardingState) => void;
   initialState?: OnboardingState;
+  onMenstrualEnabled?: () => void;
 }
 
-const OnboardingFlow = ({ onComplete, onSkip, onAddMedications, initialState }: OnboardingFlowProps) => {
+const OnboardingFlow = ({ onComplete, onSkip, onAddMedications, initialState, onMenstrualEnabled }: OnboardingFlowProps) => {
   const [diagnosis, setDiagnosis] = useState<Diagnosis | null>(initialState?.diagnosis ?? null);
   const [showDiagnosisQuestion, setShowDiagnosisQuestion] = useState(!initialState?.diagnosis);
   const [currentPhaseIndex, setCurrentPhaseIndex] = useState(initialState?.phaseIndex ?? 0);
@@ -542,6 +543,7 @@ const OnboardingFlow = ({ onComplete, onSkip, onAddMedications, initialState }: 
         }}
         onSkip={onSkip}
         onBack={() => setShowDiagnosisQuestion(true)}
+        onMenstrualEnabled={onMenstrualEnabled}
       />
     );
   }

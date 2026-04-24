@@ -338,6 +338,7 @@ const Index = () => {
               setCurrentScreen("medication-onboarding-from-flow");
             }}
             initialState={savedOnboardingState}
+            onMenstrualEnabled={() => setMenstrualEnabled(true)}
           />
         );
       case "onboarding-complete":
