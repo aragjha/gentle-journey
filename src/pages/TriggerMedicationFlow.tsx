@@ -15,6 +15,7 @@ import {
 interface TriggerMedicationFlowProps {
   onComplete: (profile: TriggerProfile) => void;
   onBack: () => void;
+  menstrualEnabled?: boolean;
 }
 
 type FlowStep =
@@ -41,7 +42,7 @@ const slideVariants = {
   exit: { opacity: 0, x: -40 },
 };
 
-const TriggerMedicationFlow = ({ onComplete, onBack }: TriggerMedicationFlowProps) => {
+const TriggerMedicationFlow = ({ onComplete, onBack, menstrualEnabled = false }: TriggerMedicationFlowProps) => {
   const [currentStep, setCurrentStep] = useState<FlowStep>("trigger-type");
   const [selectedTypeId, setSelectedTypeId] = useState<string | null>(null);
   const [selectedSubtypeId, setSelectedSubtypeId] = useState<string | null>(null);
@@ -300,7 +301,9 @@ const TriggerMedicationFlow = ({ onComplete, onBack }: TriggerMedicationFlowProp
         <p className="text-sm text-muted-foreground mb-6">Which one specifically?</p>
 
         <div className="flex-1 overflow-y-auto space-y-3">
-          {selectedType.subtypes.map((sub) => (
+          {selectedType.subtypes
+            .filter((sub) => sub.id !== "menstrual" || menstrualEnabled)
+            .map((sub) => (
             <motion.button
               key={sub.id}
               whileTap={{ scale: 0.97 }}
@@ -457,9 +460,11 @@ const TriggerMedicationFlow = ({ onComplete, onBack }: TriggerMedicationFlowProp
       className="flex-1 flex flex-col"
     >
       <h2 className="text-xl font-bold text-foreground mb-1">
-        Do you notice any early warning signs before this trigger leads to a migraine?
+        Any early warning signs before this trigger leads to a migraine?
       </h2>
-      <p className="text-sm text-muted-foreground mb-5">Select all that apply.</p>
+      <p className="text-sm text-muted-foreground mb-5">
+        Examples of warning signs may include: fatigue, mood changes, neck stiffness, food cravings, excessive yawning. Select all that apply.
+      </p>
 
       <div className="flex-1 overflow-y-auto mb-4">
         <div className="grid grid-cols-2 gap-2">

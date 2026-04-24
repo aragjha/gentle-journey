@@ -506,6 +506,7 @@ const Index = () => {
           <TriggerMedicationFlow
             onComplete={() => setCurrentScreen("home")}
             onBack={() => setCurrentScreen(previousScreen === "trigger-medication" ? "home" : previousScreen)}
+            menstrualEnabled={menstrualEnabled}
           />
         );
       case "pain-relief":
