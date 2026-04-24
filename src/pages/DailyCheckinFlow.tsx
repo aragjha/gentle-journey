@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import OnboardingQuestion from "@/components/OnboardingQuestion";
 import GratificationScreen from "@/components/GratificationScreen";
 import { Diagnosis } from "@/components/OnboardingFlow";
+import { CheckInLog, HeadacheLog } from "@/types/logs";
 
 const pdCheckInQuestions = [
   {
@@ -89,27 +90,28 @@ const migraineCheckInQuestions = [
   {
     id: "headache_today",
     title: "Did you have a headache today?",
-    helper: "Any head pain counts.",
+    helper: "Any head pain counts. Pick the level that best fits.",
     type: "single" as const,
     options: [
       { id: "no", label: "No headache", icon: "✨" },
-      { id: "mild", label: "Mild headache", icon: "😐" },
-      { id: "moderate", label: "Moderate migraine", icon: "😣" },
-      { id: "severe", label: "Severe migraine", icon: "😫" },
+      { id: "mild", label: "Mild (1-3) — noticeable, doesn't stop daily tasks", icon: "😐" },
+      { id: "moderate", label: "Moderate (4-6) — interferes with daily activities", icon: "😣" },
+      { id: "severe", label: "Severe (7-10) — had to stop, lie down, or miss plans", icon: "😫" },
     ],
   },
   {
     id: "pain_location",
     title: "Where was the pain?",
-    helper: "Select all that apply.",
+    helper: "Pick a side if it was only on one. Select all that apply.",
     type: "multi" as const,
     options: [
       { id: "forehead", label: "Forehead", icon: "🔝" },
       { id: "temples", label: "Temples", icon: "↔️" },
       { id: "behind_eyes", label: "Behind eyes", icon: "👁️" },
-      { id: "one_side", label: "One side", icon: "◀️" },
-      { id: "both_sides", label: "Both sides", icon: "↔️" },
-      { id: "neck", label: "Neck", icon: "🦴" },
+      { id: "left_side", label: "Left side only (unilateral)", icon: "⬅️" },
+      { id: "right_side", label: "Right side only (unilateral)", icon: "➡️" },
+      { id: "both_sides", label: "Both sides (bilateral)", icon: "↔️" },
+      { id: "neck", label: "Neck / base of skull", icon: "🦴" },
     ],
   },
   {
@@ -143,31 +145,35 @@ const migraineCheckInQuestions = [
   {
     id: "medication_taken",
     title: "Did you take medication today?",
+    helper: "We'll skip follow-up questions if you didn't take any.",
     type: "single" as const,
     options: [
-      { id: "yes_helped", label: "Yes, it helped", icon: "✅" },
-      { id: "yes_no_help", label: "Yes, didn't help", icon: "😕" },
-      { id: "no", label: "No medication", icon: "❌" },
+      { id: "yes_helped", label: "Yes — it helped (complete or significant relief)", icon: "✅" },
+      { id: "yes_partial", label: "Yes — partial relief", icon: "🟡" },
+      { id: "yes_no_help", label: "Yes — didn't help", icon: "😕" },
+      { id: "no", label: "No medication taken", icon: "❌" },
     ],
   },
   {
     id: "disability",
     title: "How did headaches affect your day?",
-    helper: "Based on MIDAS disability scale.",
+    helper: "Based on the MIDAS disability scale. Pick what best describes today.",
     type: "single" as const,
     options: [
-      { id: "0", label: "No effect", icon: "0️⃣" },
-      { id: "1", label: "Could manage activities", icon: "1️⃣" },
-      { id: "2", label: "Had difficulty, cancelled some plans", icon: "2️⃣" },
-      { id: "3", label: "Missed work/stayed in bed", icon: "3️⃣" },
+      { id: "0", label: "0 — No effect on activities", icon: "0️⃣" },
+      { id: "1", label: "1 — Could manage, with some difficulty", icon: "1️⃣" },
+      { id: "2", label: "2 — Had difficulty, cancelled some plans", icon: "2️⃣" },
+      { id: "3", label: "3 — Missed work or had to stay in bed", icon: "3️⃣" },
     ],
   },
 ];
 
 interface DailyCheckinFlowProps {
-  onComplete: () => void;
+  onComplete: (log: CheckInLog) => void;
   onBack: () => void;
   diagnosis?: Diagnosis | null;
+  attackLogs?: HeadacheLog[];
+  onUpdateAttackNote?: (attackId: string, note: string) => void;
 }
 
 const DailyCheckinFlow = ({ onComplete, onBack, diagnosis }: DailyCheckinFlowProps) => {
@@ -175,6 +181,7 @@ const DailyCheckinFlow = ({ onComplete, onBack, diagnosis }: DailyCheckinFlowPro
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [showGratification, setShowGratification] = useState(false);
   const [answers, setAnswers] = useState<Record<string, string[] | number>>({});
+  const [completedLog, setCompletedLog] = useState<CheckInLog | null>(null);
   const autoAdvanceTimer = useRef<NodeJS.Timeout | null>(null);
 
   const currentQuestion = checkInQuestions[currentQuestionIndex];
@@ -213,6 +220,20 @@ const DailyCheckinFlow = ({ onComplete, onBack, diagnosis }: DailyCheckinFlowPro
 
   const handleContinue = () => {
     if (currentQuestionIndex >= checkInQuestions.length - 1) {
+      const ans = answers;
+      const log: CheckInLog = {
+        id: crypto.randomUUID(),
+        date: new Date().toISOString().split("T")[0],
+        feeling: typeof ans.overall === "number" ? ans.overall : 5,
+        hadHeadache: (ans.headache_today as string[])?.[0] !== "no",
+        headacheSeverity: (ans.headache_today as string[])?.[0],
+        medicationTaken: (ans.medication_taken as string[])?.[0],
+        disability: parseInt((ans.disability as string[])?.[0] ?? "0", 10),
+        painLocations: (ans.pain_location as string[]) ?? [],
+        symptoms: (ans.symptoms as string[]) ?? [],
+        triggers: (ans.triggers as string[]) ?? [],
+      };
+      setCompletedLog(log);
       setShowGratification(true);
     } else {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
@@ -233,7 +254,7 @@ const DailyCheckinFlow = ({ onComplete, onBack, diagnosis }: DailyCheckinFlowPro
         subtitle={diagnosis === "migraine"
           ? "Tracking your migraines helps find patterns."
           : "You're building healthy habits every day."}
-        onContinue={onComplete}
+        onContinue={() => onComplete(completedLog!)}
         type="celebration"
         ctaText="Back to Home"
       />

@@ -217,7 +217,10 @@ const Index = () => {
     setNeuraInitialQuery(null);
     setCurrentScreen("neurogpt");
   };
-  const handleCheckinComplete = () => setCurrentScreen("home");
+  const handleCheckinComplete = (log: CheckInLog) => {
+    setCheckInLogs((prev) => [...prev, log]);
+    setCurrentScreen("home");
+  };
   const handleOpenChat = () => setCurrentScreen("chat");
   const handleOpenNeuroGPT = () => { setPreviousScreen(currentScreen); setNeuraInitialScript(null); setNeuraInitialQuery(null); setCurrentScreen("neurogpt"); };
   const handleOpenNeuraWithScript = (scriptId: ScriptId | null) => {
@@ -405,6 +408,8 @@ const Index = () => {
             onComplete={handleCheckinComplete}
             onBack={() => setCurrentScreen(previousScreen)}
             diagnosis={diagnosis}
+            attackLogs={attackLogs}
+            onUpdateAttackNote={(id, note) => updateAttackLog(id, { notes: note })}
           />
         );
       case "maps":
